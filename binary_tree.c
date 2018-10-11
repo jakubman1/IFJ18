@@ -55,7 +55,6 @@ int binaryTreeHeight (Tnode *root)
     return ++maxHeight;
 }
 
-// doesn't work yet
 Tnode *copyBinaryTree (Tnode *origRoot)
 {
     if (origRoot == NULL) return NULL;
