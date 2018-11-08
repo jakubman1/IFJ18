@@ -10,7 +10,7 @@ end # if
 result
 end # function factorial
 # Hlavni telo programu
-print "Zadejte cislo pro vypocet faktorialu: "
+print "Zadejte cislo pro vypocet faktorialu "
 a = inputi
 if a < 0 then
 print "\nFaktorial nelze spocitat\n"

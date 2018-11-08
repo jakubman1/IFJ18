@@ -278,7 +278,7 @@ int scanner()
 void add_to_buffer(char **buffer, int *buff_size, char c)
 {
   int len = strlen(*buffer);
-  //fprintf(stderr, "LEN: %d\n", len);
+  fprintf(stderr, "LEN: %d\n", len);
   if((len + 2) >= *buff_size) {
     *buff_size = *buff_size * 2;
     fprintf(stderr, "Incresing buffer\n");
@@ -290,8 +290,8 @@ void add_to_buffer(char **buffer, int *buff_size, char c)
     fprintf(stderr, "New buffer size: %d\n", *buff_size);
   }
   fprintf(stderr, "Adding to position %d\n", len);
-  *(*buffer + len) = c;
-  *(*buffer + len + 1) = '\0';
+  *((*buffer) + len) = c;
+  *((*buffer) + len + 1) = '\0';
 
   // fprintf(stderr, "Adding char %c to buffer\n", c);
 }
@@ -304,10 +304,10 @@ void send_buffer(token_type type, char **buffer)
   token_t token = {text, type};
   // TODO send_to_syntactic_analysis(token);
   for(int i = 0; i < buffer_size; i++) {
-    *(*buffer + i) = 0;
+    *(*buffer + i) = '\0';
   }
   printf("DEBUG: Added to buffer: %s, %d\n", token.text, token.type);
-  free(token.text); //TODO: REMOVE THIS!!!!
+  //free(token.text); //TODO: REMOVE THIS!!!!
 }
 
 void send_char(token_type type, char c) {
