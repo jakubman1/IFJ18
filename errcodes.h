@@ -4,7 +4,8 @@
  * @date 18.10. 2018
  * @brief Enum of error codes
  */
-
+#ifndef ERRCODES_H
+#define ERRCODES_H
  /* Error return codes */
  typedef enum {
    SUCCESS = 0, /* No error */
@@ -17,3 +18,5 @@
    DIVISION_BY_ZERO = 9, /* Attempt to divide by zero */
    INTERNAL_ERR = 99 /* Internal compiler errors (memory allocation errors..) */
  } err_codes;
+
+#endif

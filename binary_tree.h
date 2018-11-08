@@ -1,6 +1,6 @@
 #ifndef BINARY_TREE_H
 #define BINARY_TREE_H
-
+#include <stdbool.h>
 /**
  * @brief Struct of a data in a binary tree node.
  *
