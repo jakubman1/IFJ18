@@ -10,24 +10,24 @@
 #ifndef TYPES_H
 #define TYPES_H
 typedef enum {
-  DEF, //keywords
-  DO,
-  ELSE,
-  END,
-  IF,
-  NOT,
-  NIL,
-  THEN,
-  WHILE,
-  ID, //Identifier
-  INTEGER, // Integer
-  FLOATING_POINT, // Floating point number
-  HEXA,
-  OCTA,
-  BINARY,
-  OPERATOR, // Operator, eg +, -, /, (, )...
-  STRING,
-  ERROR // Error type (unknown character)
+  DEF, //keywords 0
+  DO, // 1
+  ELSE, // 2
+  END, // 3
+  IF, // 4
+  NOT, // 5
+  NIL, // 6
+  THEN, // 7
+  WHILE, // 8
+  ID, // Identifier 9
+  INTEGER, // Integer 10
+  FLOATING_POINT, // Floating point number 11
+  HEXA, // 12
+  OCTA, // 13
+  BINARY, //14
+  OPERATOR, // Operator, eg +, -, /, (, )... 15
+  STRING, //16
+  ERROR // Error type (unknown character) 17
 } token_type;
 
 typedef enum {

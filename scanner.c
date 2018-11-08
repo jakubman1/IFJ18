@@ -25,6 +25,7 @@ int scanner()
     switch(state) {
       case ERR:
         fprintf(stderr, "ACHTUNG, SAJRAJT!!!!\n");
+        state = START;
         break;
       case START:
         if (c == '!') {
@@ -195,17 +196,10 @@ int scanner()
         }
         break;
       case HEX:
-        if (c >= '0' && c <= '9') {
+        if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f')) { // c == 0 to 9, A to F
           add_to_buffer(&buffer, &buff_size, c);
           state = HEX;
         }
-        else if (c >= 'A' && c <= 'F') {
-          add_to_buffer(&buffer, &buff_size, c);
-          state = HEX;
-        }
-        else if (c >= 'a' && c <= 'f') {
-          add_to_buffer(&buffer, &buff_size, c);
-          state = HEX;        }
         else {
           send_buffer(HEX, &buffer);
           ungetc(c, stdin);
@@ -227,73 +221,80 @@ int scanner()
         if (c == '=') { // !=
           add_to_buffer(&buffer, &buff_size, c);
           send_buffer(OPERATOR, &buffer);
+          state = START;
         }
         else { // !
           send_buffer(ERROR, &buffer);
           ungetc(c, stdin);
+          state = START;
         }
-        state = START;
         break;
       case GREATER:
         if (c == '=') { // >=
           add_to_buffer(&buffer, &buff_size, c);
           send_buffer(OPERATOR, &buffer);
+          state = START;
         }
         else { // >
           send_buffer(OPERATOR, &buffer);
           ungetc(c, stdin);
+          state = START;
         }
-        state = START;
         break;
       case LESS:
         if (c == '=') { // <=
           add_to_buffer(&buffer, &buff_size, c);
           send_buffer(OPERATOR, &buffer);
+          state = START;
         }
         else { // <
           send_buffer(OPERATOR, &buffer);
           ungetc(c, stdin);
+          state = START;
         }
-        state = START;
         break;
       case SET:
         if (c == '=') // ==
         {
           add_to_buffer(&buffer, &buff_size, c);
           send_buffer(OPERATOR, &buffer);
+          state = START;
         }
         else { // =
           send_buffer(OPERATOR, &buffer);
           ungetc(c, stdin);
+          state = START;
         }
-        state = START;
         break;
       default:
         state = ERR;
         break;
-
     }
   }
-
+  free(buffer);
   return retcode;
 }
 
 void add_to_buffer(char **buffer, int *buff_size, char c)
 {
   int len = strlen(*buffer);
-  if(len >= (*buff_size - 1)) {
-    realloc(*buffer, sizeof(char) * 2 * (*buff_size));
+  //fprintf(stderr, "LEN: %d\n", len);
+  if((len + 2) >= *buff_size) {
+    *buff_size = *buff_size * 2;
+    fprintf(stderr, "Incresing buffer\n");
+    realloc(*buffer, sizeof(char) * (*buff_size));
     if(*buffer == NULL) {
       fprintf(stderr, "NO MEMORY LEFT!");
       exit(99);
     }
-    *buff_size = *buff_size * 2;
+    fprintf(stderr, "New buffer size: %d\n", *buff_size);
   }
+  fprintf(stderr, "Adding to position %d\n", len);
   *(*buffer + len) = c;
-  *(*buffer + len+ 1) = 0;
+  *(*buffer + len + 1) = '\0';
+
   // fprintf(stderr, "Adding char %c to buffer\n", c);
 }
-
 
 void send_buffer(token_type type, char **buffer)
 {
