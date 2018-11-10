@@ -4,22 +4,15 @@
 
 int scanner()
 {
-  // ungetc(c, stdin);
   int c;
   scanner_state state = START;
   int retcode = SUCCESS;
+  const char *key_words[] = {"def", "do", "else", "end", "if", "nil", "not", "then", "while"};
   int buff_size = DEFAULT_BUFFER_SIZE;
   char *buffer = malloc(sizeof(char) * buff_size);
   if(buffer == NULL) {
     return INTERNAL_ERR;
   }
-
-/*
-  add_to_buffer(...);
-  send_buffer(...);
-  ungetc(...);
-  state = ...;
-*/
 
   while((c = getc(stdin)) != EOF) {
     switch(state) {
@@ -275,6 +268,28 @@ int scanner()
   return retcode;
 }
 
+void correct_token (token_t *token)
+{
+    int l = LEFT;
+    int r = RIGHT;
+
+    while (l <= r) {
+        int i = (l + r) / 2; // MIDDLE
+
+        if (strcmp(token->text, key_words[i]) < 0) { // str1 < str2
+            r = i - 1;
+        }
+        else if (strcmp(token->text, key_words[i]) > 0) { // str1 > str2
+            l = i + 1;
+        }
+        else { // str1 == str2
+            token->type = i;
+            return;
+        }
+    }
+    // not a keyword
+}
+
 void add_to_buffer(char **buffer, int *buff_size, char c)
 {
   int len = strlen(*buffer);
@@ -302,6 +317,7 @@ void send_buffer(token_type type, char **buffer)
   char *text = malloc(sizeof(char) * buffer_size + 1);
   strcpy(text, *buffer);
   token_t token = {text, type};
+  correct_token(&token);
   // TODO send_to_syntactic_analysis(token);
   for(int i = 0; i < buffer_size; i++) {
     *(*buffer + i) = '\0';
