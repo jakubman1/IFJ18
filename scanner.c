@@ -317,7 +317,9 @@ void send_buffer(token_type type, char **buffer)
   char *text = malloc(sizeof(char) * buffer_size + 1);
   strcpy(text, *buffer);
   token_t token = {text, type};
-  correct_token(&token);
+  if (type == 9) { // ID
+    correct_token(&token);
+  }
   // TODO send_to_syntactic_analysis(token);
   for(int i = 0; i < buffer_size; i++) {
     *(*buffer + i) = '\0';
