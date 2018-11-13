@@ -11,7 +11,11 @@ end # if
 result
 end # function factorial
 # Hlavni telo programu
-
+=begin
+...
+Komentar na vice radku
+...
+=end
 print "Zadejte cislo pro vypocet faktorialu "
 a = inputi
 if a < 0 then
