@@ -16,7 +16,9 @@ typedef enum {
   ERR, // Error state
   START, // Default state
   COMMENT, // Comment
+  MULTILINE_COMMENT, // MULTILINE COMMENT
   IDENT, // Identifier
+  EQIDENT,  // potential =begin
   STRING_START, // Got first "
   STRING_ESCAPING, // Got \ in string
   INT, // Got number not starting with 0

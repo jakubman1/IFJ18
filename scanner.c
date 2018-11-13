@@ -2,7 +2,7 @@
 
 int scanner()
 {
-  int c;
+  int c = '\0';
 
   scanner_state state = START;
   int retcode = SUCCESS;
@@ -10,17 +10,12 @@ int scanner()
 
 
   int buff_size = DEFAULT_BUFFER_SIZE;
-  tBuffer buffer = malloc(sizeof(char) * buff_size); // orig buff_size + 1
+  tBuffer buffer = calloc(buff_size, sizeof(char)); // orig buff_size + 1
 
   if(buffer == NULL) {
     fprintf(stderr, "Internal Error: Not enough memory\n");
     exit(INTERNAL_ERR);
   }
-
-  buffer[0] = 0;
-  buffer[1] = 0;
-  buffer[2] = 0;
-  buffer[3] = 0;
 
   while((c = getc(stdin)) != EOF) {
     switch(state) {
@@ -75,6 +70,32 @@ int scanner()
           state = START;
         }
         break;
+      case MULTILINE_COMMENT:
+        if (c == '=') {
+          for (int i = 0; i < 3; i++) {
+            c = getc(stdin);
+            if (c == EOF) {
+              ungetc(c, stdin);
+              state = START;
+            }
+            else if (c == '=') {
+              ungetc(c, stdin);
+              break;
+            }
+            else if (i == 0 && c == 'e') {
+              continue;
+            }
+            else if (i == 1 && c == 'n') {
+              continue;
+            }
+            else if (i == 2 && c == 'd') {
+              state = START;
+            }
+          }
+
+          state = MULTILINE_COMMENT;
+        }
+      break;
       case IDENT:
         if (isalnum(c) || c == '_') {
           add_to_buffer(&buffer, &buff_size, c);
@@ -91,6 +112,30 @@ int scanner()
           state = START;
         }
         break;
+      case EQIDENT:
+        if (isalnum(c) || c == '_') {
+          add_to_buffer(&buffer, &buff_size, c);
+          state = EQIDENT;
+        }
+        else if (c == '!' || c == '?') {
+          add_to_buffer(&buffer, &buff_size, c);
+          send_char(OPERATOR, '=');
+          send_buffer(ID, &buffer);
+          state = START;
+        }
+        else {
+          if (strcmp(buffer, "begin") == 0) {
+            buffer[0] = 0;
+            state = MULTILINE_COMMENT;
+          }
+          else {
+            send_char(OPERATOR, '=');
+            send_buffer(ID, &buffer);
+            ungetc(c, stdin);
+            state = START;
+          }
+        }
+      break;
       case STRING_START:
         if (c != '"' && c != '\n') {
           add_to_buffer(&buffer, &buff_size, c);
@@ -261,6 +306,11 @@ int scanner()
           send_buffer(OPERATOR, &buffer);
           state = START;
         }
+        else if (c == '_' || (c >= 'a' && c <= 'z')) {  // =begin
+          buffer[0] = 0;
+          add_to_buffer(&buffer, &buff_size, c);
+          state = EQIDENT;
+        }
         else { // =
           send_buffer(OPERATOR, &buffer);
           ungetc(c, stdin);
@@ -299,25 +349,6 @@ void correct_token (tToken *token)
     // not a keyword
 }
 
-/*void send_buffer(token_type type, tBuffer *buffer)
-{
-  int buffer_size = strlen(*buffer);
-  char *text = malloc(sizeof(char) * buffer_size + 2);
-  if(text == NULL) {
-    fprintf(stderr, "Internal Error: Not enough memory\n");
-    exit(INTERNAL_ERR);
-  }
-  strcpy(text, *buffer);
-  tToken token = {text, type};
-  if (type == 9) { // ID
-    correct_token(&token);
-  }
-  // TODO send_to_syntactic_analysis(token);
-  **buffer = 0;
-  printf("DEBUG: Added to buffer: %s, %d\n", token.text, token.type);
-  free(token.text);
-}*/
-
 /**     ADAM, JIRKA VERZE
 
 @brief Function sends token.
@@ -342,8 +373,9 @@ void send_buffer(token_type type, tBuffer *buffer)
   }
 
   (*buffer)[0] = 0;
-
+  #ifdef DEBUG
   printf("DEBUG: Added to buffer: %s, %d\n", token.text, token.type);
+  #endif
   free(text);
 }
 
@@ -352,5 +384,7 @@ void send_char(token_type type, char c) {
   char text[2] = {0,};
   text[0] = c;
   tToken token = {text, type};
+  #ifdef DEBUG
   printf("DEBUG: Added to buffer: %s, %d\n", token.text, token.type);
+  #endif
 }
