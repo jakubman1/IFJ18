@@ -10,15 +10,14 @@ int scanner()
 
 
   int buff_size = DEFAULT_BUFFER_SIZE;
-  tBuffer buffer = calloc(buff_size, sizeof(char)); // buff_size + 1
+  tBuffer buffer = malloc(sizeof(char) * buff_size); // orig buff_size + 1
+
   if(buffer == NULL) {
     fprintf(stderr, "Internal Error: Not enough memory\n");
     exit(INTERNAL_ERR);
   }
 
-  if(buffer == NULL) {
-    return INTERNAL_ERR;
-  }
+  buffer[0] = 0;
 
   while((c = getc(stdin)) != EOF) {
     switch(state) {
