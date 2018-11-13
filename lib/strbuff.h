@@ -12,6 +12,7 @@
 #include <stdlib.h>
 
 #define DEFAULT_BUFFER_SIZE 4 // Buffer size on init (default 4)
+
 typedef char* tBuffer;
 
 /**

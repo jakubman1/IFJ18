@@ -5,10 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "lib/strbuff.h"
 #include "lib/errcodes.h"
 #include "lib/types.h"
-
+#include "lib/strbuff.h"
 
 #define LEFT 0
 #define RIGHT 8 //TODO: Comment magic constants
@@ -54,6 +53,12 @@ void send_buffer(token_type type, tBuffer *buffer);
  */
 void send_char(token_type type, char c);
 
+/**
+Function distinguishes token type and if it matches a keyword it changes it's type.
+
+@brief Changes type of token if keyword
+@param token Token structure
+*/
 void correct_token (tToken *token);
 
 #endif

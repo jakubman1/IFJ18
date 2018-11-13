@@ -10,7 +10,11 @@ int scanner()
 
 
   int buff_size = DEFAULT_BUFFER_SIZE;
-  tBuffer buffer = malloc(sizeof(char) * buff_size);
+  tBuffer buffer = calloc(buff_size, sizeof(char)); // buff_size + 1
+  if(buffer == NULL) {
+    fprintf(stderr, "Internal Error: Not enough memory\n");
+    exit(INTERNAL_ERR);
+  }
 
   if(buffer == NULL) {
     return INTERNAL_ERR;
@@ -293,22 +297,54 @@ void correct_token (tToken *token)
     // not a keyword
 }
 
-void send_buffer(token_type type, tBuffer *buffer)
+/*void send_buffer(token_type type, tBuffer *buffer)
 {
   int buffer_size = strlen(*buffer);
-  char *text = malloc(sizeof(char) * buffer_size + 1);
+  char *text = malloc(sizeof(char) * buffer_size + 2);
+  if(text == NULL) {
+    fprintf(stderr, "Internal Error: Not enough memory\n");
+    exit(INTERNAL_ERR);
+  }
   strcpy(text, *buffer);
   tToken token = {text, type};
   if (type == 9) { // ID
     correct_token(&token);
   }
   // TODO send_to_syntactic_analysis(token);
-  for(int i = 0; i < buffer_size; i++) {
-    *(*buffer + i) = '\0';
-  }
+  **buffer = 0;
   printf("DEBUG: Added to buffer: %s, %d\n", token.text, token.type);
-  //free(token.text); //TODO: REMOVE THIS!!!!
+  free(token.text);
+}*/
+
+/**     ADAM, JIRKA VERZE
+
+@brief Function sends token.
+@param type Token type
+@param buffer Token text
+*/
+void send_buffer(token_type type, tBuffer *buffer)
+{
+  int len = strlen(*buffer);
+  char *text = malloc(sizeof(char) * len + 1);
+
+  if(text == NULL) {
+    fprintf(stderr, "Internal Error: Not enough memory\n");
+    exit(INTERNAL_ERR);
+  }
+
+  strncpy(text, *buffer, len + 1);
+  tToken token = {text, type};
+
+  if (type == 9) { // ID
+    correct_token(&token);
+  }
+
+  (*buffer)[0] = 0;
+
+  printf("DEBUG: Added to buffer: %s, %d\n", token.text, token.type);
+  free(text);
 }
+
 
 void send_char(token_type type, char c) {
   char text[2] = {0,};

@@ -1,4 +1,5 @@
 # Program 2: Vypocet faktorialu (rekurzivne)
+rreefferfffffffffffffff = 3
 def factorial (n)
 if n < 2 then
 result = 1
