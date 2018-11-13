@@ -21,5 +21,8 @@ test: tests
 	make clean; make lexical-test
 	./lexical-test < test/factorial.rb
 
+runtest: tests
+	test/runtest.sh
+
 fulltest:
 	ssh -t xmanja00@merlin.fit.vutbr.cz 'git clone https://github.com/jakubman1/IFJ18.git; cd IFJ18; make tests;chmod +x test/runtest.sh;test/runtest.sh;cd ..; rm -rf IFJ18'
