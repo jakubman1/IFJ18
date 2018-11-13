@@ -71,7 +71,7 @@ int scanner()
         if (c == '=') {
 
           /* Jirka */
-          const char *comment = "begin";
+          /*const char *comment = "begin";
           char myString[6] = {0,}; // strlen(comment) + 1
           int i = 0;
 
@@ -95,16 +95,16 @@ int scanner()
           else {
             state = SET;
           }
-
+*/
 
 
           /* Adam */
-          /*
+
           int i = 0;
           do {
             i++;
-            c = getc(stdin)
-          } while (c == 'b' && i == 1 || c == 'e' && i == 2 || c == 'g' && i == 3 || c == 'i' && i == 4 || c == 'n' && i == 5);
+            c = getc(stdin);
+          } while ((c == 'b' && i == 1) || (c == 'e' && i == 2) || (c == 'g' && i == 3) || (c == 'i' && i == 4));
 
           if (i == 5 && c == 'n') {
             state = MULTILINE_COMMENT;
@@ -134,7 +134,7 @@ int scanner()
             ungetc('i', stdin);
             ungetc(c, stdin);
           }
-          */
+
         }
         else {
           ungetc(c, stdin);
@@ -144,6 +144,7 @@ int scanner()
       case COMMENT:
         if(c == '\n') {
           // FIXME: Not working on all architectures
+          ungetc(c, stdin);
           state = START;
         }
         break;
@@ -342,6 +343,18 @@ int scanner()
         break;
       case MULTILINE_COMMENT:
           //fprintf (stderr, "In Multiline Comment\n");
+          if(c == '\n') {
+            // detect =end
+            if((c = getc(stdin)) == '=') {
+              if((c = getc(stdin)) == 'e') {
+                if((c = getc(stdin)) == 'n') {
+                  if((c = getc(stdin)) == 'd') {
+                    state = START;
+                  }
+                }
+              }
+            }
+          }
         break;
       default:
         state = ERR;

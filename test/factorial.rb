@@ -14,6 +14,7 @@ end # function factorial
 =begin
 ...
 Komentar na vice radku
+test
 ...
 =end
 print "Zadejte cislo pro vypocet faktorialu "
