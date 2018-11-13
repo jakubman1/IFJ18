@@ -12,8 +12,6 @@
 
 int main(int argc, char const *argv[]) {
   int retcode = SUCCESS; /* Return code of the compiler */
-  /* Call lexical analysis */
-  /* Call syntactic analysis */
   retcode = scanner();
   return retcode;
 }
