@@ -5,7 +5,7 @@
 ########
 #factorial.rb
 ./lexical-test < test/factorial.rb > factorial.lexical.tmp
-DIFF=$(diff factorial.rb.lexical.tmp test/factorial.rb.lexical.output)
+DIFF=$(diff factorial.lexical.tmp test/factorial.lexical.output)
 if [ "$DIFF" != "" ] ; then
   echo "ERROR, factorial.rb lexical analysis not passed!"
   echo $DIFF
@@ -15,7 +15,7 @@ fi
 
 #comments.rb
 ./lexical-test < test/comments.rb > comments.lexical.tmp
-DIFF=$(diff comments.rb.lexical.tmp test/comments.rb.lexical.output)
+DIFF=$(diff comments.lexical.tmp test/comments.lexical.output)
 if [ "$DIFF" != "" ] ; then
   echo "ERROR, comments.rb lexical analysis not passed!"
   echo $DIFF
