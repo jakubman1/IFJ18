@@ -289,7 +289,6 @@ void correct_token (token_t *token)
     }
     // not a keyword
 }
-
 void add_to_buffer(char **buffer, int *buff_size, char c)
 {
   int len = strlen(*buffer);
