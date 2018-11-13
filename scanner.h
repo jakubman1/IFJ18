@@ -5,10 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "lib/strbuff.h"
 #include "errcodes.h"
 #include "types.h"
 
-#define DEFAULT_BUFFER_SIZE 4
+
 #define LEFT 0
 #define RIGHT 8
 

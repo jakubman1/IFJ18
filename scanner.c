@@ -1,7 +1,5 @@
 #include "scanner.h"
 
-
-
 int scanner()
 {
   int c;
@@ -9,7 +7,7 @@ int scanner()
   int retcode = SUCCESS;
   const char *key_words[] = {"def", "do", "else", "end", "if", "nil", "not", "then", "while"};
   int buff_size = DEFAULT_BUFFER_SIZE;
-  char *buffer = malloc(sizeof(char) * buff_size);
+  tBuffer buffer = malloc(sizeof(char) * buff_size);
   if(buffer == NULL) {
     return INTERNAL_ERR;
   }
@@ -289,28 +287,9 @@ void correct_token (token_t *token)
     }
     // not a keyword
 }
-void add_to_buffer(char **buffer, int *buff_size, char c)
-{
-  int len = strlen(*buffer);
-  fprintf(stderr, "LEN: %d\n", len);
-  if((len + 2) >= *buff_size) {
-    *buff_size = *buff_size * 2;
-    fprintf(stderr, "Incresing buffer\n");
-    realloc(*buffer, sizeof(char) * (*buff_size));
-    if(*buffer == NULL) {
-      fprintf(stderr, "NO MEMORY LEFT!");
-      exit(99);
-    }
-    fprintf(stderr, "New buffer size: %d\n", *buff_size);
-  }
-  fprintf(stderr, "Adding to position %d\n", len);
-  *((*buffer) + len) = c;
-  *((*buffer) + len + 1) = '\0';
 
-  // fprintf(stderr, "Adding char %c to buffer\n", c);
-}
 
-void send_buffer(token_type type, char **buffer)
+void send_buffer(token_type type, tBuffer *buffer)
 {
   int buffer_size = strlen(*buffer);
   char *text = malloc(sizeof(char) * buffer_size + 1);
