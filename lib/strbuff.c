@@ -1,3 +1,10 @@
+/**
+ * @file strbuff.c
+ * @author Jakub Man
+ * @date 13.11. 2018
+ * @brief Dynamic string buffer
+ */
+
 void add_to_buffer(tBuffer *buffer, int *buff_size, char c)
 {
   int len = strlen(*buffer);
@@ -15,6 +22,4 @@ void add_to_buffer(tBuffer *buffer, int *buff_size, char c)
   fprintf(stderr, "Adding to position %d\n", len);
   *((*buffer) + len) = c;
   *((*buffer) + len + 1) = '\0';
-
-  // fprintf(stderr, "Adding char %c to buffer\n", c);
 }

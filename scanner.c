@@ -266,7 +266,7 @@ int scanner()
   return retcode;
 }
 
-void correct_token (token_t *token)
+void correct_token (tToken *token)
 {
     int l = LEFT;
     int r = RIGHT;
@@ -294,7 +294,7 @@ void send_buffer(token_type type, tBuffer *buffer)
   int buffer_size = strlen(*buffer);
   char *text = malloc(sizeof(char) * buffer_size + 1);
   strcpy(text, *buffer);
-  token_t token = {text, type};
+  tToken token = {text, type};
   if (type == 9) { // ID
     correct_token(&token);
   }
@@ -309,7 +309,7 @@ void send_buffer(token_type type, tBuffer *buffer)
 void send_char(token_type type, char c) {
   char text[2] = {0,};
   text[0] = c;
-  token_t token = {text, type};
+  tToken token = {text, type};
   printf("DEBUG: Added to buffer: %s, %d\n", token.text, token.type);
 }
 
