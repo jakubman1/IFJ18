@@ -30,7 +30,7 @@ void add_to_buffer(tBuffer *buffer, int *buff_size, char c)
 {
   int len = strlen(*buffer);
   fprintf(stderr, "LEN: %d\n", len);
-  if(len >= (*buff_size - 2))
+  if(len >= (*buff_size - 2)) // *(buff_size) - 2 ?
   {
     // Change buffer size
     *buff_size *= 2;
@@ -62,7 +62,9 @@ void add_to_buffer(tBuffer *buffer, int *buff_size, char c)
   // Test print
   fprintf(stderr, "LEN = %d\n", len);
 
-  if (len + 1 >= buff_size) { // extend buffer
+  if (len + 1 >= *buff_size) { // extend buffer
+    printf("buff_size* = %d\n", *buff_size);
+    printf("buff_size = %d\n", buff_size);
     *buff_size *= 2;
     *buffer = (char*) realloc(*buffer, *buff_size);
 
