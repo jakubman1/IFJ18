@@ -34,9 +34,26 @@ typedef enum {
 
 } scanner_state;
 
+/**
+Finite state machine for scanner
+@returns return code of the program
+*/
 int scanner();
-void send_buffer(token_type type, char **buffer);
+
+/**
+@brief Change buffer into token and send it to syntactic analysis. Buffer will be cleared
+@param type Type of token from token_type enum defined in types.h
+@param buffer Poiner to buffer containing token text
+*/
+void send_buffer(token_type type, tBuffer *buffer);
+
+/**
+@brief Send char as token to syntactic analysis. Used for one char long tokens (eg operator +, -...)
+@param type Type of token from token_type enum defined in types.h
+@param c Character to send as token text. Will be converted into string
+ */
 void send_char(token_type type, char c);
+
 void correct_token (tToken *token);
 
 #endif

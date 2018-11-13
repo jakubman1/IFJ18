@@ -3,11 +3,15 @@
 int scanner()
 {
   int c;
+
   scanner_state state = START;
   int retcode = SUCCESS;
+
   const char *key_words[] = {"def", "do", "else", "end", "if", "nil", "not", "then", "while"};
+
   int buff_size = DEFAULT_BUFFER_SIZE;
   tBuffer buffer = malloc(sizeof(char) * buff_size);
+
   if(buffer == NULL) {
     return INTERNAL_ERR;
   }
@@ -288,7 +292,6 @@ void correct_token (tToken *token)
     // not a keyword
 }
 
-
 void send_buffer(token_type type, tBuffer *buffer)
 {
   int buffer_size = strlen(*buffer);
@@ -311,9 +314,4 @@ void send_char(token_type type, char c) {
   text[0] = c;
   tToken token = {text, type};
   printf("DEBUG: Added to buffer: %s, %d\n", token.text, token.type);
-}
-
-token_type replace_keyword(char *token_text) {
-  // TODO: Vyhledavani ve stromu;
-  return ID;
 }
