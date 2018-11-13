@@ -69,37 +69,6 @@ int scanner()
         break;
       case NEW_LINE:
         if (c == '=') {
-
-          /* Jirka */
-          /*const char *comment = "begin";
-          char myString[6] = {0,}; // strlen(comment) + 1
-          int i = 0;
-
-          for (i; i < strlen(comment); i++) {
-            c = getc(stdin);
-
-            if (c == 'b' || c == 'e' || c == 'g' || c == 'i' || c == 'n') {
-              myString[i] = c;
-            }
-            else {
-              // i == position where it went wrong
-              for (int j = 0; j < i; j++) { // correction
-                ungetc(myString[j], stdin);
-              }
-              break;
-            }
-          }
-          if (strcmp(myString, comment)) {
-            state = MULTILINE_COMMENT;
-          }
-          else {
-            state = SET;
-          }
-*/
-
-
-          /* Adam */
-
           int i = 0;
           do {
             i++;
@@ -111,21 +80,29 @@ int scanner()
           }
           else if (i == 1) {
             ungetc(c, stdin);
+            add_to_buffer(&buffer, &buff_size, '=');
+            state = SET;
           }
           else if (i == 2) {
             ungetc('b', stdin);
             ungetc(c, stdin);
+            add_to_buffer(&buffer, &buff_size, '=');
+            state = SET;
           }
           else if (i == 3) {
             ungetc('b', stdin);
             ungetc('e', stdin);
             ungetc(c, stdin);
+            add_to_buffer(&buffer, &buff_size, '=');
+            state = SET;
           }
           else if (i == 4) {
             ungetc('b', stdin);
             ungetc('e', stdin);
             ungetc('g', stdin);
             ungetc(c, stdin);
+            add_to_buffer(&buffer, &buff_size, '=');
+            state = SET;
           }
           else if (i == 5) {
             ungetc('b', stdin);
@@ -133,8 +110,9 @@ int scanner()
             ungetc('g', stdin);
             ungetc('i', stdin);
             ungetc(c, stdin);
+            add_to_buffer(&buffer, &buff_size, '=');
+            state = SET;
           }
-
         }
         else {
           ungetc(c, stdin);
