@@ -10,8 +10,6 @@ result = n * temp_result
 end # if
 result
 end # function factorial
-# Hlavni telo programu
-
 print "Zadejte cislo pro vypocet faktorialu "
 a = inputi
 if a < 0 then

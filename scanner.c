@@ -70,32 +70,6 @@ int scanner()
           state = START;
         }
         break;
-      case MULTILINE_COMMENT:
-        if (c == '=') {
-          for (int i = 0; i < 3; i++) { // 3 = length of "end"
-            c = getc(stdin);
-            if (c == EOF) {
-              ungetc(c, stdin);
-              state = START;
-            }
-            else if (c == '=') {
-              ungetc(c, stdin);
-              break;
-            }
-            else if (i == 0 && c == 'e') {
-              continue;
-            }
-            else if (i == 1 && c == 'n') {
-              continue;
-            }
-            else if (i == 2 && c == 'd') {
-              state = START;
-            }
-          }
-
-          state = MULTILINE_COMMENT;
-        }
-      break;
       case IDENT:
         if (isalnum(c) || c == '_') {
           add_to_buffer(&buffer, &buff_size, c);
@@ -112,30 +86,6 @@ int scanner()
           state = START;
         }
         break;
-      case EQIDENT:
-        if (isalnum(c) || c == '_') {
-          add_to_buffer(&buffer, &buff_size, c);
-          state = EQIDENT;
-        }
-        else if (c == '!' || c == '?') {
-          add_to_buffer(&buffer, &buff_size, c);
-          send_char(OPERATOR, '=');
-          send_buffer(ID, &buffer);
-          state = START;
-        }
-        else {
-          if (strcmp(buffer, "begin") == 0) {
-            buffer[0] = 0;
-            state = MULTILINE_COMMENT;
-          }
-          else {
-            send_char(OPERATOR, '=');
-            send_buffer(ID, &buffer);
-            ungetc(c, stdin);
-            state = START;
-          }
-        }
-      break;
       case STRING_START:
         if (c != '"' && c != '\n') {
           add_to_buffer(&buffer, &buff_size, c);
@@ -305,11 +255,6 @@ int scanner()
           add_to_buffer(&buffer, &buff_size, c);
           send_buffer(OPERATOR, &buffer);
           state = START;
-        }
-        else if (c == '_' || (c >= 'a' && c <= 'z')) {  // =begin
-          buffer[0] = 0;
-          add_to_buffer(&buffer, &buff_size, c);
-          state = EQIDENT;
         }
         else { // =
           send_buffer(OPERATOR, &buffer);
