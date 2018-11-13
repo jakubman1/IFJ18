@@ -175,7 +175,7 @@ int scanner()
           state = OCT;
         }
         else { // for 09 sends two INT tokens 0 and 9
-          send_buffer(INT, &buffer);
+          send_buffer(INTEGER, &buffer);
           ungetc(c, stdin);
           state = START;
         }
