@@ -341,7 +341,7 @@ int scanner()
         }
         break;
       case MULTILINE_COMMENT:
-          printf ("In Multiline Comment\n");
+          //fprintf (stderr, "In Multiline Comment\n");
         break;
       default:
         state = ERR;
