@@ -17,7 +17,7 @@ debug: *.c lib/*.c
 
 test:
 	make clean; make debug
-	./debyg < test.rb
+	./debug < test.rb
 
 fulltest:
-	ssh -t xmanja00@merlin.fit.vutbr.cz 'git clone https://github.com/jakubman1/IFJ18.git; cd IFJ18; make debug;./debug < test/test.rb;cd ..; rm -rf IFJ18'
+	ssh -t xmanja00@merlin.fit.vutbr.cz 'git clone https://github.com/jakubman1/IFJ18.git; cd IFJ18; make debug;chmod +x test/runtest.sh;test/runtest.sh;cd ..; rm -rf IFJ18'
