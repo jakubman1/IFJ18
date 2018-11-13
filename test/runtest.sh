@@ -13,18 +13,18 @@ NC='\033[0m' # No Color
 ./lexical-test < test/factorial.rb > factorial.lexical.tmp
 DIFF=$(diff factorial.lexical.tmp test/factorial.lexical.output)
 if [ "$DIFF" != "" ] ; then
-  echo "${RED}ERROR, factorial.rb lexical analysis not passed!${NC}"
+  echo -e "${RED}ERROR, factorial.rb lexical analysis not passed!${NC}"
   echo $DIFF
 else
-  echo "${GREEN}Lexical analysis of factorial.rb passed${NC}"
+  echo -e "${GREEN}Lexical analysis of factorial.rb passed${NC}"
 fi
 
 #comments.rb
 ./lexical-test < test/comments.rb > comments.lexical.tmp
 DIFF=$(diff comments.lexical.tmp test/comments.lexical.output)
 if [ "$DIFF" != "" ] ; then
-  echo "${RED}ERROR, comments.rb lexical analysis not passed!${NC}"
+  echo -e "${RED}ERROR, comments.rb lexical analysis not passed!${NC}"
   echo $DIFF
 else
-  echo "${GREEN}Lexical analysis of factorial.rb passed${NC}"
+  echo -e "${GREEN}Lexical analysis of factorial.rb passed${NC}"
 fi
