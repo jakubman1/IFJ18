@@ -1,8 +1,10 @@
 PRJ=ifj18
-#
 PROGS=$(PRJ)
 CC=gcc
 CFLAGS=-Wall -std=c99 -pedantic -lm
+
+# For testing on merlin.fit.vutbr.cz
+XLOGIN=xmanja00
 
 all: $(PROGS)
 
@@ -25,4 +27,4 @@ runtest: tests
 	test/runtest.sh
 
 fulltest:
-	ssh -t xmanja00@merlin.fit.vutbr.cz 'git clone https://github.com/jakubman1/IFJ18.git; cd IFJ18; make tests;chmod +x test/runtest.sh;test/runtest.sh;cd ..; rm -rf IFJ18'
+	ssh -t $(XLOGIN)@merlin.fit.vutbr.cz 'git clone https://github.com/jakubman1/IFJ18.git; cd IFJ18; make tests;chmod +x test/runtest.sh;test/runtest.sh;cd ..;echo -e "\n\nCleaning up after tests..."; rm -rf IFJ18;echo "Cleanup done."'
