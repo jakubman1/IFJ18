@@ -1,5 +1,5 @@
 # Program 2: Vypocet faktorialu (rekurzivne)
-def hdshafjjgsdfhsghsfdjghjsdffjgfhdsjjdfghskhghsfdkhg = 9
+hdshafjjgsdfhsghsfdjghjsdffjgfhdsjjdfghskhghsfdkhg = 9
 def factorial (n)
 if n < 2 then
 result = 1
