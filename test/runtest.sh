@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
-########
+
+################
 # Define colors
-########
+################
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-########
-# Test for lexical analysis
-########
+###########################
+# Tests for lexical analysis
+###########################
 echo -e "\n\n"
 echo "Running tests for lexical analysis"
 echo "----------------------------------"
-for FILENAME in 'nocomment' 'factorial' 'comments' # List of all test files
+for FILENAME in 'nocomment' 'factorial' 'comments' 'strings' # List of all test files
 do
   ./lexical-test < test/$FILENAME.rb > $FILENAME.lexical.tmp
   DIFF=$(diff $FILENAME.lexical.tmp test/$FILENAME.lexical.output)
