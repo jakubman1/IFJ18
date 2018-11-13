@@ -21,7 +21,7 @@ typedef char* tBuffer;
 @param buff_size Pointer to int containing current buffer size. Gets updated automatically.
 @param c Character to add to buffer.
  */
-void add_to_buffer(tBuffer *buffer, int *buff_size, char c);
+void add_to_buffer(tBuffer *buffer, int *buff_size, int c);
 
 
 #endif
