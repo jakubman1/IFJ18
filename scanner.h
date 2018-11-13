@@ -30,6 +30,8 @@ typedef enum {
   GREATER, // Got >
   LESS, // Got <
   SET, // Got =
+  NEW_LINE,
+  MULTILINE_COMMENT,
 
 } scanner_state;
 
