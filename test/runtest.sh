@@ -21,6 +21,6 @@ do
     echo -e "${RED}ERROR, ${FILENAME}.rb lexical analysis not passed!${NC}"
     echo $DIFF
   else
-    echo -e "${GREEN}Lexical analysis of ${FILENAME}.rb passed${NC}"
+    echo -e "${GREEN}Lexical analysis of ${FILENAME}.rb passed!${NC}"
   fi
 done

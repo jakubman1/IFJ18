@@ -10,7 +10,7 @@ $(PRJ): *.c lib/*.c
 	$(CC) $(CFLAGS) -o $@ *.c lib/*.c
 
 clean:
-	rm -f *.o *.out $(PROGS) lexical-tests *.exe
+	rm -f *.o *.out $(PROGS) lexical-tests *.exe *.tmp *.stackdump
 
 tests: lexical-test
 
