@@ -18,6 +18,9 @@ int scanner()
   }
 
   buffer[0] = 0;
+  buffer[1] = 0;
+  buffer[2] = 0;
+  buffer[3] = 0;
 
   while((c = getc(stdin)) != EOF) {
     switch(state) {
