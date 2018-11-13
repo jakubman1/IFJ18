@@ -6,12 +6,6 @@
  */
 #include "strbuff.h"
 
-/** ADAM, JIRKA, HONZA VERZE
-@Brief Adds char to the buffer
-@param buffer Destination
-@param buff_size Current size of the buffer
-@param c Char to add
-*/
 void add_to_buffer(tBuffer *buffer, int *buff_size, int c)
 {
   int len = strlen(*buffer);
