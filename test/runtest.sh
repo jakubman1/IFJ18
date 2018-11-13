@@ -13,7 +13,7 @@ echo -e "\n\n"
 echo "Running tests for lexical analysis"
 echo -e "\n"
 # List of all files
-for FILENAME in 'factorial' 'comments'
+for FILENAME in 'nocomment' 'factorial' 'comments'
 do
   ./lexical-test < test/$FILENAME.rb > $FILENAME.lexical.tmp
   DIFF=$(diff $FILENAME.lexical.tmp test/$FILENAME.lexical.output)
