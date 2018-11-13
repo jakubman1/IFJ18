@@ -9,22 +9,16 @@ NC='\033[0m' # No Color
 ########
 # Test for lexical analysis
 ########
-#factorial.rb
-./lexical-test < test/factorial.rb > factorial.lexical.tmp
-DIFF=$(diff factorial.lexical.tmp test/factorial.lexical.output)
-if [ "$DIFF" != "" ] ; then
-  echo -e "${RED}ERROR, factorial.rb lexical analysis not passed!${NC}"
-  echo $DIFF
-else
-  echo -e "${GREEN}Lexical analysis of factorial.rb passed${NC}"
-fi
 
-#comments.rb
-./lexical-test < test/comments.rb > comments.lexical.tmp
-DIFF=$(diff comments.lexical.tmp test/comments.lexical.output)
-if [ "$DIFF" != "" ] ; then
-  echo -e "${RED}ERROR, comments.rb lexical analysis not passed!${NC}"
-  echo $DIFF
-else
-  echo -e "${GREEN}Lexical analysis of factorial.rb passed${NC}"
-fi
+# List of all files
+for FILENAME in 'factorial' 'comments'
+do
+  ./lexical-test < test/$FILENAME.rb > $FILENAME.lexical.tmp
+  DIFF=$(diff $FILENAME.lexical.tmp test/$FILENAME.lexical.output)
+  if [ "$DIFF" != "" ] ; then
+    echo -e "${RED}ERROR, ${FILENAME}.rb lexical analysis not passed!${NC}"
+    echo $DIFF
+  else
+    echo -e "${GREEN}Lexical analysis of ${FILENAME}.rb passed${NC}"
+  fi
+done
