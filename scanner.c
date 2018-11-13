@@ -72,7 +72,7 @@ int scanner()
         break;
       case MULTILINE_COMMENT:
         if (c == '=') {
-          for (int i = 0; i < 3; i++) {
+          for (int i = 0; i < 3; i++) { // 3 = length of "end"
             c = getc(stdin);
             if (c == EOF) {
               ungetc(c, stdin);
