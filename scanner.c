@@ -20,7 +20,7 @@ int scanner()
   while((c = getc(stdin)) != EOF) {
     switch(state) {
       case ERR:
-        fprintf(stderr, "ACHTUNG, SAJRAJT!!!!\n");
+        send_char(ERROR, c);
         state = START;
         break;
       case START:

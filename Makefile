@@ -10,7 +10,7 @@ $(PRJ): *.c lib/*.c
 	$(CC) $(CFLAGS) -o $@ *.c lib/*.c
 
 clean:
-	rm -f *.o *.out $(PROGS)
+	rm -f *.o *.out $(PROGS) debug
 
 debug: *.c lib/*.c
 	$(CC) $(CFLAGS) -o $@ *.c lib/*.c -DDEBUG
