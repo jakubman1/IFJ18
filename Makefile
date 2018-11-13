@@ -15,3 +15,6 @@ clean:
 test:
 	make clean; make
 	./ifj18 < test.rb
+
+fulltest:
+	ssh -t xmanja00@merlin.fit.vutbr.cz 'git clone https://github.com/jakubman1/IFJ18.git; cd IFJ18; make test;cd ..; rm -rf IFJ18'
