@@ -7,6 +7,9 @@
 
 #ifndef STRBUFF_H
 #define STRBUFF_H
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define DEFAULT_BUFFER_SIZE 4 // Buffer size on init (default 4)
 typedef char* tBuffer;

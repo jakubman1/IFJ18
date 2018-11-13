@@ -7,7 +7,7 @@ int scanner()
   scanner_state state = START;
   int retcode = SUCCESS;
 
-  const char *key_words[] = {"def", "do", "else", "end", "if", "nil", "not", "then", "while"};
+
 
   int buff_size = DEFAULT_BUFFER_SIZE;
   tBuffer buffer = malloc(sizeof(char) * buff_size);
@@ -272,23 +272,24 @@ int scanner()
 
 void correct_token (tToken *token)
 {
-    int l = LEFT;
-    int r = RIGHT;
+  const char *key_words[] = {"def", "do", "else", "end", "if", "nil", "not", "then", "while"};
+  int l = LEFT;
+  int r = RIGHT;
 
-    while (l <= r) {
-        int i = (l + r) / 2; // MIDDLE
+  while (l <= r) {
+    int i = (l + r) / 2; // MIDDLE
 
-        if (strcmp(token->text, key_words[i]) < 0) { // str1 < str2
-            r = i - 1;
-        }
-        else if (strcmp(token->text, key_words[i]) > 0) { // str1 > str2
-            l = i + 1;
-        }
-        else { // str1 == str2
-            token->type = i;
-            return;
-        }
+    if (strcmp(token->text, key_words[i]) < 0) { // str1 < str2
+      r = i - 1;
     }
+    else if (strcmp(token->text, key_words[i]) > 0) { // str1 > str2
+      l = i + 1;
+    }
+    else { // str1 == str2
+      token->type = i;
+      return;
+    }
+  }
     // not a keyword
 }
 
