@@ -24,7 +24,10 @@ int scanner()
         state = START;
         break;
       case START:
-        if (c == '!') {
+        if (c == '\n') {
+          state = NEW_LINE;
+        }
+        else if (c == '!') {
           add_to_buffer(&buffer, &buff_size, c);
           state = EXCLAMATION_POINT;
         }
@@ -64,6 +67,80 @@ int scanner()
           state = ZERO;
         }
         break;
+      case NEW_LINE:
+        if (c == '=') {
+
+          /* Jirka */
+          const char *comment = "begin";
+          char myString[6] = {0,}; // strlen(comment) + 1
+          int i = 0;
+
+          for (i; i < strlen(comment); i++) {
+            c = getc(stdin);
+
+            if (c == 'b' || c == 'e' || c == 'g' || c == 'i' || c == 'n') {
+              myString[i] = c;
+            }
+            else {
+              // i == position where it went wrong
+              for (int j = 0; j < i; j++) { // correction
+                ungetc(myString[j], stdin);
+              }
+              break;
+            }
+          }
+          if (strcmp(myString, comment)) {
+            state = MULTILINE_COMMENT;
+          }
+          else {
+            state = SET;
+          }
+
+
+
+          /* Adam */
+          /*
+          int i = 0;
+          do {
+            i++;
+            c = getc(stdin)
+          } while (c == 'b' && i == 1 || c == 'e' && i == 2 || c == 'g' && i == 3 || c == 'i' && i == 4 || c == 'n' && i == 5);
+
+          if (i == 5 && c == 'n') {
+            state = MULTILINE_COMMENT;
+          }
+          else if (i == 1) {
+            ungetc(c, stdin);
+          }
+          else if (i == 2) {
+            ungetc('b', stdin);
+            ungetc(c, stdin);
+          }
+          else if (i == 3) {
+            ungetc('b', stdin);
+            ungetc('e', stdin);
+            ungetc(c, stdin);
+          }
+          else if (i == 4) {
+            ungetc('b', stdin);
+            ungetc('e', stdin);
+            ungetc('g', stdin);
+            ungetc(c, stdin);
+          }
+          else if (i == 5) {
+            ungetc('b', stdin);
+            ungetc('e', stdin);
+            ungetc('g', stdin);
+            ungetc('i', stdin);
+            ungetc(c, stdin);
+          }
+          */
+        }
+        else {
+          ungetc(c, stdin);
+          state = START;
+        }
+      break;
       case COMMENT:
         if(c == '\n') {
           // FIXME: Not working on all architectures
@@ -83,6 +160,7 @@ int scanner()
         else {
           send_buffer(ID, &buffer);
           ungetc(c, stdin);
+
           state = START;
         }
         break;
@@ -261,6 +339,9 @@ int scanner()
           ungetc(c, stdin);
           state = START;
         }
+        break;
+      case MULTILINE_COMMENT:
+          printf ("In Multiline Comment\n");
         break;
       default:
         state = ERR;
