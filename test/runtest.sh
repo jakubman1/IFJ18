@@ -9,7 +9,9 @@ NC='\033[0m' # No Color
 ########
 # Test for lexical analysis
 ########
-
+echo -e "\n\n"
+echo "Running tests for lexical analysis"
+echo -e "\n"
 # List of all files
 for FILENAME in 'factorial' 'comments'
 do
