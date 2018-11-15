@@ -26,6 +26,7 @@ int scanner()
       case START:
         if (c == '\n') {
           state = NEW_LINE;
+          send_char(EOL, c);
         }
         else if (c == '!') {
           add_to_buffer(&buffer, &buff_size, c);

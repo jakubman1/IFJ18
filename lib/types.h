@@ -28,7 +28,8 @@ typedef enum {
   BINARY, //14
   OPERATOR, // Operator, eg +, -, /, (, )... 15
   STRING, //16
-  ERROR // Error type (unknown character) 17
+  ERROR, // Error type (unknown character) 17
+  EOL // 18
 } token_type;
 
 typedef struct token {
