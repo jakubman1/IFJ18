@@ -19,7 +19,7 @@ do
   DIFF=$(diff $FILENAME.lexical.tmp test/$FILENAME.lexical.output)
   if [ "$DIFF" != "" ] ; then
     echo -e "${RED}ERROR, ${FILENAME}.rb: lexical analysis not passed!${NC}"
-    echo $DIFF
+    echo -e $DIFF
   else
     echo -e "${GREEN}Lexical analysis of ${FILENAME}.rb passed!${NC}"
   fi
