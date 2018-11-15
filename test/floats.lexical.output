@@ -21,9 +21,7 @@ DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: 1e3e1, 17
 DEBUG: Added to buffer: h, 9
 DEBUG: Added to buffer: =, 15
-DEBUG: Added to buffer: 1.2e+, 17
-DEBUG: Added to buffer: -, 15
-DEBUG: Added to buffer: 3, 10
+DEBUG: Added to buffer: 1.2e+-3, 17
 DEBUG: Added to buffer: f, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: 10.23523534e+3464, 11
