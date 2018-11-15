@@ -1,0 +1,10 @@
+a = 1. #invalid float
+b = 1.5 # valid float
+c = 1.4e-3 # valid float
+d = 3e1 # valid float
+e = 1.e3 # invalid float
+f = 1.4.3 # invalid float
+g = 1e3e1 # invalid float
+h = 1.2e+-3 # invalid flaot
+f = 10.23523534e+3464 #valid float
+h = 10.234eb43 # invalid flaot
