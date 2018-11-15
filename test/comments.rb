@@ -14,7 +14,7 @@ Komentar na vice radku
 a=endian
 #commentception
 ...
-end my life amr hahahahaha 
+end 
 =e
 =end
 def endian
