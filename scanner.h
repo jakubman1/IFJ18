@@ -25,6 +25,7 @@ typedef enum {
   FLOAT_ERR1,
   FLOAT_ERR2,
   FLOAT_ERR3,
+  FLOAT_ERR4,
   ZERO, // Got 0 as a first character in a number
   BIN, // Got 0b
   HEX, // Got 0x
@@ -34,7 +35,7 @@ typedef enum {
   LESS, // Got <
   SET, // Got =
   NEW_LINE,
-  MULTILINE_COMMENT,
+  MULTILINE_COMMENT
 
 } scanner_state;
 
