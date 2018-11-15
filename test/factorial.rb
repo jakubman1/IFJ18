@@ -16,6 +16,8 @@ end # function factorial
 Komentar na vice radku
 test
 ...
+end
+=en
 =end
 print "Zadejte cislo pro vypocet faktorialu "
 a = inputi

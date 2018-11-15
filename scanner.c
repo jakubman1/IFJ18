@@ -392,10 +392,10 @@ int scanner()
                   if((c = getc(stdin)) == 'd') {
                     // got \n=end
                     state = START;
-                  }
-                }
-              }
-            }
+                  } else ungetc(c, stdin);
+                } else ungetc(c, stdin);
+              } else ungetc(c, stdin);
+            } else ungetc(c, stdin);
           }
         break;
       default:
