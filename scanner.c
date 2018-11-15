@@ -253,7 +253,7 @@ int scanner()
           add_to_buffer(&buffer, &buff_size, c);
           state = FLOAT;
         }
-        else if (c == '+' || c == '-') {
+        else if (c == '+' || c == '-' || c == '.') {
           add_to_buffer(&buffer, &buff_size, c);
           state = FLOAT_ERR4;
         }
