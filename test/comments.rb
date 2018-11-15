@@ -14,6 +14,7 @@ Komentar na vice radku
 a=endian
 #commentception
 ...
+=en=end
 =end
 def endian
 =end
