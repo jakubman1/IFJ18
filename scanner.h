@@ -22,6 +22,9 @@ typedef enum {
   INT, // Got number not starting with 0
   FLOAT, // Current number is float
   FLOAT_E, // Number is float with letter 'e' in it
+  FLOAT_ERR1,
+  FLOAT_ERR2,
+  FLOAT_ERR3,
   ZERO, // Got 0 as a first character in a number
   BIN, // Got 0b
   HEX, // Got 0x
