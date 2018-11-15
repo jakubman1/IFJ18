@@ -156,6 +156,9 @@ int scanner()
         else { // c == '"'  ||  c == '\n'
           add_to_buffer(&buffer, &buff_size, c);
           send_buffer(STRING, &buffer);
+          if(c == '\n') {
+            send_char(EOL, c);
+          }
           state = START;
         }
         break;
