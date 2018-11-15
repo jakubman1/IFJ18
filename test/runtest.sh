@@ -13,7 +13,7 @@ NC='\033[0m' # No Color
 echo -e "\n\n"
 echo "Running tests for lexical analysis"
 echo "----------------------------------"
-for FILENAME in 'nocomment' 'factorial' 'comments' 'strings' 'fact-loop', 'floats' # List of all test files
+for FILENAME in 'nocomment' 'factorial' 'comments' 'strings' 'fact-loop' 'floats' # List of all test files
 do
   ./lexical-test < test/$FILENAME.rb > $FILENAME.lexical.tmp
   DIFF=$(diff $FILENAME.lexical.tmp test/$FILENAME.lexical.output)
