@@ -8,3 +8,6 @@
 
 /* Import local libraries */
 // #include "syn_analysis.h"
+void foo() {
+  return;
+}

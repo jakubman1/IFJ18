@@ -37,6 +37,8 @@ bool isInBinaryTree (Tnode *root, Tdata data)
     else
         isInBinaryTree(root->right, data);
 
+    return false;
+
 }
 
 int maximum (int a, int b)
