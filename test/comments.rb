@@ -14,9 +14,11 @@ Komentar na vice radku
 a=endian
 #commentception
 ...
-end 
+end
 =e
 =end
 def endian
 =end
 end
+=begin
+neukonceny komentar na konci souboru
