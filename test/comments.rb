@@ -7,7 +7,7 @@ decremented_n = n - 1
 temp_re
 =end
 result = n * n
-# Hlavni telo programu
+# Hlavni telo programu #dalsi komentar # na stejnem radku komentare
 =begin
 ...
 Komentar na vice radku
