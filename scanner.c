@@ -253,9 +253,13 @@ int scanner()
           add_to_buffer(&buffer, &buff_size, c);
           state = FLOAT;
         }
-        else if (c == 'e' || c == 'E' || c == '+' || c == '-') {
+        else if (c == '+' || c == '-') {
           add_to_buffer(&buffer, &buff_size, c);
           state = FLOAT_ERR4;
+        }
+        else if (c == 'e' || c == 'E') {
+          add_to_buffer(&buffer, &buff_size, c);
+          state = FLOAT_ERR2;
         }
         else {
           send_buffer(FLOATING_POINT, &buffer);
@@ -393,8 +397,6 @@ int scanner()
               }
             }
           }
-          //Did not get \n=end, do nothing
-          state = MULTILINE_COMMENT;
         break;
       default:
         state = ERR;
@@ -428,8 +430,7 @@ void correct_token (tToken *token)
     // not a keyword
 }
 
-/**     ADAM, JIRKA VERZE
-
+/**
 @brief Function sends token.
 @param type Token type
 @param buffer Token text
