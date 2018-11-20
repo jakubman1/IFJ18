@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdbool.h>
 #include "lib/errcodes.h"
 #include "lib/types.h"
 #include "lib/strbuff.h"
@@ -43,21 +44,21 @@ typedef enum {
 Finite state machine for scanner
 @returns return code of the program
 */
-int scanner();
+int scanner(tToken *token_out);
 
 /**
 @brief Change buffer into token and send it to syntactic analysis. Buffer will be cleared
 @param type Type of token from token_type enum defined in types.h
 @param buffer Poiner to buffer containing token text
 */
-void send_buffer(token_type type, tBuffer *buffer);
+void send_buffer(token_type type, tBuffer *buffer, tToken *token_out);
 
 /**
 @brief Send char as token to syntactic analysis. Used for one char long tokens (eg operator +, -...)
 @param type Type of token from token_type enum defined in types.h
 @param c Character to send as token text. Will be converted into string
  */
-void send_char(token_type type, char c);
+void send_char(token_type type, char c, tToken *token_out);
 
 /**
 Function distinguishes token type and if it matches a keyword it changes it's type.

@@ -1,14 +1,15 @@
 #include "scanner.h"
+scanner_state state = START; //TODO: Replace global variable with a local one
 
-int scanner()
+int scanner(tToken *token_out)
 {
   int c = '\0';
 
-  scanner_state state = START;
+  //scanner_state state = START;
   int retcode = SUCCESS;
 
 
-
+  bool quit = false;
   int buff_size = DEFAULT_BUFFER_SIZE;
   tBuffer buffer = calloc(buff_size, sizeof(char)); // orig buff_size + 1
 
@@ -20,13 +21,15 @@ int scanner()
   while((c = getc(stdin)) != EOF) {
     switch(state) {
       case ERR:
-        send_char(ERROR, c);
+        send_char(ERROR, c, token_out);
         state = START;
+        quit = true;
         break;
       case START:
         if (c == '\n') {
           state = NEW_LINE;
-          send_char(EOL, c);
+          send_char(EOL, c, token_out);
+          quit = true;
         }
         else if (c == '!') {
           add_to_buffer(&buffer, &buff_size, c);
@@ -45,8 +48,9 @@ int scanner()
           state = SET;
         }
         else if (c == ')' || c == '(' || c == '/' || c == '*' || c == '-' || c == '+') {
-          send_char(OPERATOR, c);
+          send_char(OPERATOR, c, token_out);
           state = START;
+          quit = true;
         }
         else if (c == '#') {
           state = COMMENT;
@@ -134,14 +138,15 @@ int scanner()
         }
         else if (c == '!' || c == '?') {
           add_to_buffer(&buffer, &buff_size, c);
-          send_buffer(ID, &buffer);
+          send_buffer(ID, &buffer, token_out);
           state = START;
+          quit = true;
         }
         else {
-          send_buffer(ID, &buffer);
+          send_buffer(ID, &buffer, token_out);
           ungetc(c, stdin);
-
           state = START;
+          quit = true;
         }
         break;
       case STRING_START:
@@ -155,9 +160,13 @@ int scanner()
         }
         else { // c == '"'  ||  c == '\n'
           add_to_buffer(&buffer, &buff_size, c);
-          send_buffer(STRING, &buffer);
+          send_buffer(STRING, &buffer, token_out);
+          state = START;
+          quit = true;
+          break;
           if(c == '\n') {
-            send_char(EOL, c);
+            send_char(EOL, c, token_out);
+            quit = true;
           }
           state = START;
         }
@@ -169,8 +178,9 @@ int scanner()
         }
         else { // c == '"'
           add_to_buffer(&buffer, &buff_size, c);
-          send_buffer(STRING, &buffer);
+          send_buffer(STRING, &buffer, token_out);
           state = START;
+          quit = true;
         }
         break;
       case INT:
@@ -187,9 +197,10 @@ int scanner()
           state = FLOAT_ERR2;
         }
         else {
-          send_buffer(INTEGER, &buffer);
+          send_buffer(INTEGER, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
+          quit = true;
         }
         break;
       case FLOAT_ERR1:
@@ -202,9 +213,10 @@ int scanner()
           state = FLOAT_ERR4;
         }
         else {
-          send_buffer(ERROR, &buffer);
+          send_buffer(ERROR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
+          quit = true;
         }
       break;
       case FLOAT_ERR2:
@@ -221,9 +233,10 @@ int scanner()
           state = FLOAT_ERR4;
         }
         else {
-          send_buffer(ERROR, &buffer);
+          send_buffer(ERROR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
+          quit = true;
         }
       break;
       case FLOAT_ERR3:
@@ -236,9 +249,10 @@ int scanner()
           state = FLOAT_ERR4;
         }
         else {
-          send_buffer(ERROR, &buffer);
+          send_buffer(ERROR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
+          quit = true;
         }
       break;
       case FLOAT_ERR4:
@@ -247,9 +261,10 @@ int scanner()
           state = FLOAT_ERR4;
         }
         else {
-          send_buffer(ERROR, &buffer);
+          send_buffer(ERROR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
+          quit = true;
         }
       break;
       case FLOAT:
@@ -266,9 +281,10 @@ int scanner()
           state = FLOAT_ERR2;
         }
         else {
-          send_buffer(FLOATING_POINT, &buffer);
+          send_buffer(FLOATING_POINT, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
+          quit = true;
         }
         break;
       case FLOAT_E:
@@ -281,9 +297,10 @@ int scanner()
           state = FLOAT_ERR4;
         }
         else {
-          send_buffer(FLOATING_POINT, &buffer);
+          send_buffer(FLOATING_POINT, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
+          quit = true;
         }
         break;
       case ZERO:
@@ -300,9 +317,10 @@ int scanner()
           state = OCT;
         }
         else { // for 09 sends two INT tokens 0 and 9
-          send_buffer(INTEGER, &buffer);
+          send_buffer(INTEGER, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
+          quit = true;
         }
         break;
       case BIN:
@@ -311,9 +329,10 @@ int scanner()
           state = BIN;
         }
         else {
-          send_buffer(BINARY, &buffer);
+          send_buffer(BINARY, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
+          quit = true;
         }
         break;
       case HEX:
@@ -322,9 +341,10 @@ int scanner()
           state = HEX;
         }
         else {
-          send_buffer(HEX, &buffer);
+          send_buffer(HEX, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
+          quit = true;
         }
         break;
       case OCT:
@@ -333,58 +353,67 @@ int scanner()
           state = OCT;
         }
         else {
-          send_buffer(OCT, &buffer);
+          send_buffer(OCT, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
+          quit = true;
         }
         break;
       case EXCLAMATION_POINT:
         if (c == '=') { // !=
           add_to_buffer(&buffer, &buff_size, c);
-          send_buffer(OPERATOR, &buffer);
+          send_buffer(OPERATOR, &buffer, token_out);
           state = START;
+          quit = true;
         }
         else { // !
-          send_buffer(ERROR, &buffer);
+          send_buffer(ERROR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
+          quit = true;
         }
         break;
       case GREATER:
         if (c == '=') { // >=
           add_to_buffer(&buffer, &buff_size, c);
-          send_buffer(OPERATOR, &buffer);
+          send_buffer(OPERATOR, &buffer, token_out);
           state = START;
+          quit = true;
         }
         else { // >
-          send_buffer(OPERATOR, &buffer);
+          send_buffer(OPERATOR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
+          quit = true;
         }
         break;
       case LESS:
         if (c == '=') { // <=
           add_to_buffer(&buffer, &buff_size, c);
-          send_buffer(OPERATOR, &buffer);
+          send_buffer(OPERATOR, &buffer, token_out);
           state = START;
+          quit = true;
         }
         else { // <
-          send_buffer(OPERATOR, &buffer);
+          send_buffer(OPERATOR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
+          quit = true;
         }
         break;
       case SET:
         if (c == '=') // ==
         {
           add_to_buffer(&buffer, &buff_size, c);
-          send_buffer(OPERATOR, &buffer);
+          send_buffer(OPERATOR, &buffer, token_out);
           state = START;
+          quit = true;
         }
         else { // =
-          send_buffer(OPERATOR, &buffer);
+          send_buffer(OPERATOR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
+          quit = true;
         }
         break;
       case MULTILINE_COMMENT:
@@ -406,6 +435,12 @@ int scanner()
         state = ERR;
         break;
     }
+    if(quit) { // end of while, token sent
+      break;
+    }
+  }
+  if(c == EOF) {
+    return -1;
   }
   free(buffer);
   return retcode;
@@ -439,7 +474,7 @@ void correct_token (tToken *token)
 @param type Token type
 @param buffer Token text
 */
-void send_buffer(token_type type, tBuffer *buffer)
+void send_buffer(token_type type, tBuffer *buffer, tToken *token_out)
 {
   int len = strlen(*buffer);
   char *text = malloc(sizeof(char) * len + 1);
@@ -450,25 +485,26 @@ void send_buffer(token_type type, tBuffer *buffer)
   }
 
   strncpy(text, *buffer, len + 1);
-  tToken token = {text, type};
+  token_out->text = text;
+  token_out->type = type;
 
   if (type == 9) { // ID
-    correct_token(&token);
+    correct_token(token_out);
   }
 
   (*buffer)[0] = 0;
   #ifdef DEBUG
-  printf("DEBUG: Added to buffer: %s, %d\n", token.text, token.type);
+  printf("DEBUG: Added to buffer: %s, %d\n", token_out->text, token_out->type);
   #endif
-  free(text);
 }
 
 
-void send_char(token_type type, char c) {
+void send_char(token_type type, char c, tToken *token_out) {
   char text[2] = {0,};
   text[0] = c;
-  tToken token = {text, type};
+  token_out->text = text;
+  token_out->type = type;
   #ifdef DEBUG
-  printf("DEBUG: Added to buffer: %s, %d\n", token.text, token.type);
+  printf("DEBUG: Added to buffer: %s, %d\n", token_out->text, token_out->type);
   #endif
 }

@@ -12,6 +12,13 @@
 
 int main(int argc, char const *argv[]) {
   int retcode = SUCCESS; /* Return code of the compiler */
-  retcode = scanner();
+
+  #ifdef DEBUG
+  // lexical analysis test
+  tToken t = {"", 0};
+  while(scanner(&t) == 0) {
+    ;
+  }
+  #endif
   return retcode;
 }
