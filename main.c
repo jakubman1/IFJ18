@@ -16,13 +16,14 @@ int main(int argc, char const *argv[]) {
   #ifdef DEBUG
   // lexical analysis test
   tToken t = {"", 0};
-  while(scanner(&t) == 0) {
+  int scannerout = 0;
+  while((scannerout = scanner(&t)) == 0 || scannerout == 1) {
     ;
   }
-  #endif
+  #endif  
   #ifdef DEBUG2
   // syntactic analysis test
-    
+
   #endif
   return retcode;
 }
