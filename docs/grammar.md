@@ -1,6 +1,7 @@
 # LL gramatika
 
-`<prog> → def ID <params> EOL <statement> end EOL  
+```
+<prog> → def ID <params> EOL <statement> end EOL  
 <prog> → ID <params> EOL  
 <prog> → ID = ID <params> EOL  
 <prog> → <statement>  
@@ -33,4 +34,4 @@
 <value> → STRING  
 <value> → FLOAT  
 <value> → ID  
-`
+```
