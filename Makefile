@@ -20,10 +20,6 @@ lexical-test: *.c lib/*.c
 	$(CC) $(CFLAGS) -o $@ *.c lib/*.c -DDEBUG
 
 test: tests
-	make clean; make lexical-test
-	./lexical-test < test/factorial.rb
-
-runtest: tests
 	test/runtest.sh
 
 fulltest:
