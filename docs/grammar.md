@@ -38,7 +38,7 @@
 29. <args_n> → ε   
 
 30. <value> → INT  
-31. <value> → STRING  
-32. <value> → FLOAT  
-33. <value> → ID  
+31. <value> → FLOAT
+32. <value> → ID
+33. <value> → STRING   
 ```
