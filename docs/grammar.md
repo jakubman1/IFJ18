@@ -1,49 +1,46 @@
 # LL gramatika
-<ol>
-<li>test</li>
-<li>test2</li>
-</ol>
+
 ```
-<prog> → def ID <params> EOL <statement_list> end EOL    
-<prog> → <statement_list>
+1. <prog> → def ID <params> EOL <statement_list> end EOL    
+2. <prog> → <statement_list>
 
-<params> → (<params>)  
-<params> → ID <params_n>  
-<params> → ε  
+3. <params> → (<params>)  
+4. <params> → ID <params_n>  
+5. <params> → ε  
 
-<params_n> → , ID <params_n>  
-<params_n> → ε  
+6. <params_n> → , ID <params_n>  
+7. <params_n> → ε  
 
-<statement_list> → ε
+8. <statement_list> → <statement> EOL <statement_list>
+9. <statement_list> → ε
 
-<statement> → if <expression> then EOL <statement> else EOL <statement> end EOL  
-<statement> → while <expression> do EOL <statement> end EOL  
-<statement> → ID = <define> EOL  
-<statement> → <define> EOL  
-<statement> → ε
+10. <statement> → if <expression> then EOL <statement_list> else EOL <statement_list> end EOL  
+11. <statement> → while <expression> do EOL <statement_list> end EOL  
+12. <statement> → ID = <define> EOL  
+13. <statement> → <define> EOL  
+14. <statement> → ε
 
-<prog> → ID <params> EOL  
-<prog> → ID = ID <params> EOL
+15. <define> → ID <args>
+16. <define> → print <args>  
+17. <define> → inputs <args>
+18. <define> → inputi <args>
+19. <define> → inputf <args>
+20. <define> → lenght <args>
+21. <define> → substr <args>   
+22. <define> → ord <args>  
+23. <define> → chr <args>  
+24. <define> → <expression>  
+25. <define> → ε
 
-<define> → print <args>  
-<define> → inputs <args>  
-<define> → inputi <args>  
-<define> → inputf <args>  
-<define> → lenght <value>  
-<define> → substr <value> <value> <value>  
-<define> → ord <value> <value>  
-<define> → chr <value>  
-<define> → <expression>  
-<define> → ε
+26. <args> → ε
+27. <args> → (<args>)
+28. <args> → <value> <args_n>
 
-<args> → ε
-<args> → (<args>)
-<args> → <value> <args_n>  
-<args_n> → , <value> <args_n>  
-<args_n> → ε  
+29. <args_n> → , <value> <args_n>  
+30. <args_n> → ε  
 
-<value> → INT  
-<value> → STRING  
-<value> → FLOAT  
-<value> → ID  
+31. <value> → INT  
+32. <value> → STRING  
+33. <value> → FLOAT  
+34. <value> → ID  
 ```
