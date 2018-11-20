@@ -19,12 +19,12 @@
 13. <statement> → ε  
 
 14. <define> → ID <args>  
-15. <define> → print <args>    
+15. <define> → print <args>  
 16. <define> → inputs <args>  
 17. <define> → inputi <args>  
 18. <define> → inputf <args>  
 19. <define> → lenght <args>  
-20. <define> → substr <args>     
+20. <define> → substr <args>   
 21. <define> → ord <args>    
 22. <define> → chr <args>    
 23. <define> → <expression>    
@@ -38,7 +38,7 @@
 29. <args_n> → ε   
 
 30. <value> → INT  
-31. <value> → FLOAT
-32. <value> → ID
+31. <value> → FLOAT  
+32. <value> → ID  
 33. <value> → STRING   
 ```
