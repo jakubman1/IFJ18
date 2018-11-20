@@ -23,4 +23,5 @@ do
   else
     echo -e "${GREEN}Lexical analysis of ${FILENAME}.rb passed!${NC}"
   fi
+  rm $FILENAME.lexical.tmp
 done
