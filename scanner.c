@@ -1,10 +1,9 @@
 #include "scanner.h"
-scanner_state state = START; //TODO: Replace global variable with a local one
 
 int scanner(tToken *token_out)
 {
   int c = '\0';
-
+  static scanner_state state = START;
   int retcode = SUCCESS;
 
   bool quit = false;
