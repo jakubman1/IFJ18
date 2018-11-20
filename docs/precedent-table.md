@@ -10,19 +10,33 @@
 ## Rules for expression
 
 E → E + E
+
 E → E - E
+
 E → E * E
+
 E → E / E
+
 E → (E)
+
 E → i
+
 E → int
+
 E → float
+
 E → string
+
 E → E < E
+
 E → E <= E
+
 E → E > E
+
 E → E >= E
+
 E → E == E
+
 E → E != E
 
 ## Precedenční tabulka
@@ -37,3 +51,6 @@ E → E != E
 | )  |    |    |   |   |   |   |   |   |
 | i  |    |    |   |   |   |   |   |   |
 | $  |    |    |   |   |   |   |   |   |
+
+r - "< <= > >="
+e - "== "
