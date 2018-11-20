@@ -5,9 +5,7 @@ int scanner(tToken *token_out)
 {
   int c = '\0';
 
-  //scanner_state state = START;
   int retcode = SUCCESS;
-
 
   bool quit = false;
   int buff_size = DEFAULT_BUFFER_SIZE;
@@ -23,6 +21,9 @@ int scanner(tToken *token_out)
       case ERR:
         send_char(ERROR, c, token_out);
         state = START;
+        // Error in lexical analysis, end
+        fprintf(stderr, "LEXICAL ERROR: Invalid token '%c'.\n", c);
+        retcode = LEXICAL_ERR;
         quit = true;
         break;
       case START:
@@ -213,10 +214,12 @@ int scanner(tToken *token_out)
           state = FLOAT_ERR4;
         }
         else {
+          fprintf(stderr, "LEXICAL ERROR: Invalid token \"%s\".\n", (char *)buffer);
+          retcode = LEXICAL_ERR;
           send_buffer(ERROR, &buffer, token_out);
+          quit = true;
           ungetc(c, stdin);
           state = START;
-          quit = true;
         }
       break;
       case FLOAT_ERR2:
@@ -233,6 +236,8 @@ int scanner(tToken *token_out)
           state = FLOAT_ERR4;
         }
         else {
+          fprintf(stderr, "LEXICAL ERROR: Invalid token \"%s\".\n", (char *)buffer);
+          retcode = LEXICAL_ERR;
           send_buffer(ERROR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
@@ -249,6 +254,8 @@ int scanner(tToken *token_out)
           state = FLOAT_ERR4;
         }
         else {
+          fprintf(stderr, "LEXICAL ERROR: Invalid token \"%s\".\n", (char *)buffer);
+          retcode = LEXICAL_ERR;
           send_buffer(ERROR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
@@ -261,6 +268,8 @@ int scanner(tToken *token_out)
           state = FLOAT_ERR4;
         }
         else {
+          fprintf(stderr, "LEXICAL ERROR: Invalid token \"%s\".\n", (char *)buffer);
+          retcode = LEXICAL_ERR;
           send_buffer(ERROR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
@@ -367,6 +376,8 @@ int scanner(tToken *token_out)
           quit = true;
         }
         else { // !
+          fprintf(stderr, "LEXICAL ERROR: Invalid token \"%s\".\n", (char *)buffer);
+          retcode = LEXICAL_ERR;
           send_buffer(ERROR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
