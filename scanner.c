@@ -1,20 +1,17 @@
 #include "scanner.h"
-scanner_state state = START; //TODO: Replace global variable with a local one
 
 int scanner(tToken *token_out)
 {
   int c = '\0';
-
-  //scanner_state state = START;
+  static scanner_state state = START;
   int retcode = SUCCESS;
-
 
   bool quit = false;
   int buff_size = DEFAULT_BUFFER_SIZE;
   tBuffer buffer = calloc(buff_size, sizeof(char)); // orig buff_size + 1
 
   if(buffer == NULL) {
-    fprintf(stderr, "Internal Error: Not enough memory\n");
+    fprintf(stderr, ANSI_COLOR_RED "Internal Error:" ANSI_COLOR_RESET " Not enough memory\n");
     exit(INTERNAL_ERR);
   }
 
@@ -23,6 +20,9 @@ int scanner(tToken *token_out)
       case ERR:
         send_char(ERROR, c, token_out);
         state = START;
+        // Error in lexical analysis, end
+        fprintf(stderr, ANSI_COLOR_RED "LEXICAL ERROR:" ANSI_COLOR_RESET " Invalid token '%c'.\n", c);
+        retcode = LEXICAL_ERR;
         quit = true;
         break;
       case START:
@@ -213,10 +213,12 @@ int scanner(tToken *token_out)
           state = FLOAT_ERR4;
         }
         else {
+          fprintf(stderr, ANSI_COLOR_RED "LEXICAL ERROR:" ANSI_COLOR_RESET " Invalid token \"%s\".\n", (char *)buffer);
+          retcode = LEXICAL_ERR;
           send_buffer(ERROR, &buffer, token_out);
+          quit = true;
           ungetc(c, stdin);
           state = START;
-          quit = true;
         }
       break;
       case FLOAT_ERR2:
@@ -233,6 +235,8 @@ int scanner(tToken *token_out)
           state = FLOAT_ERR4;
         }
         else {
+          fprintf(stderr, ANSI_COLOR_RED "LEXICAL ERROR:" ANSI_COLOR_RESET " Invalid token \"%s\".\n", (char *)buffer);
+          retcode = LEXICAL_ERR;
           send_buffer(ERROR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
@@ -249,6 +253,8 @@ int scanner(tToken *token_out)
           state = FLOAT_ERR4;
         }
         else {
+          fprintf(stderr, ANSI_COLOR_RED "LEXICAL ERROR:" ANSI_COLOR_RESET " Invalid token \"%s\".\n", (char *)buffer);
+          retcode = LEXICAL_ERR;
           send_buffer(ERROR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
@@ -261,6 +267,8 @@ int scanner(tToken *token_out)
           state = FLOAT_ERR4;
         }
         else {
+          fprintf(stderr, ANSI_COLOR_RED "LEXICAL ERROR:" ANSI_COLOR_RESET " Invalid token \"%s\".\n", (char *)buffer);
+          retcode = LEXICAL_ERR;
           send_buffer(ERROR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
@@ -367,6 +375,8 @@ int scanner(tToken *token_out)
           quit = true;
         }
         else { // !
+          fprintf(stderr, ANSI_COLOR_RED "LEXICAL ERROR:" ANSI_COLOR_RESET " Invalid token \"%s\".\n", (char *)buffer);
+          retcode = LEXICAL_ERR;
           send_buffer(ERROR, &buffer, token_out);
           ungetc(c, stdin);
           state = START;
@@ -480,7 +490,7 @@ void send_buffer(token_type type, tBuffer *buffer, tToken *token_out)
   char *text = malloc(sizeof(char) * len + 1);
 
   if(text == NULL) {
-    fprintf(stderr, "Internal Error: Not enough memory\n");
+    fprintf(stderr, ANSI_COLOR_RED "Internal Error:" ANSI_COLOR_RESET " Not enough memory\n");
     exit(INTERNAL_ERR);
   }
 
