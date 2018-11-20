@@ -15,19 +15,19 @@
 <statement> → ID = <define> EOL  
 <statement> → <define> EOL  
 <statement> → ε  
-<define> → print <arg>  
-<define> → inputs <arg>  
-<define> → inputi <arg>  
-<define> → inputf <arg>  
-<define> → lenght <arg>  
-<define> → substr <arg>  
-<define> → ord <arg>  
-<define> → chr <arg>  
+<define> → print <args>  
+<define> → inputs <args>  
+<define> → inputi <args>  
+<define> → inputf <args>  
+<define> → lenght <args>  
+<define> → substr <args>  
+<define> → ord <args>  
+<define> → chr <args>  
 <define> → <expression>  
 <define> → ε  
 <args> → <value> <args_n>  
 <args> → ε  
-<args_n> → <value> <args_n>  
+<args_n> → , <value> <args_n>  
 <args_n> → ε  
 <value> → INT  
 <value> → STRING  
