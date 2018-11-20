@@ -5,13 +5,12 @@
 <prog> → ID <params> EOL  
 <prog> → ID = ID <params> EOL  
 <prog> → <statement>  
-<params> → <params>  
 <params> → (<params>)  
 <params> → ID <params_n>  
 <params> → ε  
 <params_n> → , ID <params_n>  
 <params_n> → ε  
-<statement> → if <expression> then EOL <statement> EOL <statement> end EOL  
+<statement> → if <expression> then EOL <statement> else EOL <statement> end EOL  
 <statement> → while <expression> do EOL <statement> end EOL  
 <statement> → ID = <define> EOL  
 <statement> → <define> EOL  
