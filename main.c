@@ -4,7 +4,7 @@
  * @date 4.10. 2018
  * @brief Main project file
  */
-/* Import global libraries */
+/* Import system libraries */
 #include <stdio.h>
 
 /* Import local libraries */
@@ -19,6 +19,10 @@ int main(int argc, char const *argv[]) {
   while(scanner(&t) == 0) {
     ;
   }
+  #endif
+  #ifdef DEBUG2
+  // syntactic analysis test
+    
   #endif
   return retcode;
 }

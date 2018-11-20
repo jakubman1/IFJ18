@@ -14,10 +14,13 @@ $(PRJ): *.c lib/*.c
 clean:
 	rm -f *.o *.out $(PROGS) lexical-tests *.exe *.tmp *.stackdump
 
-tests: lexical-test
+tests: lexical-test syntactic-test
 
 lexical-test: *.c lib/*.c
 	$(CC) $(CFLAGS) -o $@ *.c lib/*.c -DDEBUG
+
+syntactic-test: *.c lib/*.c
+	$(CC) $(CFLAGS) -o $@ *.c lib/*.c -DDEBUG2
 
 test: tests
 	test/runtest.sh
