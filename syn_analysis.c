@@ -11,40 +11,49 @@
 
 // TODO: steal this from github
 
-int value(){
-    return 0;
-}
-
-int args_n(){
+int value()
+{
   return 0;
 }
 
-int args(){
+int args_n()
+{
   return 0;
 }
 
-int define(){
+int args()
+{
   return 0;
 }
 
-int statement(){
+int define()
+{
   return 0;
 }
 
-int params_n(){
+int statement()
+{
   return 0;
 }
 
-int params(){
+int params_n()
+{
   return 0;
 }
 
-int prog(){
+int params()
+{
   return 0;
 }
 
-int parser(){
-  int result;
+int prog()
+{
+  return 0;
+}
+
+int parser()
+{
+  int result = 0;
 
   return result;
 }
