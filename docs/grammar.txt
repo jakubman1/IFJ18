@@ -1,4 +1,4 @@
-# LL gramatika
+LL gramatika
 
 <prog> → def ID <params> EOL <statement> end EOL
 <prog> → ID <params> EOL

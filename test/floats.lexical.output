@@ -1,31 +1,51 @@
 DEBUG: Added to buffer: a, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: 1., 17
+DEBUG: Added to buffer: 
+, 18
 DEBUG: Added to buffer: b, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: 1.5, 11
+DEBUG: Added to buffer: 
+, 18
 DEBUG: Added to buffer: c, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: 1.4e-3, 11
+DEBUG: Added to buffer: 
+, 18
 DEBUG: Added to buffer: d, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: 3e1, 11
+DEBUG: Added to buffer: 
+, 18
 DEBUG: Added to buffer: e, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: 1.e3, 17
+DEBUG: Added to buffer: 
+, 18
 DEBUG: Added to buffer: f, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: 1.4.3, 17
+DEBUG: Added to buffer: 
+, 18
 DEBUG: Added to buffer: g, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: 1e3e1, 17
+DEBUG: Added to buffer: 
+, 18
 DEBUG: Added to buffer: h, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: 1.2e+-3, 17
+DEBUG: Added to buffer: 
+, 18
 DEBUG: Added to buffer: f, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: 10.23523534e+3464, 11
+DEBUG: Added to buffer: 
+, 18
 DEBUG: Added to buffer: h, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: 10.234e, 17
 DEBUG: Added to buffer: b43, 9
+DEBUG: Added to buffer: 
+, 18
