@@ -1,8 +1,8 @@
 # LL gramatika
 
 ```
-1. <prog> → def ID <params> EOL <statement_list> end EOL    
-2. <prog> → <statement_list>
+1. <prog> → def ID <params> EOL <statement> end EOL    
+2. <prog> → <statement>  
 
 3. <params> → (<params>)  
 4. <params> → ID <params_n>  
@@ -11,36 +11,34 @@
 6. <params_n> → , ID <params_n>  
 7. <params_n> → ε  
 
-8. <statement_list> → <statement> EOL <statement_list>
-9. <statement_list> → ε
+8. <statement> → <statement> EOL <statement>  
+9. <statement> → if <expression> then EOL <statement> else EOL <statement> end EOL   
+10. <statement> → while <expression> do EOL <statement> end EOL  
+11. <statement> → ID = <define> EOL  
+12. <statement> → <define> EOL  
+13. <statement> → ε  
 
-10. <statement> → if <expression> then EOL <statement_list> else EOL <statement_list> end EOL  
-11. <statement> → while <expression> do EOL <statement_list> end EOL  
-12. <statement> → ID = <define> EOL  
-13. <statement> → <define> EOL  
-14. <statement> → ε
+14. <define> → ID <args>  
+15. <define> → print <args>    
+16. <define> → inputs <args>  
+17. <define> → inputi <args>  
+18. <define> → inputf <args>  
+19. <define> → lenght <args>  
+20. <define> → substr <args>     
+21. <define> → ord <args>    
+22. <define> → chr <args>    
+23. <define> → <expression>    
+24. <define> → ε  
 
-15. <define> → ID <args>
-16. <define> → print <args>  
-17. <define> → inputs <args>
-18. <define> → inputi <args>
-19. <define> → inputf <args>
-20. <define> → lenght <args>
-21. <define> → substr <args>   
-22. <define> → ord <args>  
-23. <define> → chr <args>  
-24. <define> → <expression>  
-25. <define> → ε
+25. <args> → ε  
+26. <args> → (<args>)  
+27. <args> → <value> <args_n>  
 
-26. <args> → ε
-27. <args> → (<args>)
-28. <args> → <value> <args_n>
+28. <args_n> → , <value> <args_n>  
+29. <args_n> → ε   
 
-29. <args_n> → , <value> <args_n>  
-30. <args_n> → ε  
-
-31. <value> → INT  
-32. <value> → STRING  
-33. <value> → FLOAT  
-34. <value> → ID  
+30. <value> → INT  
+31. <value> → STRING  
+32. <value> → FLOAT  
+33. <value> → ID  
 ```
