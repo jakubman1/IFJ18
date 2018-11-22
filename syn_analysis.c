@@ -96,7 +96,7 @@ int ll_predict(tToken *token, tStack *stack)
         s_pop(stack);
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -304,11 +304,11 @@ int ll_predict(tToken *token, tStack *stack)
       if(token->type == DEF) {
         PUSH_RULE_1;
       }
-      else if(token->type == ID || token->type == IF || token->type == WHILE) {
+      else if(token->type == ID || token->type == IF || token->type == WHILE || token->type == EOL) {
         PUSH_RULE_2;
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -323,7 +323,7 @@ int ll_predict(tToken *token, tStack *stack)
         PUSH_RULE_3;
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -335,7 +335,7 @@ int ll_predict(tToken *token, tStack *stack)
         PUSH_RULE_6;
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -352,8 +352,11 @@ int ll_predict(tToken *token, tStack *stack)
       else if(token->type == WHILE) {
         PUSH_RULE_9;
       }
+      else if(token->type == EOL) {
+        PUSH_RULE_34; // ;)
+      }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -365,7 +368,7 @@ int ll_predict(tToken *token, tStack *stack)
         PUSH_RULE_12;
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -401,7 +404,7 @@ int ll_predict(tToken *token, tStack *stack)
         PUSH_RULE_22;
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -419,7 +422,7 @@ int ll_predict(tToken *token, tStack *stack)
         PUSH_RULE_27;
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -434,7 +437,7 @@ int ll_predict(tToken *token, tStack *stack)
         PUSH_RULE_28;
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -452,7 +455,7 @@ int ll_predict(tToken *token, tStack *stack)
         PUSH_RULE_33;
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
         return SYNTAX_ERR;
       }
       break;
