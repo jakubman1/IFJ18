@@ -510,7 +510,7 @@ void send_buffer(token_type type, tBuffer *buffer, tToken *token_out)
 
 
 void send_char(token_type type, char c, tToken *token_out) {
-  char text[2] = {0,};
+  char *text = calloc(sizeof(char), 2);
   text[0] = c;
   token_out->text = text;
   token_out->type = type;
