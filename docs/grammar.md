@@ -11,9 +11,9 @@
 6. <params_n> → , ID <params_n>  
 7. <params_n> → ε  
 
-8. <statement> → if <expression> then EOL <statement> else EOL <statement> end EOL   
-9. <statement> → while <expression> do EOL <statement> end EOL  
-10. <statement> → ID <def_args> EOL <statement>  
+8. <statement> → if <expression> then EOL <statement> else EOL <statement> end EOL <statement>  
+9. <statement> → while <expression> do EOL <statement> end EOL <statement>  
+10. <statement> → ID <def_args> EOL <statement> <statement>  
 11. <statement> → ε  
 
 12. <def_args> → = <define>  
