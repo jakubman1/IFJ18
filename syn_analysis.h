@@ -5,6 +5,14 @@
  * @brief Syntactic analysis header file
  */
 
+#ifndef SYN_ANALYSYS_H
+#define SYN_ANALYSYS_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "lib/errcodes.h"
+#include "lib/types.h"
+#include "scanner.h"
 
  /**
   * @brief Implementation of <value> rules
@@ -50,3 +58,5 @@
   * @brief Main function of parser
   */
  int parser();
+
+ #endif

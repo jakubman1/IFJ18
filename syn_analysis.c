@@ -5,11 +5,8 @@
  * @brief Syntactic analysis file
  */
 
-
-/* Import local libraries */
 #include "syn_analysis.h"
 
-// TODO: steal this from github
 
 int value()
 {
@@ -27,6 +24,11 @@ int args()
 }
 
 int define()
+{
+  return 0;
+}
+
+int def_args()
 {
   return 0;
 }
@@ -53,7 +55,37 @@ int prog()
 
 int parser()
 {
-  int result = 0;
+  int result = SUCCESS;
+  int scanner_out = SUCCESS;
+  tToken currentToken = {"", ERROR};
+
+  while((scanner_out = scanner(&currentToken)) == SUCCESS) {
+    // create derivation tree
+    // currentToken contains new token in every iteration
+
+    printf("Current token: %s, %d\n", currentToken.text, currentToken.type);
+    //// MUSI BYT AZ NA KONCI CYKLU !!!!!!!!!!!!!!!
+    if(currentToken.text != NULL) {
+      // Free allocated text
+      free(currentToken.text);
+    }
+  }
+  if(scanner_out != -1) {
+    // handle errors during lexical analysis
+    result = scanner_out;
+    if(scanner_out == LEXICAL_ERR) {
+      while((scanner_out = scanner(&currentToken)) == SUCCESS || scanner_out == LEXICAL_ERR) {
+        // Print all lexicals errors (scanner takes care of printing)
+        if(currentToken.text != NULL) {
+          // Free allocated text
+          free(currentToken.text);
+        }
+      }
+    }
+    if(scanner_out == INTERNAL_ERR) {
+      // Free allocated resources and quit (if there are any)
+    }
+  }
 
   return result;
 }
