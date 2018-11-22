@@ -13,11 +13,11 @@
 
 8. <statement> → if <expression> then EOL <statement> else EOL <statement> end EOL   
 9. <statement> → while <expression> do EOL <statement> end EOL  
-10. <statement> → ID <dargs> EOL <statement>
-11. <statement> → ε
+10. <statement> → ID <def_args> EOL <statement>  
+11. <statement> → ε  
 
-12. <dargs> → = <define>
-13. <dargs> → <args>
+12. <def_args> → = <define>  
+13. <def_args> → <args>  
 
 14. <define> → ID <args>  
 15. <define> → print <args>  
@@ -27,8 +27,8 @@
 19. <define> → lenght <args>  
 20. <define> → substr <args>   
 21. <define> → ord <args>    
-22. <define> → chr <args>    
-23. <define> → <expression>    
+22. <define> → chr <args>  
+23. <define> → <expression>  
 24. <define> → ε  
 
 25. <args> → ε  
