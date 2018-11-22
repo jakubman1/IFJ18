@@ -15,12 +15,14 @@ int parser()
   tStack stack;
   s_init(&stack);
 
+  s_push(&stack, LL_BOTTOM);
+  s_push(&stack, LL_PROG);
+
   while((scanner_out = scanner(&currentToken)) == SUCCESS) {
     // create derivation tree
     // currentToken contains new token in every iteration
 
-    result = ll_predict(currentToken, &stack);
-
+    result = ll_predict(&currentToken, &stack);
 
     //// MUSI BYT AZ NA KONCI CYKLU !!!!!!!!!!!!!!!
     if(currentToken.text != NULL) {
@@ -51,27 +53,31 @@ int parser()
   }
   else {
     // EOF
-    int top = s_top(stack);
+    int top = s_top(&stack);
     if (top == LL_BOTTOM)
       return SUCCESS;
-    else
+    else {
+      fprintf(stderr, "Syntax error\n");
       return SYNTAX_ERR;
+    }
+
   }
 
   return result;
 }
 
-int ll_predict(tToken token, tStack *stack)
+
+
+int ll_predict(tToken *token, tStack *stack)
 {
-  PUSH_START;
 
   // following ifj pres:
   // X == top
   // a == token->type
-
+  STYDIM_SE_ZA_SEBE: NULL;
   int top = s_top(stack);
-
   switch(top) {
+
     case LL_BOTTOM: // input cannot be EOF here
       return SYNTAX_ERR;
       break;
@@ -248,7 +254,7 @@ int ll_predict(tToken token, tStack *stack)
       }
       break;
     case LL_BRACKET_LEFT:
-      if (token->type == OPERATOR && token->text == '(') {
+      if (token->type == OPERATOR && token->text[0] == '(') {
         s_pop(stack);
       }
       else {
@@ -257,7 +263,7 @@ int ll_predict(tToken token, tStack *stack)
       }
       break;
     case LL_BRACKET_RIGHT:
-      if (token->type == OPERATOR && token->text == ')') {
+      if (token->type == OPERATOR && token->text[0] == ')') {
         s_pop(stack);
       }
       else {
@@ -295,42 +301,182 @@ int ll_predict(tToken token, tStack *stack)
 
     // non terminals
     case LL_PROG:
-
+      if(token->type == DEF) {
+        PUSH_RULE_1;
+      }
+      else if(token->type == ID || token->type == IF || token->type == WHILE) {
+        PUSH_RULE_2;
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        return SYNTAX_ERR;
+      }
       break;
     case LL_PARAMS:
-
+      if(token->type == ID) {
+        PUSH_RULE_4;
+      }
+      else if(token->type == EOL || (token->type == OPERATOR && token->text[0] == ')')) {
+        PUSH_RULE_5;
+      }
+      else if(token->type == OPERATOR && token->text[0] == '(') {
+        PUSH_RULE_3;
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        return SYNTAX_ERR;
+      }
       break;
     case LL_PARAMS_N:
-
+      if(token->type == EOL || (token->type == OPERATOR && token->text[0] == ')')) {
+        PUSH_RULE_7;
+      }
+      else if(token->type == COMMA) {
+        PUSH_RULE_6;
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        return SYNTAX_ERR;
+      }
       break;
     case LL_STATEMENT:
-
+      if(token->type == ID) {
+        PUSH_RULE_10;
+      }
+      else if(token->type == END || token->type == ELSE) {
+        PUSH_RULE_11;
+      }
+      else if(token->type == IF) {
+        PUSH_RULE_8;
+      }
+      else if(token->type == WHILE) {
+        PUSH_RULE_9;
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        return SYNTAX_ERR;
+      }
       break;
     case LL_DEF_ARGS:
-
+      if(token->type == ID || token->type == EOL || (token->type == OPERATOR && token->text[0] == '(')) {
+        PUSH_RULE_13;
+      }
+      else if(token->type == OPERATOR && token->text[0] == '=') {
+        PUSH_RULE_12;
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        return SYNTAX_ERR;
+      }
       break;
     case LL_DEFINE:
-
+      if(token->type == ID) {
+        PUSH_RULE_14;
+      }
+      else if(token->type == EOL) {
+        PUSH_RULE_24;
+      }
+      else if(token->type == ID && (strcmp(token->text, "print") == 0)) {
+        PUSH_RULE_15;
+      }
+      else if(token->type == ID && (strcmp(token->text, "inputs") == 0)) {
+        PUSH_RULE_16;
+      }
+      else if(token->type == ID && (strcmp(token->text, "inputi") == 0)) {
+        PUSH_RULE_17;
+      }
+      else if(token->type == ID && (strcmp(token->text, "inputf") == 0)) {
+        PUSH_RULE_18;
+      }
+      else if(token->type == ID && (strcmp(token->text, "length") == 0)) {
+        PUSH_RULE_19;
+      }
+      else if(token->type == ID && (strcmp(token->text, "substr") == 0)) {
+        PUSH_RULE_20;
+      }
+      else if(token->type == ID && (strcmp(token->text, "ord") == 0)) {
+        PUSH_RULE_21;
+      }
+      else if(token->type == ID && (strcmp(token->text, "chr") == 0)) {
+        PUSH_RULE_22;
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        return SYNTAX_ERR;
+      }
       break;
     case LL_ARGS:
-
+      if(token->type == ID) {
+        PUSH_RULE_27;
+      }
+      else if(token->type == EOL || (token->type == OPERATOR && token->text[0] == '(')) {
+        PUSH_RULE_25;
+      }
+      else if(token->type == OPERATOR && token->text[0] == '(') {
+        PUSH_RULE_26;
+      }
+      else if(token->type == INT || token->type == FLOAT || token->type == STRING) {
+        PUSH_RULE_27;
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        return SYNTAX_ERR;
+      }
       break;
     case LL_ARGS_N:
-
+      if (token->type == EOL) {
+        PUSH_RULE_29;
+      }
+      else if (token->type == OPERATOR && strcmp(token->text, ")") == 0) {
+        PUSH_RULE_29;
+      }
+      else if (token->type == COMMA) {
+        PUSH_RULE_28;
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        return SYNTAX_ERR;
+      }
       break;
     case LL_VALUE:
-
+      if (token->type == ID) {
+        PUSH_RULE_32;
+      }
+      else if (token->type == INTEGER) {
+        PUSH_RULE_30;
+      }
+      else if (token->type == FLOAT) {
+        PUSH_RULE_31;
+      }
+      else if (token->type == STRING) {
+        PUSH_RULE_33;
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier.\n");
+        return SYNTAX_ERR;
+      }
       break;
     case LL_EXPRESSION:
+      // TODO call precedent table
+      // for testing
+      if(token->type == THEN || token->type == ELSE || token->type == DO || token->type == END)
+        if(!s_empty(stack)) {
+          s_pop(stack);
+          goto STYDIM_SE_ZA_SEBE;
+        }
+
       break;
     default:
       // Handle syntax error
       fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" Total RIP :(\n");
+      return SYNTAX_ERR;
       break;
+
+
   }
 
   // TODO insert into tree, derivation tree
 
   // Why can you drink a drink, but not food a food?
-
+  return SUCCESS;
 }
