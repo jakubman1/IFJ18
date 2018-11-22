@@ -449,10 +449,10 @@ int scanner(tToken *token_out)
       break;
     }
   }
+  free(buffer);
   if(c == EOF) {
     return -1;
   }
-  free(buffer);
   return retcode;
 }
 
