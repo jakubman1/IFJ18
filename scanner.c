@@ -45,7 +45,7 @@ int scanner(tToken *token_out)
           send_char(OPERATOR, c, token_out);
           state = START;
           quit = true;
-        },
+        }
         else if (c == ',') {
           send_char(COMMA, c, token_out);
           state = START;
