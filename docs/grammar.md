@@ -11,12 +11,13 @@
 6. <params_n> → , ID <params_n>  
 7. <params_n> → ε  
 
-8. <statement> → <statement> EOL <statement>  
-9. <statement> → if <expression> then EOL <statement> else EOL <statement> end EOL   
-10. <statement> → while <expression> do EOL <statement> end EOL  
-11. <statement> → ID = <define> EOL  
-12. <statement> → <define> EOL  
-13. <statement> → ε  
+8. <statement> → if <expression> then EOL <statement> else EOL <statement> end EOL   
+9. <statement> → while <expression> do EOL <statement> end EOL  
+10. <statement> → ID <dargs> EOL <statement>
+11. <statement> → ε
+
+12. <dargs> → = <define>
+13. <dargs> → <args>
 
 14. <define> → ID <args>  
 15. <define> → print <args>  
