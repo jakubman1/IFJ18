@@ -76,6 +76,7 @@ int ll_predict(tToken *token, tStack *stack)
   // a == token->type
   STYDIM_SE_ZA_SEBE: NULL;
   int top = s_top(stack);
+  fprintf(stderr, "TOP IS : %d\n", top);
   switch(top) {
 
     case LL_BOTTOM: // input cannot be EOF here
@@ -173,7 +174,8 @@ int ll_predict(tToken *token, tStack *stack)
       }
       break;
     case LL_EQUAL:
-      if (token->type == OPERATOR && token->text[0] == '=') {
+      if (token->type == OPERATOR && (token->text[0] == '=')) {
+        fprintf(stderr, "POPPING ======================\n" );
         s_pop(stack);
       }
       else {
@@ -342,6 +344,7 @@ int ll_predict(tToken *token, tStack *stack)
     case LL_STATEMENT:
       if(token->type == ID) {
         PUSH_RULE_10;
+      
       }
       else if(token->type == END || token->type == ELSE) {
         PUSH_RULE_11;
