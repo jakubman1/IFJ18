@@ -1,16 +1,13 @@
 #include "scanner.h"
 
-
 int scanner(tToken *token_out)
 {
   int c = '\0';
   static scanner_state state = START;
   int retcode = SUCCESS;
-
   bool quit = false;
   tBuffer buffer = NULL;
-  static int buff_size = init_buffer(&buffer);
-
+  int buff_size = init_buffer(&buffer);
 
   while((c = getc(stdin)) != EOF) {
     switch(state) {
