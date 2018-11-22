@@ -1,23 +1,26 @@
-DEBUG: Added to buffer: 
+DEBUG: Added to buffer:
 , 18
 DEBUG: Added to buffer: s1, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: "Toto je nejaky text", 16
-DEBUG: Added to buffer: 
+DEBUG: Added to buffer:
 , 18
 DEBUG: Added to buffer: s2, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: s1, 9
 DEBUG: Added to buffer: +, 15
 DEBUG: Added to buffer: ", ktery jeste trochu obohatime", 16
-DEBUG: Added to buffer: 
+DEBUG: Added to buffer:
 , 18
 DEBUG: Added to buffer: print, 9
 DEBUG: Added to buffer: s1, 9
+DEBUG: Added to buffer: ,, 19
 DEBUG: Added to buffer: "\n", 16
+DEBUG: Added to buffer: ,, 19
 DEBUG: Added to buffer: s2, 9
+DEBUG: Added to buffer: ,, 19
 DEBUG: Added to buffer: "\n", 16
-DEBUG: Added to buffer: 
+DEBUG: Added to buffer:
 , 18
 DEBUG: Added to buffer: s1len, 9
 DEBUG: Added to buffer: =, 15
@@ -25,7 +28,7 @@ DEBUG: Added to buffer: length, 9
 DEBUG: Added to buffer: (, 15
 DEBUG: Added to buffer: s1, 9
 DEBUG: Added to buffer: ), 15
-DEBUG: Added to buffer: 
+DEBUG: Added to buffer:
 , 18
 DEBUG: Added to buffer: s1len, 9
 DEBUG: Added to buffer: =, 15
@@ -34,57 +37,65 @@ DEBUG: Added to buffer: -, 15
 DEBUG: Added to buffer: 4, 10
 DEBUG: Added to buffer: +, 15
 DEBUG: Added to buffer: 1, 10
-DEBUG: Added to buffer: 
+DEBUG: Added to buffer:
 , 18
 DEBUG: Added to buffer: s1, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: substr, 9
 DEBUG: Added to buffer: (, 15
 DEBUG: Added to buffer: s2, 9
+DEBUG: Added to buffer: ,, 19
 DEBUG: Added to buffer: s1len, 9
+DEBUG: Added to buffer: ,, 19
 DEBUG: Added to buffer: 4, 10
 DEBUG: Added to buffer: ), 15
-DEBUG: Added to buffer: 
+DEBUG: Added to buffer:
 , 18
 DEBUG: Added to buffer: print, 9
 DEBUG: Added to buffer: "4 znaky od ", 16
+DEBUG: Added to buffer: ,, 19
 DEBUG: Added to buffer: s1len, 9
+DEBUG: Added to buffer: ,, 19
 DEBUG: Added to buffer: ". znaku v \", 16
+DEBUG: Added to buffer: ,, 19
 DEBUG: Added to buffer: ", s2, ", 16
+DEBUG: Added to buffer: ,, 19
 DEBUG: Added to buffer: ":", 16
+DEBUG: Added to buffer: ,, 19
 DEBUG: Added to buffer: s1, 9
+DEBUG: Added to buffer: ,, 19
 DEBUG: Added to buffer: "\n", 16
-DEBUG: Added to buffer: 
+DEBUG: Added to buffer:
 , 18
 DEBUG: Added to buffer: print, 9
 DEBUG: Added to buffer: "Zadejte serazenou posloupnost vsech malych pismen a-h, ", 16
-DEBUG: Added to buffer: 
+DEBUG: Added to buffer:
 , 18
 DEBUG: Added to buffer: print, 9
 DEBUG: Added to buffer: "pricemz se pismena nesmeji v posloupnosti opakovat: ", 16
-DEBUG: Added to buffer: 
+DEBUG: Added to buffer:
 , 18
 DEBUG: Added to buffer: s1, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: inputs, 9
-DEBUG: Added to buffer: 
+DEBUG: Added to buffer:
 , 18
 DEBUG: Added to buffer: while, 8
 DEBUG: Added to buffer: s1, 9
 DEBUG: Added to buffer: !=, 15
 DEBUG: Added to buffer: "abcdefgh\n", 16
 DEBUG: Added to buffer: do, 1
-DEBUG: Added to buffer: 
+DEBUG: Added to buffer:
 , 18
 DEBUG: Added to buffer: print, 9
 DEBUG: Added to buffer: "Spatne zadana posloupnost, zkuste znovu: ", 16
-DEBUG: Added to buffer: 
+DEBUG: Added to buffer:
 , 18
 DEBUG: Added to buffer: s1, 9
 DEBUG: Added to buffer: =, 15
 DEBUG: Added to buffer: inputs, 9
-DEBUG: Added to buffer: 
+DEBUG: Added to buffer:
 , 18
 DEBUG: Added to buffer: end, 3
-DEBUG: Added to buffer: 
+DEBUG: Added to buffer:
 , 18
