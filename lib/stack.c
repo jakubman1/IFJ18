@@ -1,3 +1,5 @@
+#include "stack.h"
+
 void s_init(tStack *stack)
 {
   stack->head = NULL;

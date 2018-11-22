@@ -8,6 +8,8 @@
 #ifndef STACK_H
 #define STACK_H
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "types.h"
 
 typedef struct stackNode {
