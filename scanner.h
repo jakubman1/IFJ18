@@ -40,6 +40,9 @@ typedef enum {
 
 } scanner_state;
 
+
+
+
 /**
 Finite state machine for scanner
 @returns return code of the program

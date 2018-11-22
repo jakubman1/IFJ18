@@ -6,6 +6,21 @@
  */
 #include "strbuff.h"
 
+int init_buffer(tBuffer *buffer) {
+  if(*buffer == NULL) {
+    *buffer = calloc(DEFAULT_BUFFER_SIZE, sizeof(char)); // orig buff_size + 1
+
+    if(*buffer == NULL) {
+      fprintf(stderr, ANSI_COLOR_RED "Internal Error:" ANSI_COLOR_RESET " Not enough memory\n");
+      exit(INTERNAL_ERR);
+    }
+    return DEFAULT_BUFFER_SIZE;
+  }
+  else {
+    return strlen(*buffer);
+  }
+}
+
 void add_to_buffer(tBuffer *buffer, int *buff_size, int c)
 {
   int len = strlen(*buffer);

@@ -1,5 +1,6 @@
 #include "scanner.h"
 
+
 int scanner(tToken *token_out)
 {
   int c = '\0';
@@ -7,13 +8,9 @@ int scanner(tToken *token_out)
   int retcode = SUCCESS;
 
   bool quit = false;
-  int buff_size = DEFAULT_BUFFER_SIZE;
-  tBuffer buffer = calloc(buff_size, sizeof(char)); // orig buff_size + 1
+  tBuffer buffer = NULL;
+  static int buff_size = init_buffer(&buffer);
 
-  if(buffer == NULL) {
-    fprintf(stderr, ANSI_COLOR_RED "Internal Error:" ANSI_COLOR_RESET " Not enough memory\n");
-    exit(INTERNAL_ERR);
-  }
 
   while((c = getc(stdin)) != EOF) {
     switch(state) {

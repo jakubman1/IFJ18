@@ -10,10 +10,20 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "types.h"
+#include "errcodes.h"
 
 #define DEFAULT_BUFFER_SIZE 4 // Buffer size on init (default 4)
 
 typedef char* tBuffer;
+
+/**
+Init a new buffer with default buffer size of DEFAULT_BUFFER_SIZE.
+If param buffer is NULL, a new buffer is created. Otherwise length of string in buffer is returned.
+@param buffer Buffer variable to insert new buffer into. Should be NULL when calling this function
+@returns int Length of a new buffer.
+*/
+int init_buffer(tBuffer *buffer);
 
 /**
 @Brief adds character to dynamic char buffer. If lenght of a buffer is too small, size gets doubeled.
