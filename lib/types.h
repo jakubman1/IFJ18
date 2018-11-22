@@ -38,7 +38,7 @@ typedef enum {
 } token_type;
 
 typedef enum {
-  LL_PROG = 100,
+  LL_PROG = 100, // non-terminals
   LL_PARAMS,
   LL_PARAMS_N,
   LL_STATEMENT,
@@ -48,11 +48,12 @@ typedef enum {
   LL_ARGS_N,
   LL_VALUE,
   LL_EXPRESSION,
-  LL_DEF = 1000,
+  LL_BOTTOM = 1000, // $  terminals
+  LL_DEF,
   LL_ID,
   LL_EOL,
   LL_END,
-  LL_COMA,
+  LL_COMMA,
   LL_IF,
   LL_THEN,
   LL_ELSE,
