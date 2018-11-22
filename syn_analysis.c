@@ -63,7 +63,6 @@ int parser()
     // create derivation tree
     // currentToken contains new token in every iteration
 
-    printf("Current token: %s, %d\n", currentToken.text, currentToken.type);
     //// MUSI BYT AZ NA KONCI CYKLU !!!!!!!!!!!!!!!
     if(currentToken.text != NULL) {
       // Free allocated text

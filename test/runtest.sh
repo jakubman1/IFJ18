@@ -7,6 +7,11 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
+echo -e "\n\n"
+echo "Running valgrind"
+echo "----------------------------------"
+valgrind ./ifj18 < test/factorial.rb
+
 ###########################
 # Tests for lexical analysis
 ###########################

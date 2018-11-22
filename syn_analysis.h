@@ -35,6 +35,11 @@
  int define();
 
  /**
+  * @brief Implementation of <def_args> rules
+  */
+ int def_args();
+
+ /**
   * @brief Implementation of <statement> rules
   */
  int statement();

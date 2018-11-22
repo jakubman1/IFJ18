@@ -22,7 +22,7 @@ lexical-test: *.c lib/*.c
 syntactic-test: *.c lib/*.c
 	$(CC) $(CFLAGS) -o $@ *.c lib/*.c -DDEBUG2
 
-test: tests
+test: tests $(PRJ)
 	test/runtest.sh
 
 fulltest:
