@@ -444,6 +444,11 @@ int scanner(tToken *token_out)
         state = ERR;
         break;
     }
+    /*
+    .__(.)< (quack, quack, i'm a duck)
+     \__)
+    ~~~~~~~~~~~~~~>
+    */
     if(quit) { // end of while, token sent
       break;
     }

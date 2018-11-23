@@ -27,3 +27,6 @@ test: tests
 
 fulltest:
 	ssh -t $(XLOGIN)@merlin.fit.vutbr.cz 'git clone https://github.com/jakubman1/IFJ18.git; cd IFJ18; make; make tests;chmod +x test/runtest.sh;test/runtest.sh;cd ..;echo -e "\n\nCleaning up after tests..."; rm -rf IFJ18;echo "Cleanup done."'
+
+quack:
+	@echo -e ".__(.)< (quack, quack, i'm a duck)\n \\__)\n~~~~~~~~~~~~~"
