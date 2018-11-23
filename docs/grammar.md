@@ -1,48 +1,38 @@
 # LL gramatika
 
 ```
-1. <prog> → def ID <params> EOL <statement> end EOL <prog>  
-2. <prog> → <statement> <prog_n>
-<prog> → ε  
-
-3. <params> → ( <params> )  
-4. <params> → ID <params_n>  
-5. <params> → ε  
-
-6. <params_n> → , ID <params_n>  
-7. <params_n> → ε  
-
-8. <statement> → if <expression> then EOL <statement> else EOL <statement> end EOL <statement>  
-9. <statement> → while <expression> do EOL <statement> end EOL <statement>  
-10. <statement> → ID <def_args> EOL <statement>  
-11. <statement> → ε  
-
-12. <def_args> → = <define>  
-13. <def_args> → <args>  
-
-14. <define> → ID <args>  
-15. <define> → print <args>  
-16. <define> → inputs <args>  
-17. <define> → inputi <args>  
-18. <define> → inputf <args>  
-19. <define> → lenght <args>  
-20. <define> → substr <args>   
-21. <define> → ord <args>    
-22. <define> → chr <args>  
-23. <define> → <expression>  
-24. <define> → ε  
-
-25. <args> → ε  
-26. <args> → ( <args> )  
-27. <args> → <value> <args_n>  
-
-28. <args_n> → , <value> <args_n>  
-29. <args_n> → ε   
-
-30. <value> → INT  
-31. <value> → FLOAT  
-32. <value> → ID  
-33. <value> → STRING   
-
-34. <statement> → EOL <statement>  
+1. PROG → def id PARAMS eol STATEMENT end eol PROG
+2. PROG → STATEMENT eol PROG
+3. PROG → ε
+4. PARAMS → ( PARAMS )
+5. PARAMS → id PARAMS_N
+6. PARAMS → ε
+7. PARAMS_N → , id PARAMS_N
+8. PARAMS_N → ε
+9. STATEMENT → if EXPRESSION then eol STATEMENT else eol STATEMENT end
+10. STATEMENT → while EXPRESSION do eol STATEMENT end
+11. STATEMENT → id DEF_ARGS
+12. STATEMENT → ε
+13. DEF_ARGS → = DEFINE
+14. DEF_ARGS → ARGS
+15. DEFINE → id ARGS
+16. DEFINE → print ARGS
+17. DEFINE → inputs ARGS
+18. DEFINE → inputi ARGS
+19. DEFINE → inputf ARGS
+20. DEFINE → lenght ARGS
+21. DEFINE → substr ARGS
+22. DEFINE → ord ARGS
+23. DEFINE → chr ARGS
+24. DEFINE → EXPRESSION
+25. DEFINE → ε
+26. ARGS → ε
+27. ARGS → ( ARGS )
+28. ARGS → VALUE ARGS_N
+29. ARGS_N → , VALUE ARGS_N
+30. ARGS_N → ε
+31. VALUE → int
+32. VALUE → float
+33. VALUE → id
+34. VALUE → string
 ```
