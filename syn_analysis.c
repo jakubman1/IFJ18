@@ -1,5 +1,8 @@
 /**
  * @file syn_analysis.c
+ * @author Jiri Tykva
+ * @author Jakub Man
+ * @author Adam Melichar
  * @author Jan Martinák
  * @date 19.11. 2018
  * @brief Syntactic analysis file
@@ -17,7 +20,6 @@ int parser()
 
   s_push(&stack, LL_BOTTOM);
   s_push(&stack, LL_PROG);
-
   while((scanner_out = scanner(&currentToken)) == SUCCESS) {
     // create derivation tree
     // currentToken contains new token in every iteration
@@ -70,11 +72,10 @@ int parser()
 
 int ll_predict(tToken *token, tStack *stack)
 {
-
   // following ifj pres:
   // X == top
   // a == token->type
-  STYDIM_SE_ZA_SEBE: NULL;
+
   int top = s_top(stack);
   fprintf(stderr, "TOP IS : %d\n", top);
 
@@ -91,6 +92,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       else if(token->type == ID || token->type == IF || token->type == WHILE || token->type == EOL) {
         PUSH_RULE_2;
       }
+      // PUSH_RULE_3 handled before ll_predict
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
         return SYNTAX_ERR;
@@ -127,7 +129,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       if(token->type == ID) {
         PUSH_RULE_11;
       }
-      else if(token->type == EOL) {
+      else if(token->type == EOL || token->type == END || token->type == ELSE) {
         PUSH_RULE_12;
       }
       else if(token->type == IF) {
@@ -142,7 +144,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       break;
     case LL_DEF_ARGS:
-      if(token->type == ID || token->type == EOL || token->type == END || (token->type == OPERATOR && token->text[0] == '(') || token->type == ELSE || token->type == INT || token->type == FLOAT || token->type == STRING ) {
+      if(token->type == ID || token->type == EOL || token->type == END || (token->type == OPERATOR && token->text[0] == '(') || token->type == ELSE || token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING ) {
         PUSH_RULE_14;
       }
       else if(token->type == OPERATOR && token->text[0] == '=') {
@@ -184,16 +186,19 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       else if(token->type == ID && (strcmp(token->text, "chr") == 0)) {
         PUSH_RULE_23;
       }
+      else if (token->type == INTEGER) {
+        PUSH_RULE_24;
+      }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
         return SYNTAX_ERR;
       }
       break;
     case LL_ARGS:
-      if(token->type == ID || token->type == INT || token->type == FLOAT || token->type == STRING) {
+      if(token->type == ID || token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING) {
         PUSH_RULE_28;
       }
-      else if(token->type == EOL || token->type == END || (token->type == OPERATOR && token->text[0] == ')')) {
+      else if(token->type == EOL || token->type == END || token->type == ELSE || (token->type == OPERATOR && token->text[0] == ')')) {
         PUSH_RULE_26;
       }
       else if(token->type == OPERATOR && token->text[0] == '(') {
@@ -205,7 +210,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       break;
     case LL_ARGS_N:
-      if (token->type == EOL || token->type == END || (token->type == OPERATOR && strcmp(token->text, ")") == 0) || token->type == ELSE ) {
+      if (token->type == EOL || token->type == END || (token->type == OPERATOR && token->text[0] == ')') || token->type == ELSE ) {
         PUSH_RULE_30;
       }
       else if (token->type == COMMA) {
@@ -220,21 +225,27 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       if (token->type == ID) {
         PUSH_RULE_33;
       }
-      else if (token->type == INTEGER || token->type == FLOAT || token->type == STRING) {
+      else if (token->type == INTEGER) {
         PUSH_RULE_31;
+      }
+      else if (token->type == FLOATING_POINT) {
+        PUSH_RULE_32;
+      }
+      else if (token->type == STRING) {
+        PUSH_RULE_34;
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
         return SYNTAX_ERR;
       }
       break;
-    case LL_EXPRESSION:
+    case LL_EXPRESSION: // FOR TESTING: EXPRESSION CAN ONLY BE SINGLE INT
       // TODO call precedent table
-      // for testing
-      if(token->type == THEN || token->type == ELSE || token->type == DO || token->type == END || token->type == EOL)
+      // for testing purposes only
+      if(token->type == INTEGER)
         if(!s_empty(stack)) {
-          s_pop(stack);
-          goto STYDIM_SE_ZA_SEBE;
+          s_pop(stack); // discards EXPRESSION non terminal from stack
+          s_push(stack, LL_INT); // ads INT terminal on top of the stack
         }
       break;
     default:
@@ -245,8 +256,8 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     } // end switch non-terminals
   } // end while non-terminals
 
+  // TERMINALS
   switch(s_top(stack)) {
-    // terminals
     case LL_DEF:
       if (token->type == DEF) {
         s_pop(stack);
@@ -437,7 +448,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       break;
     case LL_INT:
-      if (token->type == INT) {
+      if (token->type == INTEGER) {
         s_pop(stack);
       }
       else {
@@ -446,7 +457,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       break;
     case LL_FLOAT:
-      if (token->type == FLOAT) {
+      if (token->type == FLOATING_POINT) {
         s_pop(stack);
       }
       else {

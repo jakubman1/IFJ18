@@ -1,7 +1,9 @@
 /**
  * @file types.h
+ * @author Jiri Tykva
  * @author Jakub Man
- * @author Jiří Tykva
+ * @author Adam Melichar
+ * @author Jan Martinák
  * @date 4.10. 2018
  * @brief Definition of types required for the project
  */
