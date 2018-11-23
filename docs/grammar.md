@@ -1,10 +1,11 @@
 # LL gramatika
 
 ```
-1. <prog> → def ID <params> EOL <statement> end EOL    
-2. <prog> → <statement>  
+1. <prog> → def ID <params> EOL <statement> end EOL <prog>  
+2. <prog> → <statement> <prog_n>
+<prog> → ε  
 
-3. <params> → (<params>)  
+3. <params> → ( <params> )  
 4. <params> → ID <params_n>  
 5. <params> → ε  
 
@@ -13,7 +14,7 @@
 
 8. <statement> → if <expression> then EOL <statement> else EOL <statement> end EOL <statement>  
 9. <statement> → while <expression> do EOL <statement> end EOL <statement>  
-10. <statement> → ID <def_args> EOL <statement> <statement>  
+10. <statement> → ID <def_args> EOL <statement>  
 11. <statement> → ε  
 
 12. <def_args> → = <define>  
@@ -32,7 +33,7 @@
 24. <define> → ε  
 
 25. <args> → ε  
-26. <args> → (<args>)  
+26. <args> → ( <args> )  
 27. <args> → <value> <args_n>  
 
 28. <args_n> → , <value> <args_n>  
@@ -42,4 +43,6 @@
 31. <value> → FLOAT  
 32. <value> → ID  
 33. <value> → STRING   
+
+34. <statement> → EOL <statement>  
 ```
