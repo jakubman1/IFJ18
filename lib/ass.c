@@ -56,9 +56,9 @@ void ass_empty(tAssPtr *root)
   if(root != NULL && *root != NULL) {
     ass_empty(&((*root)->lptr)); // Remove left subtree
     ass_empty(&((*root)->rptr)); // Remove right subtree
-    if(root->text != NULL) {
-      free(root->text)
-      root->text = NULL;
+    if((*root)->text != NULL) {
+      free((*root)->text);
+      (*root)->text = NULL;
     }
     free(*root); // Remove current node
     *root = NULL;
