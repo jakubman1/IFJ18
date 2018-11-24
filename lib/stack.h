@@ -27,5 +27,6 @@ void s_push(tStack *stack, int data);
 int s_pop(tStack *stack);
 int s_top(tStack *stack);
 bool s_empty(tStack *stack);
+int s_free(tStack *stack);
 
 #endif

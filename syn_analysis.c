@@ -53,6 +53,8 @@ int parser()
       // Free allocated resources and quit (if there are any)
     }
   }
+  // We no longer need the stack, remove it.
+  s_free(&stack);
   else {
     // EOF
     int top = s_top(&stack);

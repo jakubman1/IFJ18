@@ -49,3 +49,13 @@ bool s_empty(tStack *stack)
 {
   return stack->head == NULL;
 }
+
+int s_free(tStack *stack)
+{
+  tStackNode *tmp;
+  for(tStackNode *current = stack->head; curret != NULL; current = tmp) {
+    tmp = current->next;
+    free(current);
+    current = NULL;
+  }
+}
