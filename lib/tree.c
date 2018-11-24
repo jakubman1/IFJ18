@@ -16,7 +16,7 @@ int dtree_insert(tDerTreePtr *root, int type, char *text)
     if(new != NULL) {
       new->type = type;
       if(text != NULL) {
-        new->text = malloc(sizeof(char) * strlen(text));
+        new->text = malloc(sizeof(char) * (strlen(text) + 1));
         if(new->text != NULL) {
           strcpy(new->text, text);
         }
