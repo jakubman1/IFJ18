@@ -23,7 +23,8 @@ typedef struct stack {
 } tPStack;
 
 // USAGE:
-// tToken *token = (tToken *) sp_pop(&stack)
+// tToken *token = (tToken *) sp_pop(&stack);
+// sp_push(&stack, (void *) token);
 
 void sp_init(tPStack *stack);
 void sp_push(tPStack *stack, void *data);
