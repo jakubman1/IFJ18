@@ -42,6 +42,7 @@ int ass_insert(tAssPtr *root, int type, char *text)
         new->rptr = NULL;
         *root = new;
       }
+      // TODO: Insert cases when tree is empty
     }
     else {
       return INTERNAL_ERR;
