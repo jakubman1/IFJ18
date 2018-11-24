@@ -41,15 +41,15 @@ typedef enum {
 
 typedef enum {
   LL_PROG = 100, // non-terminals
-  LL_PARAMS,
-  LL_PARAMS_N,
-  LL_STATEMENT,
-  LL_DEF_ARGS,
-  LL_DEFINE,
-  LL_ARGS,
-  LL_ARGS_N,
-  LL_VALUE,
-  LL_EXPRESSION,
+  LL_PARAMS, // 101
+  LL_PARAMS_N, // 102
+  LL_STATEMENT, // 103
+  LL_DEF_ARGS, // 104
+  LL_DEFINE, // 105
+  LL_ARGS, // 106
+  LL_ARGS_N, // 107
+  LL_VALUE, // 108
+  LL_EXPRESSION, // 109
   LL_BOTTOM = 1000, // $  terminals
   LL_DEF,
   LL_ID,
