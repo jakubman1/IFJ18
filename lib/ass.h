@@ -36,9 +36,9 @@ int ass_insert(tAssPtr *root, int type, char *text);
 */
 void ass_empty(tAssPtr *root);
 
-tAssPtr ass_make_tree();
+tAssPtr ass_make_tree(); //TODO
 
-tAssPtr ass_make_leaf();
+tAssPtr ass_make_leaf(); //TODO
 
 
 #endif
