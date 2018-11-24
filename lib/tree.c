@@ -21,6 +21,7 @@ int dtree_insert(tDerTreePtr *root, int type, char *text)
           strcpy(new->text, text);
         }
         else {
+          free(new);
           return INTERNAL_ERR;
         }
       }
