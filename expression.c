@@ -15,13 +15,28 @@
 *     POKUD V LL_PREDICT FUNKCI DOJDE then, do NEBO eol TAK MUSIME EXPRESSION ZAVOLAT JESTE JEDNOU S NEJAKYM
 *     SPECIALNIM SYMBOLEM KTERY BUDE ZNACIT, ZE JE KONEC EXPRESSIONU
 *
-*     funkce s_top(&stack_pushdown) musi vracet terminal nejblize k vrochulu, nemusit to byt tedy
-*     vzdycky samotny vrchol
 *
 *     ASS se da sestrojit z praveho rozboru
 *
 *
 */
+// find first terminal closest to the top of the stack
+int stack_terminal_top (tStack *searched_stack, tStack *aux_stack)
+{
+  while (!s_empty(searched_stack) && s_top(searched_stack) > BOTTOM) // while non terminal on top
+  {
+    s_push(aux_stack, s_pop(searched_stack));
+  }
+
+  int top = s_top(searched_stack);
+
+  while (!s_empty(aux_stack))
+  {
+    s_push(searched_stack, s_pop(aux_stack));
+  }
+
+  return top;
+}
 
 int prec_table (tToken *token)
 {
@@ -94,30 +109,18 @@ int prec_table (tToken *token)
     token_input = 13;
   }
 
-  // find first terminal closest to the top of the stack
-  while (!s_empty(&stack_pushdown) && s_top(&stack_pushdown) > BOTTOM) // while non terminal on top
-  {
-    s_push(&stack_temp, s_pop(&stack_pushdown));
-  }
+  int top_terminal = stack_terminal_top(&stack_pushdown, &stack_temp);
 
-  int stack_top = s_top(&stack_pushdown);
-
-  while (!s_empty(&stack_temp))
-  {
-    s_push(&stack_pushdown, s_pop(&stack_temp));
-  }
-
-
-  switch (precedent_table[stack_top][token_input])
+  switch (precedent_table[top_terminal][token_input])
   {
     case E: // =
       s_push(&stack_pushdown, token_input);
       sp_push(&token_stack, (void *) token);
       break;
-    case S: // >
+    case S: // <
 
       break;
-    case R: // <
+    case R: // >
       break;
   }
 
