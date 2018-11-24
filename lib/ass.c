@@ -1,9 +1,16 @@
+/**
+ * @file ass.c
+ * @author Jakub Man
+ * @date 22.11. 2018
+ * @brief Abstract syntax tree library (A.S.S. -> abstraktni syntakticky strom)
+ */
+
 #include "ass.h"
 
 
 void ass_init(tAssPtr *root)
 {
-  if(*root != NULL) {
+  if(root != NULL) {
     *root = NULL;
   }
 }
@@ -11,6 +18,7 @@ void ass_init(tAssPtr *root)
 int ass_insert(tAssPtr *root, int type, char *text)
 {
   if(root != NULL) {
+    // Create a new element
     tAssPtr new = malloc(sizeof(struct assNode));
     if(new != NULL) {
       new->type = type;
@@ -48,6 +56,10 @@ void ass_empty(tAssPtr *root)
   if(root != NULL && *root != NULL) {
     ass_empty(&((*root)->lptr)); // Remove left subtree
     ass_empty(&((*root)->rptr)); // Remove right subtree
+    if(root->text != NULL) {
+      free(root->text)
+      root->text = NULL;
+    }
     free(*root); // Remove current node
     *root = NULL;
   }

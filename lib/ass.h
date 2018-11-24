@@ -1,8 +1,8 @@
 /**
- * @file tree.h
+ * @file ass.h
  * @author Jakub Man
  * @date 22.11. 2018
- * @brief Abstract syntactic tree library (A.S.S. -> abstraktni syntakticky strom)
+ * @brief Abstract syntax tree library (A.S.S. -> abstraktni syntakticky strom)
  */
 
 #ifndef ASS_H
@@ -17,15 +17,16 @@ typedef struct assNode {
   char *text; // Token text (NULL for non-terminals, token text for terminals)
   struct assNode *lptr;
   struct assNode *rptr;
+  struct assNode *fptr;
 } *tAssPtr; // Node for abstract syntax tree
 
 /**
-@brief Initialize a new derivation tree.
+@brief Initialize a new abstract syntax tree.
 @param tree Pointer to a tree variable.
 */
 void ass_init(tAssPtr *root);
 /**
-@brief Insert a new node into derivation tree.
+@brief Insert a new node into abstract syntax tree.
 @returns 0 on success, 99 if memory allocation failed.
 */
 int ass_insert(tAssPtr *root, int type, char *text);
@@ -35,6 +36,9 @@ int ass_insert(tAssPtr *root, int type, char *text);
 */
 void ass_empty(tAssPtr *root);
 
+tAssPtr ass_make_tree();
+
+tAssPtr ass_make_leaf();
 
 
 #endif
