@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "types.h"
+#include "errcodes.h"
 
 typedef struct stackNode {
   int data;

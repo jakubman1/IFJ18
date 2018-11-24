@@ -15,7 +15,7 @@ void s_push(tStack *stack, int data)
   }
   else {
     fprintf(stderr, "Internal Error: No memory left.\n");
-    exit(99);
+    exit(INTERNAL_ERR);
   }
 
 }
