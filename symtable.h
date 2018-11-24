@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include "lib/errcodes.h"
 
 
@@ -57,15 +58,15 @@ typedef struct symNode {
   char *name;
   symbol_type type;
   tDataType data; // Based on symbol type
-  struct symNode *left;
-  struct symNode *right;
+  struct symNode *lptr;
+  struct symNode *rptr;
 } *tSymPtr;
 
 void symtable_init(tSymPtr *root);
-void symtable_insert_variable(tSymPtr *root, char *name, data_type type);
-void symtable_insert_function(tSymPtr *root, char *name, data_type returnType, int paramCount, tFuncParam *params, bool define);
+int symtable_insert_variable(tSymPtr *root, char *name, data_type type, bool define);
+int symtable_insert_function(tSymPtr *root, char *name, data_type returnType, int paramCount, tFuncParam *params, bool define);
 void symtable_insert(tSymPtr *root, tSymPtr node);
-tSymPtr symtable_search(tSymPtr *root, char *name);
+tSymPtr symtable_search(tSymPtr root, char *name);
 void symtable_clear(tSymPtr *root);
 
 

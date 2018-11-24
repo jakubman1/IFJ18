@@ -1,81 +1,156 @@
+/**
+ * @file symtable.c
+ * @author Jakub Man
+ * @date 24.11. 2018
+ * @brief Data types and functions for symbol table.
+ */
+
+
 #include "symtable.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-
-Tnode *createNewNode (Tdata data)
+void symtable_init(tSymPtr *root)
 {
-    Tnode *pNewNode = malloc(sizeof(Tnode));
-    if (pNewNode == NULL) exit(99); // #TODO + delete binary tree?
-
-    pNewNode->left = NULL;
-    pNewNode->right = NULL;
-    pNewNode->data = data;
-    return pNewNode;
+  if(root != NULL) {
+    *root = NULL;
+  }
 }
 
-Tnode *insertNode (Tnode *root, Tdata data)
+int symtable_insert_variable(tSymPtr *root, char *name, data_type type, bool define)
 {
-    if (root == NULL) // empty tree
-        root = createNewNode(data);
-    else if (root->data.i >= data.i) // left subtree
-        root->left = insertNode(root->left, data);
-    else // right subtree
-        root->right = insertNode(root->right, data);
-    return root;
+  tSymPtr new = symtable_search(*root, name);
+  if(new == NULL) {
+    // Create a new item in the tree
+    new = malloc(sizeof(struct symNode));
+    if(new != NULL) {
+      new->name = malloc(sizeof(char) * (strlen(name) + 1));
+      if(new->name != NULL) {
+        strcpy(new->name, name);
+      }
+      else {
+        free(new);
+        return INTERNAL_ERR;
+      }
+      new->type = VARIABLE;
+      new->data.varData.defined = define;
+      symtable_insert(root, new);
+    }
+    else {
+      return INTERNAL_ERR;
+    }
+
+  }
+  else {
+    // Check if symbol is a variable, otherwise its a semantic error
+    if(new->type != VARIABLE) {
+      return VARIABLE_ERR;
+    }
+  }
+  // Update existing (or newly created) item
+  new->data.varData.type = type;
+  if(define) {
+    new->data.varData.defined = true;
+  }
+
+  return SUCCESS;
 }
 
-bool isInBinaryTree (Tnode *root, Tdata data)
+int symtable_insert_function(tSymPtr *root, char *name, data_type returnType, int paramCount, tFuncParam *params, bool define)
 {
-    if (root == NULL)
-        return false;
-    else if (root->data.i == data.i)
-        return true;
-    else if (root->data.i > data.i)
-        isInBinaryTree(root->left, data);
-    else
-        isInBinaryTree(root->right, data);
+  tSymPtr new = symtable_search(*root, name);
+  if(new == NULL) {
+    // Create a new item in the tree
+    new = malloc(sizeof(struct symNode));
+    if(new != NULL) {
+      new->name = malloc(sizeof(char) * (strlen(name) + 1));
+      if(new->name != NULL) {
+        strcpy(new->name, name);
+      }
+      else {
+        free(new);
+        return INTERNAL_ERR;
+      }
+      new->type = FUNCTION;
+      new->data.funData.defined = define;
+      symtable_insert(root, new);
+    }
+    else {
+      return INTERNAL_ERR;
+    }
+  }
+  else {
+    // Check if symbol is a function, otherwise its a semantic error
+    if(new->type != FUNCTION) {
+      return VARIABLE_ERR;
+    }
+  }
+  // Update existing (or newly created) item
+  if(define) {
+    new->data.funData.defined = true;
+  }
+  new->data.funData.returnType = returnType;
+  new->data.funData.paramCount = paramCount;
+  new->data.funData.params = params;
 
-    return false;
-
+  return SUCCESS;
 }
 
-int maximum (int a, int b)
+void symtable_insert(tSymPtr *root, tSymPtr node)
 {
-    if (a >= b)
-        return a;
-    else
-        return b;
+  if(root != NULL) {
+    if(*root == NULL) {
+      // Insert into root
+      *root = node;
+    }
+    else {
+      // cmpval should never be 0, when strcmp returns 0, strings are equal.
+      // This situation is handled by symtable_insert_function() or symtable_insert_variable()
+      int cmpval = strcmp((*root)->name, node->name);
+      if(cmpval < 0) {
+        symtable_insert(&((*root)->lptr), node);
+      }
+      else if(cmpval > 0) {
+        symtable_insert(&((*root)->lptr), node);
+      }
+    }
+  }
 }
 
-int binaryTreeHeight (Tnode *root)
+tSymPtr symtable_search(tSymPtr root, char *name)
 {
-    if (root == NULL) return 0;
-
-    int maxHeight = maximum(binaryTreeHeight(root->left), binaryTreeHeight(root->right));
-    return ++maxHeight;
+  if(root != NULL) {
+    int cmpval = strcmp(root->name, name);
+    if(cmpval == 0) {
+      return root;
+    }
+    else if(cmpval < 0) {
+      symtable_search(root->lptr, name);
+    }
+    else {
+      symtable_search(root->rptr, name);
+    }
+  }
+  // Not found
+  return NULL;
 }
 
-Tnode *copyBinaryTree (Tnode *origRoot)
+void symtable_clear(tSymPtr *root)
 {
-    if (origRoot == NULL) return NULL;
-
-    Tnode *copyRoot = malloc(sizeof(Tnode));
-    if (copyRoot == NULL) exit(99); // #TODO + delete binary tree?
-
-    copyRoot->data = origRoot->data;
-    copyRoot->left = copyBinaryTree(origRoot->left);
-    copyRoot->right = copyBinaryTree(origRoot->right);
-
-    return copyRoot;
-}
-
-void deleteBinaryTree (Tnode *root)
-{
-    if (root == NULL) return;
-
-    deleteBinaryTree(root->left);
-    deleteBinaryTree(root->right);
-    free(root);
+  if(root != NULL && *root != NULL) {
+    symtable_clear(&((*root)->lptr)); // Remove left subtree
+    symtable_clear(&((*root)->rptr)); // Remove right subtree
+    if((*root)->name != NULL) {
+      free((*root)->name);
+      (*root)->name = NULL;
+    }
+    if((*root)->type == FUNCTION) {
+      // We need to free param list
+      tFuncParam *tmp;
+      for(tFuncParam *current = (*root)->data.funData.params; current != NULL; current = tmp) {
+        tmp = current->next;
+        free(current);
+      }
+    }
+    free(*root); // Remove current node
+    *root = NULL;
+  }
 }
