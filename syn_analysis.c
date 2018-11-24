@@ -77,10 +77,10 @@ int ll_predict(tToken *token, tStack *stack)
   // a == token->type
 
   int top = s_top(stack);
-  fprintf(stderr, "TOP IS : %d\n", top);
 
   // NON TERMINALS
 while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
+  fprintf(stderr, "TOP IS : %d\n", top);
   switch (s_top(stack)) {
     case LL_BOTTOM: // input cannot be EOF here
       return SYNTAX_ERR;
@@ -156,10 +156,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       break;
     case LL_DEFINE:
-      if(token->type == ID) {
-        PUSH_RULE_15;
-      }
-      else if(token->type == EOL || token->type == END || token->type == ELSE) {
+      if(token->type == EOL || token->type == END || token->type == ELSE) {
         PUSH_RULE_25;
       }
       else if(token->type == ID && (strcmp(token->text, "print") == 0)) {
@@ -186,8 +183,15 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       else if(token->type == ID && (strcmp(token->text, "chr") == 0)) {
         PUSH_RULE_23;
       }
-      else if (token->type == INTEGER) {
-        PUSH_RULE_24;
+      else if(token->type == ID) {
+        // FIXME
+        // if ID is id of a function -> PUSH_RULE_15
+        // else call precedent table
+        PUSH_RULE_15;
+      }
+      else if (token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING) {
+        // FIXME call precedent table
+        PUSH_RULE_24; // for testing
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
@@ -239,13 +243,26 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         return SYNTAX_ERR;
       }
       break;
-    case LL_EXPRESSION: // FOR TESTING: EXPRESSION CAN ONLY BE SINGLE INT
+    case LL_EXPRESSION: // FOR TESTING: EXPRESSION CAN ONLY BE SINGLE INT, FLOAT or STRING
       // TODO call precedent table
       // for testing purposes only
-      if(token->type == INTEGER)
+      if(token->type == INTEGER) {
         if(!s_empty(stack)) {
           s_pop(stack); // discards EXPRESSION non terminal from stack
           s_push(stack, LL_INT); // ads INT terminal on top of the stack
+        }
+      }
+      else if (token->type == STRING) {
+          if(!s_empty(stack)) {
+            s_pop(stack);
+            s_push(stack, LL_STRING);
+          }
+        }
+        else if (token->type == FLOATING_POINT) {
+          if(!s_empty(stack)) {
+            s_pop(stack);
+            s_push(stack, LL_FLOAT);
+          }
         }
       break;
     default:
@@ -480,6 +497,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       return SYNTAX_ERR;
       break;
   } // end switch terminals
+
 
   // TODO insert into tree, derivation tree
 
