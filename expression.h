@@ -58,7 +58,7 @@ typedef enum {
   INT,
   FLOAT,
   STRING,
-  E_LOWER_E;
+  E_LOWER_E,
   E_LOWEREQ_E,
   E_GREATER_E,
   E_QREATEREQ_E,
