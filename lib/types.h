@@ -51,17 +51,17 @@ typedef enum {
   LL_VALUE, // 108
   LL_EXPRESSION, // 109
   LL_BOTTOM = 1000, // $  terminals
-  LL_DEF,
+  LL_DEF, //1001
   LL_ID,
   LL_EOL,
   LL_END,
   LL_COMMA,
   LL_IF,
   LL_THEN,
-  LL_ELSE,
+  LL_ELSE, // 1008
   LL_WHILE,
   LL_DO,
-  LL_EQUAL,
+  LL_SET,
   LL_PRINT,
   LL_INPUTS,
   LL_INPUTI,
@@ -74,7 +74,17 @@ typedef enum {
   LL_BRACKET_RIGHT,
   LL_INT,
   LL_FLOAT,
-  LL_STRING
+  LL_STRING,
+  LL_PLUS,  //+
+  LL_MINUS, //-
+  LL_MULTIPLY, //*
+  LL_DIVIDE,  // /
+  LL_LESS, // <
+  LL_EQUAL, // ==
+  LL_GREATER, // >
+  LL_GEQUAL, // =>
+  LL_LEQUAL, // =<
+  LL_NEQUAL // !=
 } ll_table_type;
 
 typedef struct token {
