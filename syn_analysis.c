@@ -74,10 +74,6 @@ int parser()
 
 int ll_predict(tToken *token, tStack *stack)
 {
-  // following ifj pres:
-  // X == top
-  // a == token->type
-
   int top = s_top(stack);
 
   // NON TERMINALS
@@ -188,13 +184,14 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       else if(token->type == ID) {
         // FIXME
         // if ID is id of a function -> PUSH_RULE_15
-        //tSymPtr id = symtable_search(root, token->text);
+        // tSymPtr id = symtable_search(root, token->text);
         // else call precedent table
         PUSH_RULE_15;
+        prec_table(token);
       }
       else if (token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING) {
-        // FIXME call precedent table
-        PUSH_RULE_24; // for testing
+        PUSH_RULE_24;
+        prec_table(token);
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
@@ -247,7 +244,68 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       break;
     case LL_EXPRESSION:
-      prec_table(token);
+      if (token->type == INTEGER || token->type == STRING || token->type == FLOATING_POINT || token->type == ID || token->type == OPERATOR) {
+        prec_table(token);
+        if(token->type == INTEGER) {
+          s_push(stack, LL_INT);
+        }
+        if(token->type == STRING) {
+          s_push(stack, LL_STRING);
+        }
+        if(token->type == FLOATING_POINT) {
+          s_push(stack, LL_FLOAT);
+        }
+        if(token->type == ID) {
+          s_push(stack, LL_ID);
+        }
+        if(token->type == OPERATOR) {
+          //s_push(stack, LL_OPERATOR);
+          if(token->text[0] == '(') {
+            s_push(stack, LL_BRACKET_LEFT);
+          }
+          if(token->text[0] == ')') {
+            s_push(stack, LL_BRACKET_RIGHT);
+          }
+          if(token->text[0] == '+') {
+            s_push(stack, LL_PLUS);
+          }
+          if(token->text[0] == '-') {
+            s_push(stack, LL_MINUS);
+          }
+          if(token->text[0] == '*') {
+            s_push(stack, LL_MULTIPLY);
+          }
+          if(token->text[0] == '/') {
+            s_push(stack, LL_DIVIDE);
+          }
+          if(token->text[0] == '<') {
+            s_push(stack, LL_LESS);
+          }
+          if((strcmp(token->text, "<=") == 0)) {
+            s_push(stack, LL_LEQUAL);
+          }
+          if(token->text[0] == '>') {
+            s_push(stack, LL_GREATER);
+          }
+          if((strcmp(token->text, ">=") == 0)) {
+            s_push(stack, LL_GEQUAL);
+          }
+          if((strcmp(token->text, "==") == 0)) {
+            s_push(stack, LL_EQUAL);
+          }
+          if((strcmp(token->text, "!=") == 0)) {
+            s_push(stack, LL_NEQUAL);
+          }
+        }
+
+      }
+      else {
+        fprintf(stderr, "PRED POPOVANIM TOP = %d\n", s_top(stack));
+        s_pop(stack);
+        fprintf(stderr, "PO POPOVANI TOP = %d\n", s_top(stack));
+        tToken endExpression = {"", LL_BOTTOM};
+        prec_table(&endExpression);
+      }
       break;
     default:
       // Handle syntax error
@@ -280,9 +338,6 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_EOL:
       if (token->type == EOL) {
         s_pop(stack);
-        // end expression
-        tToken endExpression = {"", LL_BOTTOM};
-        prec_table(&endExpression);
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s, expected EOL.\n", token->text);
@@ -319,9 +374,6 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_THEN:
       if (token->type == THEN) {
         s_pop(stack);
-        // end expression
-        tToken endExpression = {"", LL_BOTTOM};
-        prec_table(&endExpression);
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected then with no if.\n");
@@ -349,16 +401,13 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_DO:
       if (token->type == DO) {
         s_pop(stack);
-        // end expression
-        tToken endExpression = {"", LL_BOTTOM};
-        prec_table(&endExpression);
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected do.\n");
         return SYNTAX_ERR;
       }
       break;
-    case LL_EQUAL:
+    case LL_SET:
       if (token->type == OPERATOR && (token->text[0] == '=')) {
         s_pop(stack);
       }
@@ -481,6 +530,96 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected string.\n");
+        return SYNTAX_ERR;
+      }
+      break;
+    case LL_PLUS:
+      if (token->type == OPERATOR && token->text[0] == '+') {
+        s_pop(stack);
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected token %s, expected operator +.\n", token->text);
+        return SYNTAX_ERR;
+      }
+      break;
+    case LL_MINUS:
+      if (token->type == OPERATOR && token->text[0] == '-') {
+        s_pop(stack);
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected token %s, expected operator -.\n", token->text);
+        return SYNTAX_ERR;
+      }
+      break;
+    case LL_MULTIPLY:
+      if (token->type == OPERATOR && token->text[0] == '*') {
+        s_pop(stack);
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected token %s, expected operator *.\n", token->text);
+        return SYNTAX_ERR;
+      }
+      break;
+    case LL_DIVIDE:
+      if (token->type == OPERATOR && token->text[0] == '/') {
+        s_pop(stack);
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected token %s, expected operator /.\n", token->text);
+        return SYNTAX_ERR;
+      }
+      break;
+    case LL_EQUAL:
+      if (token->type == OPERATOR && (strcmp(token->text, "==") == 0)) {
+        s_pop(stack);
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected token %s, expected operator ==.\n", token->text);
+        return SYNTAX_ERR;
+      }
+      break;
+    case LL_LESS:
+      if (token->type == OPERATOR && token->text[0] == '<') {
+        s_pop(stack);
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected token %s, expected operator <.\n", token->text);
+        return SYNTAX_ERR;
+      }
+      break;
+    case LL_LEQUAL:
+      if (token->type == OPERATOR && (strcmp(token->text, "<=") == 0)) {
+        s_pop(stack);
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected token %s, expected operator <=.\n", token->text);
+        return SYNTAX_ERR;
+      }
+      break;
+    case LL_GREATER:
+      if (token->type == OPERATOR && token->text[0] == '>') {
+        s_pop(stack);
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected token %s, expected operator >.\n", token->text);
+        return SYNTAX_ERR;
+      }
+      break;
+    case LL_GEQUAL:
+      if (token->type == OPERATOR && (strcmp(token->text, ">=") == 0)) {
+        s_pop(stack);
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected token %s, expected operator >=.\n", token->text);
+        return SYNTAX_ERR;
+      }
+      break;
+    case LL_NEQUAL:
+      if (token->type == OPERATOR && (strcmp(token->text, "!=") == 0)) {
+        s_pop(stack);
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected token %s, expected operator !=.\n", token->text);
         return SYNTAX_ERR;
       }
       break;
