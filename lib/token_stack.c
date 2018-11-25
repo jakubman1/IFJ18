@@ -1,4 +1,4 @@
-#include "token-stack.h"
+#include "token_stack.h"
 
 void st_init(tTStack *stack)
 {
