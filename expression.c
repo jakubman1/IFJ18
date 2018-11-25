@@ -43,8 +43,8 @@ void furfil_stack(tStack *searched_stack, tStack *aux_stack)
 int prec_table(tToken *token)
 {
   int result = SUCCESS; // TODO
-  int prec_table_out = SUCCESS;
-  tToken currentToken = {"", ERROR};
+  //int prec_table_out = SUCCESS;
+  //tToken currentToken = {"", ERROR};
 
   static tStack stack_rules; // stores postfix notation
   static tStack stack_pushdown; // auxiliary stack
@@ -66,6 +66,7 @@ int prec_table(tToken *token)
     init = true;
   }
 
+/*
   // $ vs $ || $E vs $ --> success
   if (token->type == LL_BOTTOM) {
     if (s_top(&stack_pushdown) == P_E) {
@@ -82,6 +83,7 @@ int prec_table(tToken *token)
       return SYNTAX_ERR;
     }
   }
+*/
 
   int token_input;
   if (token->type == OPERATOR && token->text[0] == '+') {

@@ -35,7 +35,7 @@
 #define PUSH_RULE_10 s_pop(stack); s_push(stack, LL_END); s_push(stack, LL_STATEMENT); s_push(stack, LL_EOL); s_push(stack, LL_DO); s_push(stack, LL_EXPRESSION); s_push(stack, LL_WHILE)
 #define PUSH_RULE_11 s_pop(stack); s_push(stack, LL_DEF_ARGS); s_push(stack, LL_ID)
 #define PUSH_RULE_12 s_pop(stack)
-#define PUSH_RULE_13 s_pop(stack); s_push(stack, LL_DEFINE); s_push(stack, LL_EQUAL)
+#define PUSH_RULE_13 s_pop(stack); s_push(stack, LL_DEFINE); s_push(stack, LL_SET)
 #define PUSH_RULE_14 s_pop(stack); s_push(stack, LL_ARGS)
 #define PUSH_RULE_15 s_pop(stack); s_push(stack, LL_ARGS); s_push(stack, LL_ID)
 #define PUSH_RULE_16 s_pop(stack); s_push(stack, LL_ARGS); s_push(stack, LL_PRINT)

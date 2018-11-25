@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "lib/stack.h"
-#include "lib/token-stack.h"
+#include "lib/token_stack.h"
 #include "lib/ass.h"
 
 #define PRECEDENT_TABLE_SIZE 14
