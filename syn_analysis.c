@@ -40,6 +40,7 @@ int parser()
   if(scanner_out != -1) {
     // handle errors during lexical analysis
     result = scanner_out;
+
     if(scanner_out == LEXICAL_ERR) {
       while((scanner_out = scanner(&currentToken)) == SUCCESS || scanner_out == LEXICAL_ERR) {
         // Print all lexicals errors (scanner takes care of printing)
@@ -54,19 +55,18 @@ int parser()
     }
   }
   // We no longer need the stack, remove it.
-  s_free(&stack);
   else {
     // EOF
     int top = s_top(&stack);
     if (top == LL_BOTTOM)
-      return SUCCESS;
+      result = SUCCESS;
     else {
       fprintf(stderr, "Syntax error\n");
-      return SYNTAX_ERR;
+      result = SYNTAX_ERR;
     }
 
   }
-
+  s_free(&stack);
   return result;
 }
 
@@ -188,6 +188,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       else if(token->type == ID) {
         // FIXME
         // if ID is id of a function -> PUSH_RULE_15
+        //tSymPtr id = symtable_search(root, token->text);
         // else call precedent table
         PUSH_RULE_15;
       }
@@ -245,27 +246,8 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         return SYNTAX_ERR;
       }
       break;
-    case LL_EXPRESSION: // FOR TESTING: EXPRESSION CAN ONLY BE SINGLE INT, FLOAT or STRING
-      // TODO call precedent table
-      // for testing purposes only
-      if(token->type == INTEGER) {
-        if(!s_empty(stack)) {
-          s_pop(stack); // discards EXPRESSION non terminal from stack
-          s_push(stack, LL_INT); // ads INT terminal on top of the stack
-        }
-      }
-      else if (token->type == STRING) {
-          if(!s_empty(stack)) {
-            s_pop(stack);
-            s_push(stack, LL_STRING);
-          }
-        }
-        else if (token->type == FLOATING_POINT) {
-          if(!s_empty(stack)) {
-            s_pop(stack);
-            s_push(stack, LL_FLOAT);
-          }
-        }
+    case LL_EXPRESSION:
+      prec_table(token);
       break;
     default:
       // Handle syntax error
@@ -298,6 +280,9 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_EOL:
       if (token->type == EOL) {
         s_pop(stack);
+        // end expression
+        tToken endExpression = {"", LL_BOTTOM};
+        prec_table(&endExpression);
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s, expected EOL.\n", token->text);
@@ -334,6 +319,9 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_THEN:
       if (token->type == THEN) {
         s_pop(stack);
+        // end expression
+        tToken endExpression = {"", LL_BOTTOM};
+        prec_table(&endExpression);
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected then with no if.\n");
@@ -361,6 +349,9 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_DO:
       if (token->type == DO) {
         s_pop(stack);
+        // end expression
+        tToken endExpression = {"", LL_BOTTOM};
+        prec_table(&endExpression);
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected do.\n");

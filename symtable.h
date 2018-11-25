@@ -16,8 +16,10 @@
 
 typedef enum {
   VARIABLE,
-  FUNCTION
+  FUNCTION,
+  UNKNOWN
 } symbol_type;
+
 typedef enum {
   TYPE_INT,
   TYPE_STRING,
@@ -74,6 +76,7 @@ Insert a new variable into symtable. If variable already exists, update it.
 @param define Was variable defined or not? If yes, variable will be set as defined
 @returns 0 on success, 2 if name is a function, 99 on memory allocation errors.
 */
+
 int symtable_insert_variable(tSymPtr *root, char *name, data_type type, bool define);
 /**
 Insert a new function into symtable. If function already exists, update it.

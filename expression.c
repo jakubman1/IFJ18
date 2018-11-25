@@ -20,25 +20,27 @@
 *
 *
 */
-// find first terminal closest to the top of the stack
-int stack_terminal_top (tStack *searched_stack, tStack *aux_stack)
+
+int stack_terminal_top(tStack *searched_stack, tStack *aux_stack)
 {
-  while (!s_empty(searched_stack) && s_top(searched_stack) > BOTTOM) // while non terminal on top
+  while (!s_empty(searched_stack) && s_top(searched_stack) > P_BOTTOM) // while non terminal on top
   {
     s_push(aux_stack, s_pop(searched_stack));
   }
 
-  int top = s_top(searched_stack);
-
-  while (!s_empty(aux_stack))
-  {
-    s_push(searched_stack, s_pop(aux_stack));
-  }
-
-  return top;
+  return s_top(searched_stack);
 }
 
-int prec_table (tToken *token)
+void furfil_stack(tStack *searched_stack, tStack *aux_stack)
+{
+    while (!s_empty(aux_stack))
+    {
+      s_push(searched_stack, s_pop(aux_stack));
+    }
+}
+
+
+int prec_table(tToken *token)
 {
   int result = SUCCESS; // TODO
   int prec_table_out = SUCCESS;
@@ -47,7 +49,7 @@ int prec_table (tToken *token)
   static tStack stack_rules; // stores postfix notation
   static tStack stack_pushdown; // auxiliary stack
   static tStack stack_temp; // auxiliary stack for searching for first terminal
-  static tPStack token_stack; // stores text and type of the tokens until the end of the expression
+  static tTStack token_stack; // stores text and type of the tokens until the end of the expression
   static bool init = false;
 
   if (!init)
@@ -55,7 +57,7 @@ int prec_table (tToken *token)
     s_init(&stack_rules);
     s_init(&stack_pushdown);
     s_init(&stack_temp);
-    sp_init(&token_stack);
+    st_init(&token_stack);
 
     s_push(&stack_pushdown, P_BOTTOM);
 
@@ -64,70 +66,141 @@ int prec_table (tToken *token)
     init = true;
   }
 
+  // $ vs $ || $E vs $ --> success
+  if (token->type == LL_BOTTOM) {
+    if (s_top(&stack_pushdown) == P_E) {
+      s_pop(&stack_pushdown);
+    }
+    if (s_top(&stack_pushdown) == P_BOTTOM) {
+      // TODO
+      //if (!s_empty(&stack_rules) {
+      //  send pravy rozbor do ASS
+      //}
+      return SUCCESS;
+    }
+    else {
+      return SYNTAX_ERR;
+    }
+  }
+
   int token_input;
   if (token->type == OPERATOR && token->text[0] == '+') {
-    token_input = 0;
+    token_input = P_PLUS;
   }
   else if (token->type == OPERATOR && token->text[0] == '-') {
-    token_input = 1;
+    token_input = P_MINUS;
     //TODO
   }
   else if (token->type == OPERATOR && token->text[0] == '*') {
-    token_input = 2;
+    token_input = P_MULTIPLY;
   }
   else if (token->type == OPERATOR && token->text[0] == '/') {
-    token_input = 3;
+    token_input = P_DIVIDE;
   }
   else if (token->type == OPERATOR && token->text[0] == '<') {
-    token_input = 4;
+    token_input = P_LOWER;
   }
   else if (token->type == OPERATOR && (strcmp(token->text, "<=") == 0)) {
-    token_input = 5;
+    token_input = P_LOWEREQ;
   }
   else if (token->type == OPERATOR && token->text[0] == '>') {
-    token_input = 6;
+    token_input = P_GREATER;
   }
   else if (token->type == OPERATOR && (strcmp(token->text, ">=") == 0)) {
-    token_input = 7;
+    token_input = P_GREATEREQ;
   }
   else if (token->type == OPERATOR && (strcmp(token->text, "==") == 0)) {
-    token_input = 8;
+    token_input = P_EQ;
   }
   else if (token->type == OPERATOR && (strcmp(token->text, "!=") == 0)) {
-    token_input = 9;
+    token_input = P_NOTEQ;
   }
   else if (token->type == OPERATOR && token->text[0] == '(') {
-    token_input = 10;
+    token_input = P_LEFT_BRACKET;
   }
   else if (token->type == OPERATOR && token->text[0] == ')') {
-    token_input = 11;
+    token_input = P_RIGHT_BRACKET;
   }
   else if (token->type == ID || token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING) { // i
-    token_input = 12;
+    token_input = P_ID;
   }
   else { // end of expression (== $)
-    token_input = 13;
+    token_input = P_BOTTOM;
   }
 
   int top_terminal = stack_terminal_top(&stack_pushdown, &stack_temp);
+  furfil_stack (&stack_pushdown, &stack_temp);
+
 
   switch (precedent_table[top_terminal][token_input])
   {
     case E: // =
       s_push(&stack_pushdown, token_input);
-      sp_push(&token_stack, (void *) token);
       break;
     case S: // <
-
+      top_terminal = stack_terminal_top(&stack_pushdown, &stack_temp);
+      s_push(&stack_pushdown, S);
+      furfil_stack(&stack_pushdown, &stack_temp);
+      s_push(&stack_pushdown, token_input);
       break;
     case R: // >
+      top_terminal = stack_terminal_top(&stack_pushdown, &stack_temp);
+      int second_top_terminal = stack_terminal_top(&stack_pushdown, &stack_temp); // should be S
+      if (second_top_terminal == S) {
+        s_pop(&stack_pushdown); // get rid of < (== S)
+
+        bool successful_rules [NUMBER_OF_RULES];
+        for (int i = 0; i < NUMBER_OF_RULES; i++) {
+          successful_rules[i] = true;
+        }
+
+        // compare rules
+        for (int j = 0; !s_empty(&stack_temp); j++) { // j MAX 3
+          int rule_element = s_pop(&stack_temp);
+          for (int i = 0; i < NUMBER_OF_RULES; i++) { // i MAX 12
+            if (successful_rules[i] == true) {
+              if (rule_table[i][j] != rule_element) {
+                successful_rules[i] = false;
+              }
+            }
+          }
+        }
+
+        int rule = -1;
+        for (int i = 0; i < NUMBER_OF_RULES; i++)
+        {
+          if (successful_rules[i] == true) {
+            rule = i;
+          }
+        }
+
+        if (rule == -1) {
+          return SYNTAX_ERR;
+        }
+        else {
+          s_push(&stack_rules, rule); // Right parse
+          s_push(&stack_pushdown, P_E);
+        }
+
+      }
+      else {
+        return SYNTAX_ERR;
+      }
+      break; // end of Case R
+    default:  // NONE
+      return SYNTAX_ERR;
       break;
+  }
+
+  if (token_input == P_ID) {
+    st_push(&token_stack, *token);
   }
 
   /*TODO: if (konec) {
   s_free(&stack_pushdown);
   s_free(&stack_temp);
   s_free(&stack_rules);
-  sp_free(&token_stack);
+  st_free(&token_stack);
   }*/
+  return result;
 }

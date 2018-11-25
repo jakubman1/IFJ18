@@ -41,8 +41,11 @@ int symtable_insert_variable(tSymPtr *root, char *name, data_type type, bool def
   }
   else {
     // Check if symbol is a variable, otherwise its a semantic error
-    if(new->type != VARIABLE) {
+    if(new->type != VARIABLE || new->type != UNKNOWN) {
       return VARIABLE_ERR;
+    }
+    if(new->type == UNKNOWN) {
+      new->type = VARIABLE;
     }
   }
   // Update existing (or newly created) item
@@ -79,8 +82,11 @@ int symtable_insert_function(tSymPtr *root, char *name, data_type returnType, in
   }
   else {
     // Check if symbol is a function, otherwise its a semantic error
-    if(new->type != FUNCTION) {
+    if(new->type != FUNCTION || new->type != UNKNOWN) {
       return VARIABLE_ERR;
+    }
+    if(new->type == UNKNOWN) {
+      new->type = FUNCTION;
     }
   }
   // Update existing (or newly created) item

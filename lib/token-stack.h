@@ -18,7 +18,7 @@ typedef struct tokenStackNode {
   struct tokenStackNode *next;
 } tTStackNode;
 
-typedef struct stack {
+typedef struct tokenStack {
   tTStackNode *head;
 } tTStack;
 
@@ -26,11 +26,11 @@ typedef struct stack {
 // tToken token = st_pop(&stack);
 // st_push(&stack, *token);
 
-void st_init(tPStack *stack);
-void st_push(tPStack *stack, tToken data);
-void *st_pop(tPStack *stack);
-void *st_top(tPStack *stack);
-bool st_empty(tPStack *stack);
-int st_free(tPStack *stack);
+void st_init(tTStack *stack);
+void st_push(tTStack *stack, tToken data);
+tToken st_pop(tTStack *stack);
+tToken st_top(tTStack *stack);
+bool st_empty(tTStack *stack);
+void st_free(tTStack *stack);
 
 #endif

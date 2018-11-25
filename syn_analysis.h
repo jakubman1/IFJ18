@@ -17,6 +17,8 @@
 #include "lib/types.h"
 #include "lib/stack.h"
 #include "scanner.h"
+#include "symtable.h"
+#include "expression.c"
 
 
 #define PUSH_START s_push(stack, LL_BOTTOM); s_push(stack, LL_PROG)

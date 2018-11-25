@@ -15,7 +15,7 @@ void ass_init(tAssPtr *root)
   }
 }
 
-int ass_insert(tAssPtr *root, int type, char *text)
+/*int ass_insert(tAssPtr *root, int type, char *text)
 {
   if(root != NULL) {
     // Create a new element
@@ -42,7 +42,7 @@ int ass_insert(tAssPtr *root, int type, char *text)
         new->rptr = NULL;
         *root = new;
       }
-      // TODO: Insert cases when tree is empty
+      // TODO: Insert cases when tree is not empty
     }
     else {
       return INTERNAL_ERR;
@@ -50,7 +50,7 @@ int ass_insert(tAssPtr *root, int type, char *text)
   }
 
   return SUCCESS;
-}
+}*/
 
 void ass_empty(tAssPtr *root)
 {
@@ -63,5 +63,48 @@ void ass_empty(tAssPtr *root)
     }
     free(*root); // Remove current node
     *root = NULL;
+  }
+}
+
+tAssPtr ass_make_tree(int type, char *text, tSymPtr symtable, tAssPtr left, tAssPtr right, tAssPtr middle)
+{
+  tAssPtr new = ass_make_leaf(type, text, symtable);
+  if(new != NULL) {
+    new->lptr = left;
+    new->rptr = right;
+    new->fptr = middle;
+
+  }
+  return new;
+}
+
+tAssPtr ass_make_leaf(int type, char *text, tSymPtr symtable)
+{
+  tAssPtr new = malloc(sizeof(struct assNode));
+  if(new != NULL) {
+    new->type = type;
+    new->symtable = symtable;
+    if(text != NULL) {
+      new->text = malloc(sizeof(char) * (strlen(text) + 1));
+      if(new->text != NULL) {
+        strcpy(new->text, text);
+      }
+      else {
+        // Text memory allocation failed.
+        free(new);
+        return NULL;
+      }
+    }
+    else {
+      new->text = NULL;
+    }
+    // We have a new element
+    new->lptr = NULL;
+    new->rptr = NULL;
+    new->fptr = NULL;
+    return new;
+  }
+  else {
+    return NULL;
   }
 }

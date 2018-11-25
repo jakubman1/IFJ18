@@ -4,12 +4,14 @@
  * @date 24.11. 2018
  * @brief
  */
- #ifndef EXPRESION_H
- #define EXPRESION_H
+#ifndef EXPRESSION_H
+#define EXPRESSION_H
 
- #include <stdbool.h>
- #include <string.h>
- #include "lib/stack.h"
+#include <stdbool.h>
+#include <string.h>
+#include "lib/stack.h"
+#include "lib/token-stack.h"
+#include "lib/ass.h"
 
 #define PRECEDENT_TABLE_SIZE 14
 
@@ -54,42 +56,35 @@ typedef enum {
   P_LEFT_BRACKET,   // 10
   P_RIGHT_BRACKET,  // 11
   P_ID,             // 12
-  P_BOTTOM          // 13
+  P_BOTTOM,         // 13
+  P_E               // 14 - non-terminal, expression
 } p_table_terms;
 
-/*
-typedef enum {
-  E_PLUS_E,             // E → E + E
-  E_MINUS_E,            // E → E - E
-  E_MULTIPLY_E,         // E → E * E
-  E_DIVIDE_E,           // E → E / E
-  BRACKET_E_BRACKET,    // E → (E)
-  ID,                   // E → i
-  INT,                  // E → int
-  FLOAT,                // E → float
-  STRING,               // E → string
-  E_LOWER_E,            // E → E < E
-  E_LOWEREQ_E,          // E → E <= E
-  E_GREATER_E,          // E → E > E
-  E_QREATEREQ_E,        // E → E >= E
-  E_EQ_E,               // E → E == E
-  E_NOTEQ_E             // E → E != E
-  EXP,                  // E
-} expression_rules;*/
+#define NUMBER_OF_RULES 12
+#define MAX_RULE_LENGHT 3
 
-/* #define PREC_RULE_01 s_pop(stack); s_push(stack, ); s_push(stack, ); s_push(stack, ) */
+static int rule_table[NUMBER_OF_RULES][MAX_RULE_LENGHT] =
+{
+  {P_E, P_PLUS, P_E},                       // E → E + E
+  {P_E, P_MINUS, P_E},                      // E → E - E
+  {P_E, P_MULTIPLY, P_E},                   // E → E * E
+  {P_E, P_DIVIDE, P_E},                     // E → E / E
+  {P_E, P_LOWER, P_E},                      // E → E < E
+  {P_E, P_LOWEREQ, P_E},                    // E → E <= E
+  {P_E, P_GREATER, P_E},                    // E → E > E
+  {P_E, P_GREATEREQ, P_E},                  // E → E >= E
+  {P_E, P_EQ, P_E},                         // E → E == E
+  {P_E, P_NOTEQ, P_E},                      // E → E != E
+  {P_LEFT_BRACKET, P_E, P_RIGHT_BRACKET},   // E → (E)
+  {P_ID, -1, -1}                            // E → i
+};
 
-#define PREC_RULE_01 s_pop(stack); s_push(stack, ); s_push(stack, ); s_push(stack, )
-#define PREC_RULE_01 s_pop(stack); s_push(stack, ); s_push(stack, ); s_push(stack, )
-#define PREC_RULE_01 s_pop(stack); s_push(stack, ); s_push(stack, ); s_push(stack, )
-#define PREC_RULE_01 s_pop(stack); s_push(stack, ); s_push(stack, ); s_push(stack, )
-#define PREC_RULE_01 s_pop(stack); s_push(stack, ); s_push(stack, ); s_push(stack, )
-#define PREC_RULE_01 s_pop(stack); s_push(stack, ); s_push(stack, ); s_push(stack, )
-#define PREC_RULE_01 s_pop(stack); s_push(stack, ); s_push(stack, ); s_push(stack, )
-#define PREC_RULE_01 s_pop(stack); s_push(stack, ); s_push(stack, ); s_push(stack, )
-#define PREC_RULE_01 s_pop(stack); s_push(stack, ); s_push(stack, ); s_push(stack, )
-#define PREC_RULE_01 s_pop(stack); s_push(stack, ); s_push(stack, ); s_push(stack, )
-#define PREC_RULE_01 s_pop(stack); s_push(stack, ); s_push(stack, ); s_push(stack, )
-#define PREC_RULE_01 s_pop(stack); s_push(stack, ); s_push(stack, ); s_push(stack, )
+/**
+@brief Find first terminal closest to the top of the stack
+*/
+int stack_terminal_top(tStack *searched_stack, tStack *aux_stack);
+void furfil_stack(tStack *searched_stack, tStack *aux_stack);
+int prec_table(tToken *token);
+
 
 #endif

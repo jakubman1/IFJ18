@@ -23,16 +23,14 @@ void st_push(tTStack *stack, tToken data)
 tToken st_pop(tTStack *stack)
 {
   if(!st_empty(stack)) {
-    void *data = stack->head->data;
+    tToken data = stack->head->data;
     tTStackNode *tmp = stack->head;
     stack->head = stack->head->next;
     free(tmp);
     return data;
   }
-  else {
-    tToken empty = {"", ERROR};
-    return empty;
-  }
+  tToken empty = {"", ERROR};
+  return empty;
 }
 
 tToken st_top(tTStack *stack)
@@ -47,12 +45,12 @@ tToken st_top(tTStack *stack)
 
 }
 
-bool s_empty(tTStack *stack)
+bool st_empty(tTStack *stack)
 {
   return stack->head == NULL;
 }
 
-void s_free(tTStack *stack)
+void st_free(tTStack *stack)
 {
   tTStackNode *tmp;
   for(tTStackNode *current = stack->head; current != NULL; current = tmp) {
