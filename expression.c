@@ -11,14 +11,7 @@
 #include "expression.h"
 
 /*
-*     // TODO
-*     POKUD V LL_PREDICT FUNKCI DOJDE then, do NEBO eol TAK MUSIME EXPRESSION ZAVOLAT JESTE JEDNOU S NEJAKYM
-*     SPECIALNIM SYMBOLEM KTERY BUDE ZNACIT, ZE JE KONEC EXPRESSIONU
-*
-*
 *     ASS se da sestrojit z praveho rozboru
-*
-*
 */
 
 int stack_terminal_top(tStack *searched_stack, tStack *aux_stack)

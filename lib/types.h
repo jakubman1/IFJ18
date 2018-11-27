@@ -62,30 +62,12 @@ typedef enum {
   LL_WHILE,
   LL_DO,
   LL_SET,
-  LL_PRINT,
-  LL_INPUTS,
-  LL_INPUTI,
-  LL_INPUTF,
-  LL_LENGHT,
-  LL_SUBSTR,
-  LL_ORD,
-  LL_CHR,
   LL_BRACKET_LEFT,
   LL_BRACKET_RIGHT,
   LL_EXPRESSION,
   LL_INT,
   LL_FLOAT,
-  LL_STRING,
-  LL_PLUS,  //+
-  LL_MINUS, //-
-  LL_MULTIPLY, //*
-  LL_DIVIDE,  // /
-  LL_LESS, // <
-  LL_EQUAL, // ==
-  LL_GREATER, // >
-  LL_GEQUAL, // =>
-  LL_LEQUAL, // =<
-  LL_NEQUAL // !=
+  LL_STRING
 } ll_table_type;
 
 typedef struct token {
