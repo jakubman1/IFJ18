@@ -15,6 +15,32 @@ void symtable_init(tSymPtr *root)
   }
 }
 
+int symtable_insert_unknown(tSymPtr *root, char *name)
+{
+  tSymPtr new = symtable_search(*root, name);
+  if(new == NULL) {
+    new = malloc(sizeof(struct symNode));
+    if(new != NULL) {
+      new->name = malloc(sizeof(char) * (strlen(name) + 1));
+      if(new->name != NULL) {
+        strcpy(new->name, name);
+      }
+      else {
+        free(new);
+        return INTERNAL_ERR;
+      }
+      new->type = UNKNOWN;
+      symtable_insert(root, new);
+    }
+    else {
+      return INTERNAL_ERR;
+    }
+  }
+  else {
+    return -1;
+  }
+}
+
 int symtable_insert_variable(tSymPtr *root, char *name, data_type type, bool define)
 {
   tSymPtr new = symtable_search(*root, name);
