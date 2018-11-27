@@ -70,7 +70,10 @@ Initialize symtable
 void symtable_init(tSymPtr *root);
 
 /**
-Unse
+Insert unknown token into symtable, to be updated later.
+@param root Root of symtable tree
+@param name Name of the variable
+@returns 0 on success, 99 on memory allocation errors
 */
 int symtable_insert_unknown(tSymPtr *root, char *name);
 

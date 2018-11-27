@@ -10,6 +10,17 @@
 
 #include "syn_analysis.h"
 
+// TODO PRACE SE SYMTABLE
+/*
+kdykoliv narazime na DEF, mela by se inicializovat nova tabulka symbolu
+id po DEF se ulozi pres
+
+
+
+
+
+*/
+
 int parser()
 {
   int result = SUCCESS;
@@ -58,8 +69,12 @@ int parser()
   else {
     // EOF
     int top = s_top(&stack);
-    if (top == LL_BOTTOM)
-      result = SUCCESS;
+    if (top == LL_PROG) {
+      top = s_top(&stack);
+      if (top == LL_BOTTOM) {
+        result = SUCCESS;
+      }
+    }
     else {
       fprintf(stderr, "Syntax error\n");
       result = SYNTAX_ERR;
