@@ -149,7 +149,7 @@ void symtable_insert(tSymPtr *root, tSymPtr node)
         symtable_insert(&((*root)->lptr), node);
       }
       else if(cmpval > 0) {
-        symtable_insert(&((*root)->lptr), node);
+        symtable_insert(&((*root)->rptr), node);
       }
     }
   }

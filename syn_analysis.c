@@ -265,11 +265,18 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       break;
     case LL_EXPRESSION:
       if (token->type == INTEGER || token->type == STRING || token->type == FLOATING_POINT || token->type == OPERATOR || token->type == ID) { // everything that fits in expression,  TODO must be ID of a variable
-          prec_table(token);
+          if(prec_table(token) == SYNTAX_ERR) {
+            fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected token in expression.\n");
+            return SYNTAX_ERR;
+          }
       }
       else { // everything else or ID of a function
         tToken endExpression = {"", LL_BOTTOM}; // finish expression
-        prec_table(&endExpression);
+        fprintf(stderr, "PRISEL EOL, UKONCUJE SE PREC\n");
+        if (prec_table(&endExpression) == SYNTAX_ERR) {
+          fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected token in expression.\n");
+          return SYNTAX_ERR;
+        }
         s_pop(stack);
         ll_predict(token, stack); // recall the function in order not to lose a token
       }

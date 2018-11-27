@@ -126,6 +126,8 @@ int prec_table(tToken *token)
   int top_terminal = stack_terminal_top(&stack_pushdown, &stack_temp);
   furfil_stack (&stack_pushdown, &stack_temp);
 
+  /* 5 * 2 */
+  /*  */
 
   switch (precedent_table[top_terminal][token_input])
   {
@@ -140,8 +142,11 @@ int prec_table(tToken *token)
       break;
     case R: // >
       top_terminal = stack_terminal_top(&stack_pushdown, &stack_temp);
+      s_push(&stack_temp, s_pop(&stack_pushdown)); // skip firt terminal on top
       int second_top_terminal = stack_terminal_top(&stack_pushdown, &stack_temp); // should be S
-      if (second_top_terminal == S) {
+      furfil_stack(&stack_pushdown, &stack_temp);
+
+      if (second_top_terminal == S) { // <
         s_pop(&stack_pushdown); // get rid of < (== S)
 
         bool successful_rules [NUMBER_OF_RULES];
@@ -149,14 +154,14 @@ int prec_table(tToken *token)
           successful_rules[i] = true;
         }
 
-        // compare rules
+        // some magic (compare rules) {jirkuv zmatek}
         for (int j = 0; !s_empty(&stack_temp); j++) { // j MAX 3
           int rule_element = s_pop(&stack_temp);
           for (int i = 0; i < NUMBER_OF_RULES; i++) { // i MAX 12
             if (successful_rules[i] == true) {
               if (rule_table[i][j] != rule_element) {
                 successful_rules[i] = false;
-              }
+              } //TODO: oznuk
             }
           }
         }
@@ -175,11 +180,12 @@ int prec_table(tToken *token)
         else {
           s_push(&stack_rules, rule); // Right parse
           s_push(&stack_pushdown, P_E);
+          fprintf(stderr, "TOP RULES STACK = %d\n", s_top(&stack_rules));
         }
 
       }
       else {
-        return SYNTAX_ERR;
+        return SYNTAX_ERR; // second top terminal is not <
       }
       break; // end of Case R
     default:  // NONE
@@ -190,6 +196,8 @@ int prec_table(tToken *token)
   if (token_input == P_ID) {
     st_push(&token_stack, *token);
   }
+
+  furfil_stack (&stack_pushdown, &stack_temp);
 
   /*TODO: if (konec) {
   s_free(&stack_pushdown);
