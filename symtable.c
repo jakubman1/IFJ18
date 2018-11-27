@@ -17,7 +17,15 @@ void symtable_init(tSymPtr *root)
 
 int symtable_insert_unknown(tSymPtr *root, char *name)
 {
-  tSymPtr new = symtable_search(*root, name);
+  tSymPtr new;
+  if(root != NULL) {
+    new = symtable_search(*root, name);
+  }
+  else {
+    return -1;
+  }
+  printf("Inserting symbol %s\n", name);
+
   if(new == NULL) {
     new = malloc(sizeof(struct symNode));
     if(new != NULL) {

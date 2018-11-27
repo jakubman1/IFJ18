@@ -45,9 +45,7 @@ int parser()
     // currentToken contains new token in every iteration
 
     result = ll_predict(&currentToken, &stack);
-    if(token->type == ID) {
-      symtable(&currentToken, &globalTree);
-    }
+    symtable(&currentToken, &globalTree);
 
     //// MUSI BYT AZ NA KONCI CYKLU !!!!!!!!!!!!!!!
     if(currentToken.text != NULL) {
@@ -104,7 +102,7 @@ int ll_predict(tToken *token, tStack *stack)
 
   // NON TERMINALS
 while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
-  fprintf(stderr, "TOP IS : %d\n", top);
+  //fprintf(stderr, "TOP IS : %d\n", top);
   switch (s_top(stack)) {
     case LL_BOTTOM: // input cannot be EOF here
       return SYNTAX_ERR;
@@ -427,15 +425,14 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
 
 int symtable(tToken *token, tSymPtr *globalTree)
 {
-/*  bool
+  bool b;
 
   if (token->type == DEF) {
 
   }
-
   if(token->type == ID) {
     // pridej do symtable, ale prvni sezen jeho typ.
     symtable_insert_unknown(globalTree, token->text);
   }
-  return 0;*/
+  return 0;
 }
