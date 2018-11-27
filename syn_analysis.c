@@ -427,9 +427,15 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
 
 int symtable(tToken *token, tSymPtr *globalTree)
 {
+/*  bool
+
+  if (token->type == DEF) {
+
+  }
+
   if(token->type == ID) {
     // pridej do symtable, ale prvni sezen jeho typ.
     symtable_insert_unknown(globalTree, token->text);
   }
-  return 0;
+  return 0;*/
 }

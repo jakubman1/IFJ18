@@ -1,4 +1,4 @@
-x/**
+/**
  * @file syn_analysis.h
  * @author Jiri Tykva
  * @author Jakub Man
