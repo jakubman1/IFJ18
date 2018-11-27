@@ -44,12 +44,12 @@ typedef enum {
   LL_PARAMS, // 101
   LL_PARAMS_N, // 102
   LL_STATEMENT, // 103
-  LL_DEF_ARGS, // 104
-  LL_DEFINE, // 105
-  LL_ARGS, // 106
-  LL_ARGS_N, // 107
-  LL_VALUE, // 108
-  LL_EXPRESSION, // 109
+  LL_STATEMENT_N, // 104
+  LL_DEF_ARGS, // 105
+  LL_DEFINE, // 106
+  LL_ARGS, // 107
+  LL_ARGS_N, // 108
+  LL_VALUE, // 109
   LL_BOTTOM = 1000, // $  terminals
   LL_DEF, //1001
   LL_ID,
@@ -72,6 +72,7 @@ typedef enum {
   LL_CHR,
   LL_BRACKET_LEFT,
   LL_BRACKET_RIGHT,
+  LL_EXPRESSION,
   LL_INT,
   LL_FLOAT,
   LL_STRING,

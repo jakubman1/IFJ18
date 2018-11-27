@@ -70,7 +70,8 @@ int parser()
   return result;
 }
 
-
+// TODO pridat STATEMENT_N
+// udelat z EXPRESSION terminal
 
 int ll_predict(tToken *token, tStack *stack)
 {
