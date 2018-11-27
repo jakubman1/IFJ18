@@ -27,12 +27,14 @@ typedef struct assNode {
 @param tree Pointer to a tree variable.
 */
 void ass_init(tAssPtr *root);
+
 /**
 @brief Insert a new node into abstract syntax tree.
 @returns 0 on success, 99 if memory allocation failed.
 @note currently not implemented nor used.
 */
 // int ass_insert(tAssPtr *root, int type, char *text);
+
 /**
 @brief Remove tree and free all allocated resources.
 @param tree Pointer to a tree that should be removed. After this function, tree will be empty.

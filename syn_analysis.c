@@ -10,14 +10,20 @@
 
 #include "syn_analysis.h"
 
-// TODO PRACE SE SYMTABLE
-/*
-kdykoliv narazime na DEF, mela by se inicializovat nova tabulka symbolu
-id po DEF se ulozi pres
+/* TODO PRACE SE SYMTABLE
 
+  UKLADANI FUNKCE
+1) kdykoliv narazime na DEF, mela by se inicializovat nova tabulka symbolu
+    def id ( PARAMS ) eol STATEMENT_N end eol PROG
+    ^   ^      ^                  ^
+    0)  2)     3)                 4)
 
-
-
+symtable_insert_function
+0) define
+1) root
+2) name
+3) paramCount, params
+4) returnType1
 
 */
 
@@ -27,6 +33,9 @@ int parser()
   int scanner_out = SUCCESS;
   tToken currentToken = {"", ERROR};
   tStack stack;
+  tSymPtr globalTree;
+
+  symtable_init(&globalTree);
   s_init(&stack);
 
   s_push(&stack, LL_BOTTOM);
@@ -36,6 +45,9 @@ int parser()
     // currentToken contains new token in every iteration
 
     result = ll_predict(&currentToken, &stack);
+    if(token->type == ID) {
+      symtable(&currentToken, &globalTree);
+    }
 
     //// MUSI BYT AZ NA KONCI CYKLU !!!!!!!!!!!!!!!
     if(currentToken.text != NULL) {
@@ -411,4 +423,13 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
 
   // Why can you drink a drink, but not food a food?
   return SUCCESS;
+}
+
+int symtable(tToken *token, tSymPtr *globalTree)
+{
+  if(token->type == ID) {
+    // pridej do symtable, ale prvni sezen jeho typ.
+    symtable_insert_unknown(globalTree, token->text);
+  }
+  return 0;
 }

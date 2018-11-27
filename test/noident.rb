@@ -1,7 +1,7 @@
 # Program 2: Vypocet faktorialu (rekurzivne)
 hdshafjjgsdfhsghsfdjghjsdffjgfhdsjjdfghskhghsfdkhg = 9
 def factorial (n)
-if 1 < 2 then
+if 1 <<< 2 then
 result = 1
 else
 decremented_n = 2 - 1 + "test"
