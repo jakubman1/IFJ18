@@ -31,7 +31,7 @@
 #define PUSH_RULE_6 s_pop(stack); s_push(stack, LL_PARAMS_N); s_push(stack, LL_ID); s_push(stack, LL_COMMA)
 #define PUSH_RULE_7 s_pop(stack)
 #define PUSH_RULE_8 s_pop(stack); s_push(stack, LL_END); s_push(stack, LL_STATEMENT_N); s_push(stack, LL_EOL); s_push(stack, LL_ELSE); s_push(stack, LL_STATEMENT_N); s_push(stack, LL_EOL); s_push(stack, LL_THEN); s_push(stack, LL_EXPRESSION); s_push(stack, LL_IF)
-#define PUSH_RULE_9 s_pop(stack); s_push(stack, LL_END); s_push(stack, LL_STATEMENT_N); s_push(stack, LL_EOL); s_push(stack, LL_DO); s_push(stack, LL_EXPRESSION_N); s_push(stack, LL_WHILE)
+#define PUSH_RULE_9 s_pop(stack); s_push(stack, LL_END); s_push(stack, LL_STATEMENT_N); s_push(stack, LL_EOL); s_push(stack, LL_DO); s_push(stack, LL_EXPRESSION); s_push(stack, LL_WHILE)
 #define PUSH_RULE_10 s_pop(stack); s_push(stack, LL_DEF_ARGS); s_push(stack, LL_ID)
 #define PUSH_RULE_11 s_pop(stack)
 #define PUSH_RULE_12 s_pop(stack); s_push(stack, LL_PROG); s_push(stack, LL_EOL); s_push(stack, LL_STATEMENT)

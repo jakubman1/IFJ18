@@ -113,7 +113,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       if(token->type == ID || token->type == EOL || token->type == IF || token->type == WHILE) {
         PUSH_RULE_12;
       }
-      else if (|| token->type == END || token->type == ELSE) {
+      else if (token->type == END || token->type == ELSE) {
         PUSH_RULE_13;
       }
       break;
