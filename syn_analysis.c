@@ -109,7 +109,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         return SYNTAX_ERR;
       }
       break;
-    case STATEMENT_N:
+    case LL_STATEMENT_N:
       if(token->type == ID || token->type == EOL || token->type == IF || token->type == WHILE) {
         PUSH_RULE_12;
       }
