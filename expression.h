@@ -85,6 +85,7 @@ static int rule_table[NUMBER_OF_RULES][MAX_RULE_LENGHT] =
 int stack_terminal_top(tStack *searched_stack, tStack *aux_stack);
 void furfil_stack(tStack *searched_stack, tStack *aux_stack);
 int prec_table(tToken *token);
+int someMagic (tStack *stack_temp, tStack *stack_pushdown, tStack *stack_rules);
 
 
 #endif
