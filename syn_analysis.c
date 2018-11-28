@@ -3,7 +3,7 @@
  * @author Jiri Tykva
  * @author Jakub Man
  * @author Adam Melichar
- * @author Jan Martinák
+ * @author ̶J̶a̶n̶ M̶a̶r̶t̶i̶n̶a̶k̶
  * @date 19.11. 2018
  * @brief Syntactic analysis file
  */
@@ -81,7 +81,7 @@ int insert_built_in_functions (tSymPtr *root)
     return INTERNAL_ERR;
   }
 
-
+// Insert builtin functions
   symtable_insert_function(root, "print", TYPE_NIL, -1, NULL, true); // error returns NIL
   symtable_insert_function(root, "inputs", TYPE_STRING, 0, NULL, true);
   symtable_insert_function(root, "inputi", TYPE_INT, 0, NULL, true);
