@@ -213,3 +213,27 @@ void symtable_clear(tSymPtr *root)
     *root = NULL;
   }
 }
+
+int add_param(tFuncParam *head, data_type type)
+{
+  // TODO: check NULL
+  if(head != NULL) {
+    tFuncParam *current = NULL;
+    for(current = head; current != NULL; current = current->next) {
+      // Go to the end of the list
+      if(current->next == NULL) {
+        // insert a new element
+        current->next = malloc(sizeof(tFuncParam));
+        if(current->next != NULL) {
+          current->next->next = NULL;
+          current->next->type = type;
+          break;
+        }
+        else {
+          return INTERNAL_ERR;
+        }
+      }
+    }
+  }
+  return SUCCESS;
+}

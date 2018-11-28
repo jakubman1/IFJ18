@@ -119,6 +119,14 @@ Free all allocated resources of a symtable, including parameter lists.
 */
 void symtable_clear(tSymPtr *root);
 
+/**
+Add parameter to a parameter list
+@param head First element in the list.
+@param type Type of parameter (can be TYPE_INT, TYPE_STRING, TYPE_FLOAT or TYPE_NIL)
+@pre head cannot be NULL
+@return 0 on success, 99 on memory allocation errors.
+*/
+int add_param(tFuncParam *head, data_type type);
 
 
 #endif

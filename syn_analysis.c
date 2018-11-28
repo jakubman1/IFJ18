@@ -13,10 +13,10 @@
 /* TODO PRACE SE SYMTABLE
 
   UKLADANI FUNKCE
-1) kdykoliv narazime na DEF, mela by se inicializovat nova tabulka symbolu
+1) kdykoliv narazime na DEF, mela by se inicializovat nova lokalni tabulka symbolu
     def id ( PARAMS ) eol STATEMENT_N end eol PROG
-    ^   ^      ^                  ^
-    0)  2)     3)                 4)
+    ^   ^      ^                  ^   ^
+    0)  2)     3)                 4)  5)
 
 symtable_insert_function
 0) define
@@ -24,16 +24,74 @@ symtable_insert_function
 2) name
 3) paramCount, params
 4) returnType1
+5) konec ramce lokalni tabulky symbolu - pomoci pocitadla endu
 
 */
 
+
+
 int insert_built_in_functions (tSymPtr *root)
 {
-  symtable_insert_function(root, "print", TYPE_NIL, -1, NULL, true);
+  tFuncParam *length_params = malloc(sizeof(tFuncParam));
+  if(length_params != NULL) {
+    length_params->type = TYPE_STRING;
+    length_params->next = NULL;
+  }
+  else {
+    fprintf(stderr, "Internal Error: No memory left.\n");
+    return INTERNAL_ERR;
+  }
+
+  tFuncParam *substr_params = malloc(sizeof(tFuncParam));
+  if(substr_params != NULL) {
+    substr_params->type = TYPE_STRING;
+    substr_params->next = NULL;
+    if (add_param(substr_params, TYPE_INT) == INTERNAL_ERR) {
+      return INTERNAL_ERR;
+    }
+    if (add_param(substr_params, TYPE_INT) == INTERNAL_ERR) {
+      return INTERNAL_ERR;
+    }
+  }
+  else {
+    fprintf(stderr, "Internal Error: No memory left.\n");
+    return INTERNAL_ERR;
+  }
+
+  tFuncParam *ord_params = malloc(sizeof(tFuncParam));
+  if(ord_params != NULL) {
+    ord_params->type = TYPE_STRING;
+    ord_params->next = NULL;
+    if (add_param(ord_params, TYPE_INT) == INTERNAL_ERR) {
+      return INTERNAL_ERR;
+    }
+  }
+  else {
+    fprintf(stderr, "Internal Error: No memory left.\n");
+    return INTERNAL_ERR;
+  }
+
+  tFuncParam *chr_params = malloc(sizeof(tFuncParam));
+  if(chr_params != NULL) {
+    chr_params->type = TYPE_INT;
+    chr_params->next = NULL;
+  }
+  else {
+    fprintf(stderr, "Internal Error: No memory left.\n");
+    return INTERNAL_ERR;
+  }
+
+
+  symtable_insert_function(root, "print", TYPE_NIL, -1, NULL, true); // error returns NIL
   symtable_insert_function(root, "inputs", TYPE_STRING, 0, NULL, true);
   symtable_insert_function(root, "inputi", TYPE_INT, 0, NULL, true);
   symtable_insert_function(root, "inputf", TYPE_FLOAT, 0, NULL, true);
-  symtable_insert_function(root, "length", TYPE_INT, 1, , true);
+  symtable_insert_function(root, "length", TYPE_INT, 1, length_params, true);
+  symtable_insert_function(root, "substr", TYPE_STRING, 3, substr_params, true); // error returns NIL
+  symtable_insert_function(root, "ord", TYPE_INT, 2, ord_params, true); // error returns NIL
+  symtable_insert_function(root, "chr", TYPE_STRING, 1, chr_params, true);
+
+  return 0;
 }
 
 int parser()
@@ -47,44 +105,59 @@ int parser()
   char *idName = NULL;
 
   symtable_init(&globalTree);
+  if (insert_built_in_functions(&globalTree) == INTERNAL_ERR) {
+    return INTERNAL_ERR;
+  }
   s_init(&stack);
 
   s_push(&stack, LL_BOTTOM);
   s_push(&stack, LL_PROG);
 
+  bool seenID = false;
+
 
   while((scanner_out = scanner(&currentToken)) == SUCCESS && result == SUCCESS) {
-    // create derivation tree
+    // create abstract syntax tree
     // currentToken contains new token in every iteration
 
     /*SYMTABLE*/
+    tSymPtr new = NULL;
+    symtable_search(globalTree, currentToken.text, &new);
 
-    if ( currentToken.type == ID ) {
-      if ( (strcmp(currentToken.text, "print") == 0) || (strcmp(currentToken.text, "inputs") == 0) || (strcmp(currentToken.text, "inputi") == 0) || (strcmp(currentToken.text, "inputf") == 0) || (strcmp(currentToken.text, "lenght") == 0) || (strcmp(currentToken.text, "subst") == 0) || (strcmp(currentToken.text, "ord") == 0) || (strcmp(currentToken.text, "chr") == 0)) {
-        symtable_insert_function(&globalTree, currentToken.text, TYPE_NIL, -1, NULL, true); // FIXME
+    if (currentToken.type == ID && new == NULL)
+    {
+      idName = malloc((strlen(currentToken.text) + 1) * sizeof(char));
+
+      if (idName == NULL)
+      {
+        result = INTERNAL_ERR;
       }
-      else {
-        idName = malloc((strlen(currentToken.text) + 1) * sizeof(char));
-        if (idName == NULL) {
+      else
+      {
+        strcpy(idName, currentToken.text);
+        if (symtable_insert_unknown(&globalTree, idName) == INTERNAL_ERR)
+        {
           result = INTERNAL_ERR;
         }
-        else {
-          strcpy(idName, currentToken.text);
-          if (symtable_insert_unknown(&globalTree, idName) == INTERNAL_ERR) {
-            result = INTERNAL_ERR;
-          }
-          //free(idName);
-        }
+
+        fprintf(stderr, "seenID\n");
+        seenID = true;
       }
     }
-
-    if (currentToken.type == OPERATOR && (strcmp(currentToken.text, "=") == 0)) {
+    else if ((currentToken.type == OPERATOR && (strcmp(currentToken.text, "=") == 0)) && seenID) {
+      fprintf(stderr, "INSERT\n");
       int insertval = symtable_insert_variable(&globalTree, idName, TYPE_NIL, true);
       if(insertval != SUCCESS) {
         result = insertval;
       }
+      seenID = false;
+      free(idName);
+      fprintf(stderr, "insert variable do symtable\n");
     }
-
+    else if (seenID) {
+      seenID = false;
+      free(idName);
+    }
     /*SYMTABLE*/
 
     if(result == 0) {
@@ -238,13 +311,10 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         tSymPtr sym = NULL;
         symtable_search(*globalTree, token->text, &sym);
         // Muze byt UNKNOWN,FUNCTION nebo VARIABLE
-        fprintf(stderr, "Found this: type: %d, name %s\n", sym->type, sym->name);
         if(sym->type == UNKNOWN || sym->type == FUNCTION) {
-          fprintf(stderr, "PUSHING RULE_16\n");
           PUSH_RULE_16;
         }
         else {
-          fprintf(stderr, "PUSHING RULE_17\n");
           PUSH_RULE_17;
         }
       }
