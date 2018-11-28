@@ -69,7 +69,6 @@ int symtable_insert_variable(tSymPtr *root, char *name, data_type type, bool def
         free(new);
         return INTERNAL_ERR;
       }
-      fprintf(stderr, "ASSSSSSSSSSSSSSSSSSSSSSS\n");
       new->type = VARIABLE;
       new->data.varData.defined = define;
       new->lptr = NULL;

@@ -16,11 +16,11 @@ void start() {
 
 }
 
-void opetator(/* arguments */) {
-  switch (/* expression */) {
-    case /* value */:
+/*void opetator {
+  switch () {
+    case :
   }
-}
+}*/
 
 
 /*

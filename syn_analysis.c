@@ -29,8 +29,11 @@ symtable_insert_function
 
 int insert_built_in_functions (tSymPtr *root)
 {
-
-  symtable_insert_function(root, "print", TYPE_NIL, -1, NULL , true);
+  symtable_insert_function(root, "print", TYPE_NIL, -1, NULL, true);
+  symtable_insert_function(root, "inputs", TYPE_STRING, 0, NULL, true);
+  symtable_insert_function(root, "inputi", TYPE_INT, 0, NULL, true);
+  symtable_insert_function(root, "inputf", TYPE_FLOAT, 0, NULL, true);
+  symtable_insert_function(root, "length", TYPE_INT, 1, , true);
 }
 
 int parser()
@@ -76,13 +79,10 @@ int parser()
     }
 
     if (currentToken.type == OPERATOR && (strcmp(currentToken.text, "=") == 0)) {
-      fprintf(stderr, "INSERTING VARIABLE!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-      fprintf(stderr, "RETURNED THIS: %d\n", symtable_insert_variable(&globalTree, idName, TYPE_NIL, true));
-      tSymPtr sym = NULL;
-      symtable_search(globalTree, idName, &sym);
-      // Muze byt UNKNOWN,FUNCTION nebo VARIABLE
-      fprintf(stderr, "Found this: type: %d, name %s\n", sym->type, sym->name);
-
+      int insertval = symtable_insert_variable(&globalTree, idName, TYPE_NIL, true);
+      if(insertval != SUCCESS) {
+        result = insertval;
+      }
     }
 
     /*SYMTABLE*/
