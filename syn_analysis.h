@@ -57,7 +57,7 @@
   */
  int parser();
 
- int ll_predict(tToken *token, tStack *stack);
+ int ll_predict(tToken *token, tStack *stack, tSymPtr *globalTree);
  int add_to_symtable(tToken *token, tToken *prev_token, tSymPtr *globalTree);
 
  #endif

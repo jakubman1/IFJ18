@@ -70,13 +70,9 @@ int parser()
     }
 
     /*SYMTABLE*/
-    /*
-    result = add_to_symtable(&currentToken, &previousToken, &globalTree);
-    previousToken = currentToken;
-    // fprintf(stderr, "Result from ll_predict is now %d\n", result);
-    */
+
     if(result == 0) {
-      result = ll_predict(&currentToken, &stack);
+      result = ll_predict(&currentToken, &stack, &globalTree);
     }
 
     //// MUSI BYT AZ NA KONCI CYKLU !!!!!!!!!!!!!!!
@@ -223,7 +219,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         PUSH_RULE_18;
       }
       else if(token->type == ID) { // TODO must be ID of a function
-        tSymPtr sym = symtable_search(globalTree, token->name);
+        tSymPtr sym = symtable_search(globalTree, token->text);
         // Muze byt UNKNOWN,FUNCTION nebo VARIABLE
         if(sym->type == UNKNOWN || sym->type == FUNCTION) {
           PUSH_RULE_16;
