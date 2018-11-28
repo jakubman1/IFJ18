@@ -219,7 +219,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         PUSH_RULE_18;
       }
       else if(token->type == ID) { // TODO must be ID of a function
-        tSymPtr sym = symtable_search(globalTree, token->text);
+        tSymPtr sym = symtable_search(*globalTree, token->text);
         // Muze byt UNKNOWN,FUNCTION nebo VARIABLE
         if(sym->type == UNKNOWN || sym->type == FUNCTION) {
           PUSH_RULE_16;
