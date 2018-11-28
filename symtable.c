@@ -17,7 +17,8 @@ void symtable_init(tSymPtr *root)
 
 int symtable_insert_unknown(tSymPtr *root, char *name)
 {
-  tSymPtr new = symtable_search(*root, name);
+  tSymPtr new = NULL;
+  symtable_search(*root, name, &new);
 
   if(new == NULL)
   {
@@ -54,7 +55,8 @@ int symtable_insert_unknown(tSymPtr *root, char *name)
 int symtable_insert_variable(tSymPtr *root, char *name, data_type type, bool define)
 {
 
-  tSymPtr new = symtable_search(*root, name);
+  tSymPtr new = NULL;
+  symtable_search(*root, name, &new);
   if(new == NULL) {
     // Create a new item in the tree
     new = malloc(sizeof(struct symNode));
@@ -67,6 +69,7 @@ int symtable_insert_variable(tSymPtr *root, char *name, data_type type, bool def
         free(new);
         return INTERNAL_ERR;
       }
+      fprintf(stderr, "ASSSSSSSSSSSSSSSSSSSSSSS\n");
       new->type = VARIABLE;
       new->data.varData.defined = define;
       new->lptr = NULL;
@@ -80,10 +83,11 @@ int symtable_insert_variable(tSymPtr *root, char *name, data_type type, bool def
   }
   else {
     // Check if symbol is a variable, otherwise its a semantic error
-    if(new->type != VARIABLE || new->type != UNKNOWN) {
+    if(new->type == FUNCTION ) {
       return VARIABLE_ERR;
     }
     if(new->type == UNKNOWN) {
+      fprintf(stderr, "CHANGING TYPE\n");
       new->type = VARIABLE;
     }
   }
@@ -98,7 +102,8 @@ int symtable_insert_variable(tSymPtr *root, char *name, data_type type, bool def
 
 int symtable_insert_function(tSymPtr *root, char *name, data_type returnType, int paramCount, tFuncParam *params, bool define)
 {
-  tSymPtr new = symtable_search(*root, name);
+  tSymPtr new = NULL;
+  symtable_search(*root, name, &new);
   if(new == NULL) {
     // Create a new item in the tree
     new = malloc(sizeof(struct symNode));
@@ -123,7 +128,7 @@ int symtable_insert_function(tSymPtr *root, char *name, data_type returnType, in
   }
   else {
     // Check if symbol is a function, otherwise its a semantic error
-    if(new->type != FUNCTION || new->type != UNKNOWN) {
+    if(new->type == VARIABLE) {
       return VARIABLE_ERR;
     }
     if(new->type == UNKNOWN) {
@@ -168,19 +173,20 @@ void symtable_insert(tSymPtr *root, tSymPtr node)
   }
 }
 
-tSymPtr symtable_search(tSymPtr root, char *name)
+tSymPtr symtable_search(tSymPtr root, char *name, tSymPtr *result)
 {
   int cmpval = 0;
   if(root != NULL && root->name != NULL) {
     cmpval = strcmp(root->name, name);
     if(cmpval == 0) {
-      return root;
+      *result = root;
+      //return root;
     }
     else if(cmpval < 0) {
-      symtable_search(root->lptr, name);
+      symtable_search(root->lptr, name, result);
     }
     else {
-      symtable_search(root->rptr, name);
+      symtable_search(root->rptr, name, result);
     }
   }
   // Not found

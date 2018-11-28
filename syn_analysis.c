@@ -27,6 +27,12 @@ symtable_insert_function
 
 */
 
+int insert_built_in_functions (tSymPtr *root)
+{
+
+  symtable_insert_function(root, "print", TYPE_NIL, -1, NULL , true);
+}
+
 int parser()
 {
   int result = SUCCESS;
@@ -51,22 +57,32 @@ int parser()
     /*SYMTABLE*/
 
     if ( currentToken.type == ID ) {
-      /// tu to porovnani jestli je to funkca strecu
       if ( (strcmp(currentToken.text, "print") == 0) || (strcmp(currentToken.text, "inputs") == 0) || (strcmp(currentToken.text, "inputi") == 0) || (strcmp(currentToken.text, "inputf") == 0) || (strcmp(currentToken.text, "lenght") == 0) || (strcmp(currentToken.text, "subst") == 0) || (strcmp(currentToken.text, "ord") == 0) || (strcmp(currentToken.text, "chr") == 0)) {
-        symtable_insert_function(&globalTree, currentToken.text, TYPE_NIL, -1, NULL, true);
-      }
-      idName = malloc(strlen(currentToken.text) * sizeof(char));
-      if (idName == NULL) {
-        result = INTERNAL_ERR;
+        symtable_insert_function(&globalTree, currentToken.text, TYPE_NIL, -1, NULL, true); // FIXME
       }
       else {
-        strcpy(idName, currentToken.text);
-        symtable_insert_unknown(&globalTree, idName);
+        idName = malloc((strlen(currentToken.text) + 1) * sizeof(char));
+        if (idName == NULL) {
+          result = INTERNAL_ERR;
+        }
+        else {
+          strcpy(idName, currentToken.text);
+          if (symtable_insert_unknown(&globalTree, idName) == INTERNAL_ERR) {
+            result = INTERNAL_ERR;
+          }
+          //free(idName);
+        }
       }
     }
 
     if (currentToken.type == OPERATOR && (strcmp(currentToken.text, "=") == 0)) {
-      symtable_insert_variable(&globalTree, idName, TYPE_NIL, true);
+      fprintf(stderr, "INSERTING VARIABLE!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+      fprintf(stderr, "RETURNED THIS: %d\n", symtable_insert_variable(&globalTree, idName, TYPE_NIL, true));
+      tSymPtr sym = NULL;
+      symtable_search(globalTree, idName, &sym);
+      // Muze byt UNKNOWN,FUNCTION nebo VARIABLE
+      fprintf(stderr, "Found this: type: %d, name %s\n", sym->type, sym->name);
+
     }
 
     /*SYMTABLE*/
@@ -219,12 +235,16 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         PUSH_RULE_18;
       }
       else if(token->type == ID) { // TODO must be ID of a function
-        tSymPtr sym = symtable_search(*globalTree, token->text);
+        tSymPtr sym = NULL;
+        symtable_search(*globalTree, token->text, &sym);
         // Muze byt UNKNOWN,FUNCTION nebo VARIABLE
+        fprintf(stderr, "Found this: type: %d, name %s\n", sym->type, sym->name);
         if(sym->type == UNKNOWN || sym->type == FUNCTION) {
+          fprintf(stderr, "PUSHING RULE_16\n");
           PUSH_RULE_16;
         }
         else {
+          fprintf(stderr, "PUSHING RULE_17\n");
           PUSH_RULE_17;
         }
       }

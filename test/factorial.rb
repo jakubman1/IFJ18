@@ -1,15 +1,16 @@
 # Program 2: Vypocet faktorialu (rekurzivne)
 hdshafjjgsdfhsghsfdjghjsdffjgfhdsjjdfghskhghsfdkhg = 9
-def factorial (n)
+#def factorial (n)
+n = 5
 if n < 2 then
 result = 1
 else
 decremented_n = n - 1
-temp_result = factorial decremented_n
+#emp_result = factorial decremented_n
 result = n * temp_result
 end # if
 result
-end # function factorial
+# end # function factorial
 # Hlavni telo programu
 =begin
 ...
