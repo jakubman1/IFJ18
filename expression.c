@@ -16,66 +16,151 @@
 
 int stack_terminal_top(tStack *searched_stack, tStack *aux_stack)
 {
-  while (!s_empty(searched_stack) && s_top(searched_stack) > P_BOTTOM) // while non terminal on top
+  // pop from searched stack
+  while (!s_empty(searched_stack) && s_top(searched_stack) == P_E) // while non terminal on top
   {
     s_push(aux_stack, s_pop(searched_stack));
   }
 
-  return s_top(searched_stack);
-}
+  int top = s_top(searched_stack);
 
-void furfil_stack(tStack *searched_stack, tStack *aux_stack)
-{
-    while (!s_empty(aux_stack))
-    {
-      s_push(searched_stack, s_pop(aux_stack));
-    }
-}
-
-int someMagic (tStack *stack_temp, tStack *stack_pushdown, tStack *stack_rules)
-{
-  bool successful_rules [NUMBER_OF_RULES];
-  for (int i = 0; i < NUMBER_OF_RULES; i++) {
-    successful_rules[i] = true;
+  // fill back again the searched stack
+  while (!s_empty(aux_stack))
+  {
+    s_push(searched_stack, s_pop(aux_stack));
   }
 
-  // some magic (compare rules) {jirkuv zmatek}
-  for (int j = 0; !s_empty(stack_temp); j++) { // j MAX 3
-    int rule_element = s_pop(stack_temp);
-    for (int i = 0; i < NUMBER_OF_RULES; i++) { // i MAX 12
-      if (successful_rules[i] == true) {
-        if (rule_table[i][j] != rule_element) {
-          successful_rules[i] = false;
-        } //TODO: oznuk
+  return top;
+}
+
+int evaluate_rule (tStack *stack_temp, tStack *stack_pushdown, tStack *stack_rules)
+{
+  int tmp = s_pop(stack_temp);
+
+  // rule No. 11
+  if ( tmp == P_ID ) { // i
+    if ( s_empty(stack_temp) ) {
+      s_push(stack_rules, 11); // Right parse
+      s_push(stack_pushdown, P_E);
+      return 11;
+    }
+  }
+
+  // rule No. 10
+  else if (tmp == P_LEFT_BRACKET) {
+    if (s_pop(stack_temp) == P_E) {
+      if (s_pop(stack_temp) == P_RIGHT_BRACKET) {
+        if (s_empty(stack_temp)) {
+          s_push(stack_rules, 10); // Right parse
+          s_push(stack_pushdown, P_E);
+          return 10;
+        }
       }
     }
   }
 
-  int rule = -1;
-
-  for (int i = 0; i < NUMBER_OF_RULES; i++) {
-    if (successful_rules[i] == true) {
-      rule = i;
+  // rule No. 0 - 9
+  else if(tmp == P_E) {
+    switch(s_pop(stack_temp)) {
+      case P_PLUS:
+        if (s_pop(stack_temp) == P_E) {
+          if (s_empty(stack_temp)) {
+            s_push(stack_rules, 0); // Right parse
+            s_push(stack_pushdown, P_E);
+            return 0;
+          }
+        }
+        break;
+      case P_MINUS:
+        if (s_pop(stack_temp) == P_E) {
+          if (s_empty(stack_temp)) {
+            s_push(stack_rules, 1); // Right parse
+            s_push(stack_pushdown, P_E);
+            return 1;
+          }
+        }
+        break;
+      case P_MULTIPLY:
+        if (s_pop(stack_temp) == P_E) {
+          if (s_empty(stack_temp)) {
+            s_push(stack_rules, 2); // Right parse
+            s_push(stack_pushdown, P_E);
+            return 2;
+          }
+        }
+        break;
+      case P_DIVIDE:
+        if (s_pop(stack_temp) == P_E) {
+          if (s_empty(stack_temp)) {
+            s_push(stack_rules, 3); // Right parse
+            s_push(stack_pushdown, P_E);
+            return 3;
+          }
+        }
+        break;
+      case P_LOWER:
+        if (s_pop(stack_temp) == P_E) {
+          if (s_empty(stack_temp)) {
+            s_push(stack_rules, 4); // Right parse
+            s_push(stack_pushdown, P_E);
+            return 4;
+          }
+        }
+        break;
+      case P_LOWEREQ:
+        if (s_pop(stack_temp) == P_E) {
+          if (s_empty(stack_temp)) {
+            s_push(stack_rules, 5); // Right parse
+            s_push(stack_pushdown, P_E);
+            return 5;
+          }
+        }
+        break;
+      case P_GREATER:
+        if (s_pop(stack_temp) == P_E) {
+          if (s_empty(stack_temp)) {
+            s_push(stack_rules, 6); // Right parse
+            s_push(stack_pushdown, P_E);
+            return 6;
+          }
+        }
+        break;
+      case P_GREATEREQ:
+        if (s_pop(stack_temp) == P_E) {
+          if (s_empty(stack_temp)) {
+            s_push(stack_rules, 7); // Right parse
+            s_push(stack_pushdown, P_E);
+            return 7;
+          }
+        }
+        break;
+      case P_EQ:
+        if (s_pop(stack_temp) == P_E) {
+          if (s_empty(stack_temp)) {
+            s_push(stack_rules, 8); // Right parse
+            s_push(stack_pushdown, P_E);
+            return 8;
+          }
+        }
+        break;
+      case P_NOTEQ:
+        if (s_pop(stack_temp) == P_E) {
+          if (s_empty(stack_temp)) {
+            s_push(stack_rules, 9); // Right parse
+            s_push(stack_pushdown, P_E);
+            return 9;
+          }
+        }
+        break;
+      default:
+        return -2;
     }
   }
-
-  if (rule == -1) {
-    return SYNTAX_ERR;
-  }
-  else {
-    s_push(stack_rules, rule); // Right parse
-    s_push(stack_pushdown, P_E);
-    fprintf(stderr, "TOP RULES STACK = %d\n", s_top(stack_rules));
-  }
+  return -2;
 }
-
 
 int prec_table(tToken *token)
 {
-  int result = SUCCESS; // TODO
-  //int prec_table_out = SUCCESS;
-  //tToken currentToken = {"", ERROR};
-
   static tStack stack_rules; // stores postfix notation
   static tStack stack_pushdown; // auxiliary stack
   static tStack stack_temp; // auxiliary stack for searching for first terminal
@@ -140,7 +225,6 @@ int prec_table(tToken *token)
   }
 
   int top_terminal = stack_terminal_top(&stack_pushdown, &stack_temp);
-  furfil_stack (&stack_pushdown, &stack_temp);
 
   switch (precedent_table[top_terminal][token_input])
   {
@@ -148,27 +232,39 @@ int prec_table(tToken *token)
       s_push(&stack_pushdown, token_input);
       break;
     case S: // <
-      top_terminal = stack_terminal_top(&stack_pushdown, &stack_temp);
-      s_push(&stack_pushdown, S);
-      furfil_stack(&stack_pushdown, &stack_temp);
-      s_push(&stack_pushdown, token_input);
+      // find first top terminal
+      while ( !s_empty(&stack_pushdown) && s_top(&stack_pushdown) == P_E ) {
+        s_push(&stack_temp, s_pop(&stack_pushdown));
+      }
+      s_push(&stack_pushdown, S); // change terminal to terminal<
+      while ( !s_empty(&stack_temp)) { // fill back again stack_pushdown
+        s_push(&stack_pushdown, s_pop(&stack_temp));
+      }
+      s_push(&stack_pushdown, token_input); // put token on top
       break;
     case R: // >
-      while ( s_top(&stack_pushdown) != S || s_top(&stack_pushdown) != P_BOTTOM )
-      {
+      while ( s_top(&stack_pushdown) != S && s_top(&stack_pushdown) != P_BOTTOM ) {
         s_push(&stack_temp, s_pop(&stack_pushdown));
       }
 
-      if (s_top(&stack_pushdown) == S)
-      {
+      if (s_top(&stack_pushdown) == S) {
         s_pop(&stack_pushdown);
+
+        if ( evaluate_rule(&stack_temp, &stack_pushdown, &stack_rules) == -2 ) {
+          return SYNTAX_ERR;
+        }
+        else {
+          // po vyhodnoceni pravidla se vola se stejnym tokenem
+          if (token_input != P_BOTTOM || (stack_terminal_top(&stack_pushdown, &stack_temp) != P_BOTTOM)) {
+            if (prec_table(token) == SYNTAX_ERR) {
+              return SYNTAX_ERR;
+            }
+          }
+        }
       }
-      else
-      {
+      else {
         return SYNTAX_ERR;
       }
-
-      someMagic (&stack_temp, &stack_pushdown, &stack_rules);
 
       break; // end of Case R
     default:  // NONE
@@ -180,7 +276,10 @@ int prec_table(tToken *token)
     st_push(&token_stack, *token);
   }
 
-  //furfil_stack (&stack_pushdown, &stack_temp);
+  // nevime proc to funguje
+  if (token_input == P_BOTTOM && s_top(&stack_pushdown) != P_BOTTOM) {
+    s_pop(&stack_pushdown); // get rid of E, stack is now ready for new expression
+  }
 
   /*TODO: if (konec) {
   s_free(&stack_pushdown);
@@ -188,5 +287,5 @@ int prec_table(tToken *token)
   s_free(&stack_rules);
   st_free(&token_stack);
   }*/
-  return result;
+  return SUCCESS;
 }

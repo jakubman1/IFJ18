@@ -17,19 +17,17 @@ void symtable_init(tSymPtr *root)
 
 int symtable_insert_unknown(tSymPtr *root, char *name)
 {
-  tSymPtr new;
-  if(root != NULL) {
-    new = symtable_search(*root, name);
-  }
-  else {
-    return -1;
-  }
-  printf("Inserting symbol %s\n", name);
+  tSymPtr new = NULL;
+  new = symtable_search(*root, name);
 
   if(new == NULL) {
+    //fprintf(stderr, "Allocating space for a new node. \n");
     new = malloc(sizeof(struct symNode));
+    //fprintf(stderr, "Allocated. \n");
     if(new != NULL) {
-      new->name = malloc(sizeof(char) * (strlen(name) + 1));
+      int len = strlen(name) + 1;
+      new->name = malloc(sizeof(char) * len);
+      //fprintf(stderr, "Allocating %d chars for string %s\n", len, name );
       if(new->name != NULL) {
         strcpy(new->name, name);
       }
@@ -47,6 +45,7 @@ int symtable_insert_unknown(tSymPtr *root, char *name)
   else {
     return -1;
   }
+  return SUCCESS;
 }
 
 int symtable_insert_variable(tSymPtr *root, char *name, data_type type, bool define)

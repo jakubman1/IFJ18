@@ -18,6 +18,7 @@ typedef struct stackNode {
   struct stackNode *next;
 } tStackNode;
 
+// stack->head->next->data fuj
 typedef struct stack {
   tStackNode *head;
 } tStack;

@@ -33,19 +33,22 @@ int parser()
   int scanner_out = SUCCESS;
   tToken currentToken = {"", ERROR};
   tStack stack;
-  tSymPtr globalTree;
+  tSymPtr globalTree = NULL;
 
   symtable_init(&globalTree);
   s_init(&stack);
 
   s_push(&stack, LL_BOTTOM);
   s_push(&stack, LL_PROG);
-  while((scanner_out = scanner(&currentToken)) == SUCCESS) {
+  while((scanner_out = scanner(&currentToken)) == SUCCESS && result == SUCCESS) {
     // create derivation tree
     // currentToken contains new token in every iteration
 
     result = ll_predict(&currentToken, &stack);
-    symtable(&currentToken, &globalTree);
+    // fprintf(stderr, "Result from ll_predict is now %d\n", result);
+    if(result == 0) {
+      result = symtable(&currentToken, &globalTree);
+    }
 
     //// MUSI BYT AZ NA KONCI CYKLU !!!!!!!!!!!!!!!
     if(currentToken.text != NULL) {
@@ -54,13 +57,12 @@ int parser()
       currentToken.text = NULL;
     }
     if(result != 0) {
-      // neco je spatne, a ona to vi
-      break;
+      // TODO: free allocated resources
     }
-  }
+  } // end while
+
   if(scanner_out != -1) {
     // handle errors during lexical analysis
-    result = scanner_out;
 
     if(scanner_out == LEXICAL_ERR) {
       while((scanner_out = scanner(&currentToken)) == SUCCESS || scanner_out == LEXICAL_ERR) {
@@ -72,6 +74,9 @@ int parser()
       }
     }
     else {
+        if(result == INTERNAL_ERR) {
+          fprintf(stderr, ANSI_COLOR_RED "Internal error: " ANSI_COLOR_RESET "memory allocation failed. Not enough memory?");
+        }
       // Free allocated resources and quit (if there are any)
     }
   }
@@ -86,7 +91,7 @@ int parser()
       }
     }
     else {
-      fprintf(stderr, "Syntax error\n");
+      fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected end of file.\n");
       result = SYNTAX_ERR;
     }
 
@@ -266,7 +271,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_EXPRESSION:
       if (token->type == INTEGER || token->type == STRING || token->type == FLOATING_POINT || token->type == OPERATOR || token->type == ID) { // everything that fits in expression,  TODO must be ID of a variable
           if(prec_table(token) == SYNTAX_ERR) {
-            fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected token in expression.\n");
+            fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET"Unexpected token in expression.\n");
             return SYNTAX_ERR;
           }
       }
@@ -274,7 +279,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         tToken endExpression = {"", LL_BOTTOM}; // finish expression
         fprintf(stderr, "PRISEL EOL, UKONCUJE SE PREC\n");
         if (prec_table(&endExpression) == SYNTAX_ERR) {
-          fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected token in expression.\n");
+          fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET"Unexpected token in expression.\n");
           return SYNTAX_ERR;
         }
         s_pop(stack);
@@ -432,14 +437,12 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
 
 int symtable(tToken *token, tSymPtr *globalTree)
 {
-  bool b;
-
   if (token->type == DEF) {
 
   }
   if(token->type == ID) {
     // pridej do symtable, ale prvni sezen jeho typ.
-    symtable_insert_unknown(globalTree, token->text);
-  }
+    return symtable_insert_unknown(globalTree, token->text);
+    }
   return 0;
 }

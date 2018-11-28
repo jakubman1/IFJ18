@@ -58,5 +58,6 @@
  int parser();
 
  int ll_predict(tToken *token, tStack *stack);
+ int symtable(tToken *token, tSymPtr *globalTree);
 
  #endif

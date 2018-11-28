@@ -16,18 +16,18 @@
 #define PRECEDENT_TABLE_SIZE 14
 
 typedef enum {
-  E, // =
-  R, // >
-  S, // <
-  N // NONE
+  E = 100,  // =
+  R = 101,  // >
+  S = 102,  // <
+  N = 103   // NONE
 } p_table_sign;
 
 static int precedent_table[PRECEDENT_TABLE_SIZE][PRECEDENT_TABLE_SIZE] =
 {
-  //+ |- |* |/ |< |<=|> |>=|==|!=|( |) |i |$ |
-   {R, R, S, S, R, R, R, R, R, R, S, R, S, R}, // +
-   {R, R, S, S, R, R, R, R, R, R, S, R, S, R}, // -
-   {R, R, R, R, R, R, R, R, R, R, S, R, S, R}, // *
+  //+ |- |* |/ |< |<=|> |>=|==|!=|( |) |i |$ |          token_input -->
+   {R, R, S, S, R, R, R, R, R, R, S, R, S, R}, // +     stack_pushdown
+   {R, R, S, S, R, R, R, R, R, R, S, R, S, R}, // -      |
+   {R, R, R, R, R, R, R, R, R, R, S, R, S, R}, // *      V
    {R, R, R, R, R, R, R, R, R, R, S, R, S, R}, // /
    {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // <
    {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // <=
@@ -83,9 +83,8 @@ static int rule_table[NUMBER_OF_RULES][MAX_RULE_LENGHT] =
 @brief Find first terminal closest to the top of the stack
 */
 int stack_terminal_top(tStack *searched_stack, tStack *aux_stack);
-void furfil_stack(tStack *searched_stack, tStack *aux_stack);
 int prec_table(tToken *token);
-int someMagic (tStack *stack_temp, tStack *stack_pushdown, tStack *stack_rules);
+int evaluate_rule (tStack *stack_temp, tStack *stack_pushdown, tStack *stack_rules);
 
 
 #endif
