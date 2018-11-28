@@ -17,8 +17,6 @@ void symtable_init(tSymPtr *root)
 
 int symtable_insert_unknown(tSymPtr *root, char *name)
 {
-  fprintf(stderr, "%p\n", (void *)root);
-  fprintf(stderr, "%p\n", (void *)*root);
   tSymPtr new = symtable_search(*root, name);
 
   if(new == NULL)
@@ -41,6 +39,8 @@ int symtable_insert_unknown(tSymPtr *root, char *name)
         return INTERNAL_ERR;
       }
       new->type = UNKNOWN;
+      new->lptr = NULL;
+      new->rptr = NULL;
       symtable_insert(root, new);
     }
     else
@@ -69,6 +69,8 @@ int symtable_insert_variable(tSymPtr *root, char *name, data_type type, bool def
       }
       new->type = VARIABLE;
       new->data.varData.defined = define;
+      new->lptr = NULL;
+      new->rptr = NULL;
       symtable_insert(root, new);
     }
     else {
@@ -111,6 +113,8 @@ int symtable_insert_function(tSymPtr *root, char *name, data_type returnType, in
       }
       new->type = FUNCTION;
       new->data.funData.defined = define;
+      new->lptr = NULL;
+      new->rptr = NULL;
       symtable_insert(root, new);
     }
     else {
