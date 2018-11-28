@@ -74,10 +74,11 @@ int parser()
     result = add_to_symtable(&currentToken, &previousToken, &globalTree);
     previousToken = currentToken;
     // fprintf(stderr, "Result from ll_predict is now %d\n", result);
+    */
     if(result == 0) {
       result = ll_predict(&currentToken, &stack);
     }
-    */
+
     //// MUSI BYT AZ NA KONCI CYKLU !!!!!!!!!!!!!!!
     if(currentToken.text != NULL) {
       // Free allocated text
@@ -129,7 +130,7 @@ int parser()
 }
 
 
-int ll_predict(tToken *token, tStack *stack)
+int ll_predict(tToken *token, tStack *stack, tSymPtr *globalTree)
 {
   int top = s_top(stack);
 
@@ -318,7 +319,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
           return SYNTAX_ERR;
         }
         s_pop(stack);
-        ll_predict(token, stack); // recall the function in order not to lose a token
+        ll_predict(token, stack, globalTree); // recall the function in order not to lose a token
       }
       break;
     case LL_ID:
