@@ -17,39 +17,43 @@ void symtable_init(tSymPtr *root)
 
 int symtable_insert_unknown(tSymPtr *root, char *name)
 {
-  tSymPtr new = NULL;
-  new = symtable_search(*root, name);
+  fprintf(stderr, "%p\n", (void *)root);
+  fprintf(stderr, "%p\n", (void *)*root);
+  tSymPtr new = symtable_search(*root, name);
 
-  if(new == NULL) {
+  if(new == NULL)
+  {
     //fprintf(stderr, "Allocating space for a new node. \n");
     new = malloc(sizeof(struct symNode));
     //fprintf(stderr, "Allocated. \n");
-    if(new != NULL) {
+    if(new != NULL)
+    {
       int len = strlen(name) + 1;
       new->name = malloc(sizeof(char) * len);
       //fprintf(stderr, "Allocating %d chars for string %s\n", len, name );
-      if(new->name != NULL) {
+      if(new->name != NULL)
+      {
         strcpy(new->name, name);
       }
-      else {
+      else
+      {
         free(new);
         return INTERNAL_ERR;
       }
       new->type = UNKNOWN;
       symtable_insert(root, new);
     }
-    else {
+    else
+    {
       return INTERNAL_ERR;
     }
-  }
-  else {
-    return -1;
   }
   return SUCCESS;
 }
 
 int symtable_insert_variable(tSymPtr *root, char *name, data_type type, bool define)
 {
+
   tSymPtr new = symtable_search(*root, name);
   if(new == NULL) {
     // Create a new item in the tree
@@ -135,6 +139,7 @@ int symtable_insert_function(tSymPtr *root, char *name, data_type returnType, in
 
 void symtable_insert(tSymPtr *root, tSymPtr node)
 {
+  int cmpval = 0;
   if(root != NULL) {
     if(*root == NULL) {
       // Insert into root
@@ -143,12 +148,17 @@ void symtable_insert(tSymPtr *root, tSymPtr node)
     else {
       // cmpval should never be 0, when strcmp returns 0, strings are equal.
       // This situation is handled by symtable_insert_function() or symtable_insert_variable()
-      int cmpval = strcmp((*root)->name, node->name);
-      if(cmpval < 0) {
-        symtable_insert(&((*root)->lptr), node);
+      if(node->name != NULL) {
+        cmpval = strcmp((*root)->name, node->name);
+        if(cmpval < 0) {
+          symtable_insert(&(((*root)->lptr)), node);
+        }
+        else if(cmpval > 0) {
+          symtable_insert(&(((*root)->rptr)), node);
+        }
       }
-      else if(cmpval > 0) {
-        symtable_insert(&((*root)->rptr), node);
+      else {
+        fprintf(stderr, "Node name was NULL!\n");
       }
     }
   }
@@ -156,8 +166,9 @@ void symtable_insert(tSymPtr *root, tSymPtr node)
 
 tSymPtr symtable_search(tSymPtr root, char *name)
 {
-  if(root != NULL) {
-    int cmpval = strcmp(root->name, name);
+  int cmpval = 0;
+  if(root != NULL && root->name != NULL) {
+    cmpval = strcmp(root->name, name);
     if(cmpval == 0) {
       return root;
     }

@@ -35,21 +35,49 @@ int parser()
   tStack stack;
   tSymPtr globalTree = NULL;
 
+  char *idName = NULL;
+
   symtable_init(&globalTree);
   s_init(&stack);
 
   s_push(&stack, LL_BOTTOM);
   s_push(&stack, LL_PROG);
+
+
   while((scanner_out = scanner(&currentToken)) == SUCCESS && result == SUCCESS) {
     // create derivation tree
     // currentToken contains new token in every iteration
 
-    result = ll_predict(&currentToken, &stack);
-    // fprintf(stderr, "Result from ll_predict is now %d\n", result);
-    if(result == 0) {
-      result = symtable(&currentToken, &globalTree);
+    /*SYMTABLE*/
+
+    if ( currentToken.type == ID ) {
+      /// tu to porovnani jestli je to funkca strecu
+      if ( (strcmp(currentToken.text, "print") == 0) || (strcmp(currentToken.text, "inputs") == 0) || (strcmp(currentToken.text, "inputi") == 0) || (strcmp(currentToken.text, "inputf") == 0) || (strcmp(currentToken.text, "lenght") == 0) || (strcmp(currentToken.text, "subst") == 0) || (strcmp(currentToken.text, "ord") == 0) || (strcmp(currentToken.text, "chr") == 0)) {
+        symtable_insert_function(&globalTree, currentToken.text, TYPE_NIL, -1, NULL, true);
+      }
+      idName = malloc(strlen(currentToken.text) * sizeof(char));
+      if (idName == NULL) {
+        result = INTERNAL_ERR;
+      }
+      else {
+        strcpy(idName, currentToken.text);
+        symtable_insert_unknown(&globalTree, idName);
+      }
     }
 
+    if (currentToken.type == OPERATOR && (strcmp(currentToken.text, "=") == 0)) {
+      symtable_insert_variable(&globalTree, idName, TYPE_NIL, true);
+    }
+
+    /*SYMTABLE*/
+    /*
+    result = add_to_symtable(&currentToken, &previousToken, &globalTree);
+    previousToken = currentToken;
+    // fprintf(stderr, "Result from ll_predict is now %d\n", result);
+    if(result == 0) {
+      result = ll_predict(&currentToken, &stack);
+    }
+    */
     //// MUSI BYT AZ NA KONCI CYKLU !!!!!!!!!!!!!!!
     if(currentToken.text != NULL) {
       // Free allocated text
@@ -181,7 +209,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       if(token->type == ID || token->type == EOL || (token->type == OPERATOR && token->text[0] == '(') || token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING ) {
         PUSH_RULE_15;
       }
-      else if(token->type == OPERATOR && token->text[0] == '=') {
+      else if(token->type == OPERATOR && (strcmp(token->text, "=") == 0)) {
         PUSH_RULE_14;
       }
       else {
@@ -194,9 +222,16 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         PUSH_RULE_18;
       }
       else if(token->type == ID) { // TODO must be ID of a function
-        PUSH_RULE_16; //
+        tSymPtr sym = symtable_search(globalTree, token->name);
+        // Muze byt UNKNOWN,FUNCTION nebo VARIABLE
+        if(sym->type == UNKNOWN || sym->type == FUNCTION) {
+          PUSH_RULE_16;
+        }
+        else {
+          PUSH_RULE_17;
+        }
       }
-      else if (token->type == INTEGER || token->type == STRING || token->type == FLOATING_POINT || token->type == OPERATOR || token->type == ID) { // everything that fits in expression,  TODO must be ID of a variable
+      else if (token->type == INTEGER || token->type == STRING || token->type == FLOATING_POINT || token->type == OPERATOR) { // everything that fits in expression,
         PUSH_RULE_17;
       }
       else {
@@ -368,7 +403,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       break;
     case LL_SET:
-      if (token->type == OPERATOR && (token->text[0] == '=')) {
+      if (token->type == OPERATOR && (strcmp(token->text, "=") == 0)) {
         s_pop(stack);
       }
       else {
@@ -435,14 +470,19 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
   return SUCCESS;
 }
 
-int symtable(tToken *token, tSymPtr *globalTree)
+int add_to_symtable(tToken *cur_token, tToken *prev_token, tSymPtr *globalTree)
 {
-  if (token->type == DEF) {
-
+  if(cur_token->type == OPERATOR && (strcmp(cur_token->text, "=") == 0) && prev_token->type == ID) {
+    // nastav predchozi token na promennou
+    symtable_insert_variable(globalTree, prev_token->text, TYPE_NIL, true);
   }
+  /*
   if(token->type == ID) {
     // pridej do symtable, ale prvni sezen jeho typ.
+    // Prislo ID, pockej na dalsi token.
+    // Jesli dalsi token je =, nastav ID jako promenou, jinak nechej unknown
     return symtable_insert_unknown(globalTree, token->text);
-    }
+  }
+  */
   return 0;
 }

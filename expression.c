@@ -279,6 +279,12 @@ int prec_table(tToken *token)
   // nevime proc to funguje
   if (token_input == P_BOTTOM && s_top(&stack_pushdown) != P_BOTTOM) {
     s_pop(&stack_pushdown); // get rid of E, stack is now ready for new expression
+
+    fprintf(stderr, "PRAVY ROZBOR\n");
+    while (!s_empty(&stack_rules)) {
+      fprintf(stderr, "%d, ", s_pop(&stack_rules));
+    }
+    fprintf(stderr, "\n");
   }
 
   /*TODO: if (konec) {
