@@ -153,7 +153,7 @@ int scanner(tToken *token_out)
           add_to_buffer(&buffer, &buff_size, c);
           if ((c = getc(stdin)) == '"'){
             add_to_buffer(&buffer, &buff_size, c);
-            state = STRING_START;
+            state = STRING_ESCAPING;
             break;
           } else {
             ungetc(c, stdin);
