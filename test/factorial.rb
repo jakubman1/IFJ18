@@ -25,7 +25,7 @@ test
 end
 =en
 =end
-print "\"abc Zadejte cislo pro vypocet faktorialu "
+print "abc Zadejte cislo pro vypocet faktorialu "
 a = inputi
 if a < 0 then
 print "\nFaktorial nelze spocitat\n"
