@@ -94,6 +94,55 @@ int insert_built_in_functions (tSymPtr *root)
   return 0;
 }
 
+int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
+{
+  tSymPtr searchID = NULL;
+  symtable_search(symtable_ptr, token.text, &searchID);
+
+  char *nameID = NULL;
+  static bool seenID = false;
+  int return_value = SUCCESS;
+
+  if (token->type == ID && searchID == NULL)
+  {
+    nameID = malloc((strlen(token->text) + 1) * sizeof(char));
+
+    if (nameID == NULL)
+    {
+      return INTERNAL_ERR;
+    }
+    else
+    {
+      strcpy(nameID, token->text);
+      return_value = symtable_insert_unknown(symtable_ptr, nameID);
+      if (return_value == SUCCESS)
+      {
+        seenID = true;
+      }
+      else
+      {
+        free(nameID);
+      }
+      return return_value;
+    }
+  }
+  else if ((token->type == OPERATOR && (strcmp(token->text, "=") == 0)) && seenID) {
+
+    return_value = symtable_insert_variable(symtable_ptr, nameID, TYPE_NIL, true);
+
+    seenID = false;
+    free(nameID);
+
+    return return_value;
+  }
+  else if (seenID) {
+    seenID = false;
+    free(idName);
+  }
+
+  return SUCCESS;
+}
+
 int parser()
 {
   int result = SUCCESS;
@@ -121,43 +170,7 @@ int parser()
     // currentToken contains new token in every iteration
 
     /*SYMTABLE*/
-    tSymPtr new = NULL;
-    symtable_search(globalTree, currentToken.text, &new);
-
-    if (currentToken.type == ID && new == NULL)
-    {
-      idName = malloc((strlen(currentToken.text) + 1) * sizeof(char));
-
-      if (idName == NULL)
-      {
-        result = INTERNAL_ERR;
-      }
-      else
-      {
-        strcpy(idName, currentToken.text);
-        if (symtable_insert_unknown(&globalTree, idName) == INTERNAL_ERR)
-        {
-          result = INTERNAL_ERR;
-        }
-
-        fprintf(stderr, "seenID\n");
-        seenID = true;
-      }
-    }
-    else if ((currentToken.type == OPERATOR && (strcmp(currentToken.text, "=") == 0)) && seenID) {
-      fprintf(stderr, "INSERT\n");
-      int insertval = symtable_insert_variable(&globalTree, idName, TYPE_NIL, true);
-      if(insertval != SUCCESS) {
-        result = insertval;
-      }
-      seenID = false;
-      free(idName);
-      fprintf(stderr, "insert variable do symtable\n");
-    }
-    else if (seenID) {
-      seenID = false;
-      free(idName);
-    }
+    fill_symtable (&globalTree, &currentToken);
     /*SYMTABLE*/
 
     if(result == 0) {
