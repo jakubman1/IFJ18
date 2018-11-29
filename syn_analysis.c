@@ -178,6 +178,7 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     tSymPtr localTree = NULL;
     symtable_init(&localTree);
     // insert new element in the list
+    fprintf(stderr, "PRED LIST_INSERT: %s\n", token->text);
     list_insert (symtable_list, localTree, token->text);
   }
 
