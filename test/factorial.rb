@@ -5,7 +5,7 @@ test = 5
 n = test + 5
 test = 5
 
-
+temp_result = 3
 
 if n < 2 then
 result = 1
