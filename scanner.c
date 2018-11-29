@@ -173,9 +173,12 @@ int scanner(tToken *token_out)
       case STRING_ESCAPING:
         if (c != '"' && c != '\n') {
 
-          if (c == '\' && c = getc(stdin) == '"'){
-            add_to_buffer(&buffer, &buff_size, c);
-            ungetc(c, stdin);
+          if (c == '\') {
+            if ((c = getc(stdin)) == '"') {
+              state = STRING_ESCAPING;
+            } else {
+              ungetc(c, stdin);
+            }
           }
 
           add_to_buffer(&buffer, &buff_size, c);
