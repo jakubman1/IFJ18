@@ -184,7 +184,7 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     // insert new element in the list
     fprintf(stderr, "PRED LIST_INSERT: %s\n", token->text);
     list_insert (symtable_list, localTree, token->text);
-    fprintf(stderr, "LOKALNI =: %s\n", localTree->name);
+    fprintf(stderr, "LOKALNI =: %s\n", symtable_list->Act->table_name);
   }
   fprintf(stderr, "HERE2\n");
   return SUCCESS;
