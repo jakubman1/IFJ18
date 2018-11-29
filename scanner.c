@@ -149,7 +149,7 @@ int scanner(tToken *token_out)
         }
         break;
       case STRING_START:
-        if (c == '\') {
+        if (c == '\\') {
           add_to_buffer(&buffer, &buff_size, c);
           if ((c == getc(stdin)) == '"') {
             add_to_buffer(&buffer, &buff_size, c);
