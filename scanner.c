@@ -159,8 +159,7 @@ int scanner(tToken *token_out)
             ungetc(c, stdin);
           }
           state = STRING_START;
-        }
-        else if (c != '"' && c != '\n') {
+        } else if (c != '"' && c != '\n') {
           add_to_buffer(&buffer, &buff_size, c);
           state = STRING_START;
         }
