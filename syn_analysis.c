@@ -186,7 +186,7 @@ int parser()
     else if ( nebylo def) {
       fill_symtable (&globalTree, &currentToken);
     }*/
-    fill_symtable (&globalTree, &currentToken)
+    fill_symtable (&globalTree, &currentToken);
 
     if(result == 0) {
       result = ll_predict(&currentToken, &stack, &globalTree);
