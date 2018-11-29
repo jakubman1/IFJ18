@@ -190,7 +190,7 @@ int parser()
   int scanner_out = SUCCESS;
   tToken currentToken = {"", ERROR};
   tStack stack;
-  tList *symtable_list = NULL;
+  tList symtable_list;
   tSymPtr globalTree = NULL;
 
   symtable_init(&globalTree);
@@ -198,8 +198,8 @@ int parser()
     return INTERNAL_ERR;
   }
 
-  list_init(symtable_list);
-  list_insert(symtable_list, globalTree, NULL);
+  list_init(&symtable_list);
+  list_insert(&symtable_list, globalTree, NULL);
 
   s_init(&stack);
 
