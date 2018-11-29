@@ -99,7 +99,7 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
   tSymPtr searchID = NULL;
   symtable_search(*symtable_ptr, token->text, &searchID);
 
-  char *nameID = NULL;
+  static char *nameID = NULL;
   static bool seenID = false;
   int return_value = SUCCESS;
 
@@ -170,7 +170,6 @@ int parser()
   s_push(&stack, LL_BOTTOM);
   s_push(&stack, LL_PROG);
 
-fprintf(stderr, "HERE0\n");
   while((scanner_out = scanner(&currentToken)) == SUCCESS && result == SUCCESS) {
     // create abstract syntax tree
     // currentToken contains new token in every iteration
