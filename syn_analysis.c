@@ -281,9 +281,8 @@ int parser()
 
 fprintf(stderr, "VYPIS TABULEK SYMBOLU:\n");
 tSymPtr adam = NULL;
-
-symtable_search(globalTree, "adam", &adam); // searches through global Tree
-fprintf(stderr, "%s\n", adam->name);
+//symtable_search(globalTree, "adam", &adam); // searches through global Tree
+fprintf(stderr, "%s\n", symtable_list->Act->name);
 
   return result;
 }
