@@ -199,7 +199,7 @@ int parser()
   }
 
   InitList(symtable_list);
-  Insert(symtable_list, &globalTree, NULL);
+  Insert(symtable_list, globalTree, NULL);
 
   s_init(&stack);
 
