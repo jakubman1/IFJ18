@@ -53,12 +53,13 @@ int Insert (tList *L, tSymPtr table_ptr, char *table_name)
   new_elem->ptr = L->Act->ptr;
   L->Act->ptr = new_elem;
 
-  Succ(L);
+  // SUC ...
+  if ( L->Act == NULL )   /* Pokud neni aktivni prvek, funkce skonci. */
+  {
+    return -1;
+  }
+
+  L->Act = L->Act->ptr;
 
   return SUCCESS;
-}
-
-int Active (tList *L)
-{
-  return L->Act != NULL;
 }
