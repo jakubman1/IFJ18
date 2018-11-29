@@ -150,11 +150,8 @@ int scanner(tToken *token_out)
         break;
       case STRING_START:
 
-        if (c != '"' && c != '\n') {
-          add_to_buffer(&buffer, &buff_size, c);
-          state = STRING_START;
-        }
-        else if (c == '\\') {
+
+        if (c == '\\') {
           add_to_buffer(&buffer, &buff_size, c);
 
           if ((c = getc(stdin)) == '"'){
@@ -165,6 +162,10 @@ int scanner(tToken *token_out)
             ungetc(c, stdin);
           }
 
+        }
+        else if (c != '"' && c != '\n') {
+          add_to_buffer(&buffer, &buff_size, c);
+          state = STRING_START;
         }
         else { // c == '"'  ||  c == '\n'
           add_to_buffer(&buffer, &buff_size, c);
