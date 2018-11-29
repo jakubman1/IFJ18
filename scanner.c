@@ -160,7 +160,7 @@ int scanner(tToken *token_out)
           }
           state = STRING_START;
         }
-        if (c != '"' && c != '\n') {
+        else if (c != '"' && c != '\n') {
           add_to_buffer(&buffer, &buff_size, c);
           state = STRING_START;
         }
