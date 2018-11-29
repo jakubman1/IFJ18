@@ -171,12 +171,7 @@ int scanner(tToken *token_out)
         }
         break;
       case STRING_ESCAPING:
-        if (c == '\'){
-          add_to_buffer(&buffer, &buff_size, c);
-          
-          state = STRING_ESCAPING;
-        }
-        else if (c != '"' && c != '\n') {
+        if (c != '"' && c != '\n') {
           add_to_buffer(&buffer, &buff_size, c);
           state = STRING_START;
         }
