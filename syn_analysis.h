@@ -60,5 +60,8 @@
 
  int ll_predict(tToken *token, tStack *stack, tSymPtr *globalTree);
  int add_to_symtable(tToken *token, tToken *prev_token, tSymPtr *globalTree);
+ int create_local_symtable(tList symtable_list, tToken *token);
+ int fill_symtable (tSymPtr *symtable_ptr, tToken *token);
+ int insert_built_in_functions (tSymPtr *root);
 
  #endif

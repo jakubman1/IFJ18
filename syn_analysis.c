@@ -151,7 +151,7 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
 /**************************
          FUNCTIONS
 ***************************/
-int create_local_symtable(tList symtable_list, tToken *token)
+int create_local_symtable(tList *symtable_list, tToken *token)
 {
   tSymPtr searchID = NULL;
 
@@ -223,7 +223,7 @@ int parser()
       fill_symtable (&globalTree, &currentToken);
     }*/
 
-    // resit vracene hodnoty
+    create_local_symtable(symtable_list, &currentToken);
     fill_symtable (&globalTree, &currentToken);
     // create_local_symtable
     //
