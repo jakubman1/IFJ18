@@ -283,7 +283,7 @@ fprintf(stderr, "VYPIS TABULEK SYMBOLU:\n");
 tSymPtr adam = NULL;
 
 symtable_search(globalTree, "adam", &adam); // searches through global Tree
-fprintf(stderr, "%s\n" adam->name);
+fprintf(stderr, "%s\n", adam->name);
 
   return result;
 }
