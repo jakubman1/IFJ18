@@ -173,9 +173,9 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     seenDEF = false;
     // insert function to global symtable
     return_value = symtable_insert_function(&(symtable_list->First->table_ptr), token->text, TYPE_NIL, -2, NULL, true);
-
+    fprintf(stderr, "HERE1\n");
     if (return_value != SUCCESS) {
-      fprintf(stderr, "HERE1\n");
+      fprintf(stderr, "HERE ERROR\n");
       return return_value;
     }
     // init new symtable
