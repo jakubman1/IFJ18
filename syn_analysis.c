@@ -282,9 +282,7 @@ int parser()
 fprintf(stderr, "VYPIS TABULEK SYMBOLU:\n");
 tSymPtr adam = NULL;
 
-if (token->type == ID) {
-  symtable_search(globalTree, "adam", &adam); // searches through global Tree
-}
+symtable_search(globalTree, "adam", &adam); // searches through global Tree
 fprintf(stderr, "%s\n" adam->name);
 
   return result;
