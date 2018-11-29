@@ -25,7 +25,7 @@ int list_insert (tList *L, tSymPtr table_ptr, char *table_name)
   tElemPtr new_elem = NULL;
 
   if (table_name != NULL) { // global symtable doesn't have a name, it's send with NULL param
-    name = malloc((strlen(token->text) + 1) * sizeof(char));
+    name = malloc((strlen(table_name) + 1) * sizeof(char));
 
     if (name == NULL) {
       return INTERNAL_ERR;
