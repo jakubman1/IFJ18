@@ -97,7 +97,7 @@ int insert_built_in_functions (tSymPtr *root)
 int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
 {
   tSymPtr searchID = NULL;
-  symtable_search(symtable_ptr, token->text, &searchID);
+  symtable_search(*symtable_ptr, token->text, &searchID);
 
   char *nameID = NULL;
   static bool seenID = false;
