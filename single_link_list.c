@@ -19,42 +19,29 @@ void DisposeList (tList *L)
   }
 }
 
-int InsertFirst (tList *L, tSymPtr table_ptr, char *table_name)
+int Insert (tList *L, tSymPtr table_ptr, char *table_name)
 {
-  tElemPtr new_elem = malloc(sizeof( struct tElem ));
+  tElemPtr new_elem = NULL;
 
-  if ( new_elem == NULL )
-  {
-    return INTERNAL_ERR;
-  }
-
-  new_elem->table_name = table_name;
-  new_elem->table_ptr = table_ptr;
-  new_elem->ptr = NULL;
-  L->First = new_elem;
-  L->Act = new_elem;
-
-  return SUCCESS;
-}
-
-void Succ (tList *L)
-{
   if ( L->Act == NULL )
   {
-    return;
+    new_elem = malloc(sizeof( struct tElem ));
+
+    if ( new_elem == NULL )
+    {
+      return INTERNAL_ERR;
+    }
+
+    new_elem->table_name = table_name;
+    new_elem->table_ptr = table_ptr;
+    new_elem->ptr = NULL;
+    L->First = new_elem;
+    L->Act = new_elem;
+
+    return SUCCESS;
   }
 
-  L->Act = L->Act->ptr;
-}
-
-int PostInsert (tList *L, tSymPtr table_ptr, char *table_name)
-{
-  if ( L->Act == NULL )
-  {
-    return -1;
-  }
-
-  tElemPtr new_elem = malloc(sizeof( struct tElem ));
+  new_elem = malloc(sizeof( struct tElem ));
 
   if ( new_elem == NULL )
   {

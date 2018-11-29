@@ -34,9 +34,8 @@ typedef struct {
 
 void InitList (tList *L);
 void DisposeList (tList *L);
-int InsertFirst (tList *L, tSymPtr table_ptr, char *table_name);
 void Succ (tList *L);
-int PostInsert (tList *L, tSymPtr table_ptr, char *table_name);
+int Insert (tList *L, tSymPtr table_ptr, char *table_name);
 int Active (tList *L); // returns true if active, false otherwise
 
 #endif

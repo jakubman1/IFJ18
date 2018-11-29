@@ -1,1 +1,3 @@
-a = 5 < 2 * 4 + 2
+def adam ()
+  test = 5
+end

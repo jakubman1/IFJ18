@@ -94,19 +94,20 @@ int insert_built_in_functions (tSymPtr *root)
   return 0;
 }
 
+/**************************
+        VARIABLES
+***************************/
 int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
 {
   tSymPtr searchID = NULL;
-  symtable_search(*symtable_ptr, token->text, &searchID);
+  if (token->type == ID) {
+    symtable_search(*symtable_ptr, token->text, &searchID);
+  }
 
   static char *nameID = NULL;
   static bool seenID = false;
   int return_value = SUCCESS;
 
-  /**************************
-          VARIABLES
-  ***************************/
-fprintf(stderr, "HERE1\n");
   if (token->type == ID && searchID == NULL)
   {
     nameID = malloc((strlen(token->text) + 1) * sizeof(char));
@@ -143,14 +144,45 @@ fprintf(stderr, "HERE1\n");
     seenID = false;
     free(nameID);
   }
-
-  /**************************
-           FUNCTIONS
-  ***************************/
-fprintf(stderr, "HERE2\n");
-
-
   return SUCCESS;
+}
+
+
+/**************************
+         FUNCTIONS
+***************************/
+int create_local_symtable(tList symtable_list, tToken *token)
+{
+  tSymPtr searchID = NULL;
+
+  if (token->type == ID) {
+    symtable_search(symtable_list->First->table_ptr, token->text, &searchID); // searches through global Tree
+  }
+
+  static bool seenDEF = false;
+  int return_value = SUCCESS;
+  static int countEND = 0;
+
+  if (token->type == DEF) {
+    seenDEF = true;
+    countEND++;
+  }
+  else if (token->type == ID && searchID == NULL && seenDEF) {
+    seenDEF = false;
+    // insert uknown function
+    return_value = symtable_insert_function(symtable_list->First->table_ptr, token->text, TYPE_NIL, -2, NULL, true);
+    if (return_value != SUCCESS) {
+      return return_value;
+    }
+    // init new symtable
+    tSymPtr localTree = NULL;
+    return_value = symtable_init(&localTree);
+    if (return_value != SUCCESS) {
+      return return_value;
+    }
+    // insert new element in the list
+    Insert (symtable_list, localTree, token->text);
+  }
 }
 
 int parser()
@@ -159,12 +191,17 @@ int parser()
   int scanner_out = SUCCESS;
   tToken currentToken = {"", ERROR};
   tStack stack;
+  tList *symtable_list = NULL;
   tSymPtr globalTree = NULL;
 
   symtable_init(&globalTree);
   if (insert_built_in_functions(&globalTree) == INTERNAL_ERR) {
     return INTERNAL_ERR;
   }
+
+  InitList(symtable_list);
+  Insert(symtable_list, &globalTree, NULL);
+
   s_init(&stack);
 
   s_push(&stack, LL_BOTTOM);
@@ -186,7 +223,10 @@ int parser()
       fill_symtable (&globalTree, &currentToken);
     }*/
 
+    // resit vracene hodnoty
     fill_symtable (&globalTree, &currentToken);
+    // create_local_symtable
+    //
 
     if(result == 0) {
       result = ll_predict(&currentToken, &stack, &globalTree);
