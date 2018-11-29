@@ -170,19 +170,18 @@ int create_local_symtable(tList *symtable_list, tToken *token)
   else if (token->type == ID && searchID == NULL && seenDEF) {
     seenDEF = false;
     // insert uknown function
-    return_value = symtable_insert_function(symtable_list->First->table_ptr, token->text, TYPE_NIL, -2, NULL, true);
+    return_value = symtable_insert_function(&(symtable_list->First->table_ptr), token->text, TYPE_NIL, -2, NULL, true);
     if (return_value != SUCCESS) {
       return return_value;
     }
     // init new symtable
     tSymPtr localTree = NULL;
-    return_value = symtable_init(&localTree);
-    if (return_value != SUCCESS) {
-      return return_value;
-    }
+    symtable_init(&localTree);
     // insert new element in the list
     Insert (symtable_list, localTree, token->text);
   }
+
+  return SUCCESS;
 }
 
 int parser()
@@ -619,7 +618,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
   } // end switch terminals
 
 
-  // TODO insert into tree, derivation tree
+  // TODO  into tree, derivation tree
 
   // Why can you drink a drink, but not food a food?
   return SUCCESS;
