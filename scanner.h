@@ -19,7 +19,6 @@ typedef enum {
   COMMENT, // Comment
   IDENT, // Identifier
   STRING_START, // Got first "
-  STRING_ESCAPING, // Got \ in string
   INT, // Got number not starting with 0
   FLOAT, // Current number is float
   FLOAT_E, // Number is float with letter 'e' in it
