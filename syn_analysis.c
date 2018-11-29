@@ -158,6 +158,7 @@ int create_local_symtable(tList *symtable_list, tToken *token)
   if (token->type == ID) {
     symtable_search(symtable_list->First->table_ptr, token->text, &searchID); // searches through global Tree
   }
+  // TODO pokud searchID neni NULL, tak mozna predefinice, ted nevim, nechce se mi o tom premyslet
 
   static bool seenDEF = false;
   int return_value = SUCCESS;
@@ -171,6 +172,7 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     seenDEF = false;
     // insert uknown function
     return_value = symtable_insert_function(&(symtable_list->First->table_ptr), token->text, TYPE_NIL, -2, NULL, true);
+    fprintf(stderr, "HERE\n");
     if (return_value != SUCCESS) {
       return return_value;
     }
