@@ -106,7 +106,7 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
   /**************************
           VARIABLES
   ***************************/
-
+fprintf(stderr, "HERE1\n");
   if (token->type == ID && searchID == NULL)
   {
     nameID = malloc((strlen(token->text) + 1) * sizeof(char));
@@ -147,7 +147,7 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
   /**************************
            FUNCTIONS
   ***************************/
-
+fprintf(stderr, "HERE2\n");
 
 
   return SUCCESS;
@@ -170,7 +170,7 @@ int parser()
   s_push(&stack, LL_BOTTOM);
   s_push(&stack, LL_PROG);
 
-
+fprintf(stderr, "HERE0\n");
   while((scanner_out = scanner(&currentToken)) == SUCCESS && result == SUCCESS) {
     // create abstract syntax tree
     // currentToken contains new token in every iteration
@@ -186,7 +186,8 @@ int parser()
     else if ( nebylo def) {
       fill_symtable (&globalTree, &currentToken);
     }*/
-    //fill_symtable (&globalTree, &currentToken);
+
+    fill_symtable (&globalTree, &currentToken);
 
     if(result == 0) {
       result = ll_predict(&currentToken, &stack, &globalTree);
