@@ -180,18 +180,6 @@ int scanner(tToken *token_out)
           state = START;
         }
         break;
-      case STRING_ESCAPING:
-        if (c != '"' && c != '\n') {
-          add_to_buffer(&buffer, &buff_size, c);
-          state = STRING_START;
-        }
-        else { // c == '"'
-          add_to_buffer(&buffer, &buff_size, c);
-          send_buffer(STRING, &buffer, token_out);
-          state = START;
-          quit = true;
-        }
-        break;
       case INT:
         if (c >= '0' && c <= '9') {
           add_to_buffer(&buffer, &buff_size, c);
