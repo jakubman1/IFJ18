@@ -21,7 +21,17 @@ void list_dispose (tList *L)
 
 int list_insert (tList *L, tSymPtr table_ptr, char *table_name)
 {
+  char *name = NULL;
   tElemPtr new_elem = NULL;
+
+  if (table_name != NULL) { // global symtable doesn't have a name, it's send with NULL param
+    name = malloc((strlen(token->text) + 1) * sizeof(char));
+
+    if (name == NULL) {
+      return INTERNAL_ERR;
+    }
+    strcpy(name, table_name);
+  }
 
   if ( L->Act == NULL )
   {
@@ -32,7 +42,7 @@ int list_insert (tList *L, tSymPtr table_ptr, char *table_name)
       return INTERNAL_ERR;
     }
 
-    new_elem->table_name = table_name;
+    new_elem->table_name = name;
     new_elem->table_ptr = table_ptr;
     new_elem->ptr = NULL;
     L->First = new_elem;
@@ -48,7 +58,7 @@ int list_insert (tList *L, tSymPtr table_ptr, char *table_name)
     return INTERNAL_ERR;
   }
 
-  new_elem->table_name = table_name;
+  new_elem->table_name = name;
   new_elem->table_ptr = table_ptr;
   new_elem->ptr = L->Act->ptr;
   L->Act->ptr = new_elem;
