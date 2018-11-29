@@ -149,7 +149,18 @@ int scanner(tToken *token_out)
         }
         break;
       case STRING_START:
-        if (c != '"' && c != '\n') {
+        if (c == '\') {
+          add_to_buffer(&buffer, &buff_size, c);
+          if ((c == getc(stdin)) == '"') {
+            add_to_buffer(&buffer, &buff_size, c);
+            state = STRING_START;
+            break;
+          } else {
+            ungetc(c, stdin);
+          }
+          state = STRING_START;
+        }
+        else if (c != '"' && c != '\n') {
           add_to_buffer(&buffer, &buff_size, c);
           state = STRING_START;
         }
@@ -171,7 +182,7 @@ int scanner(tToken *token_out)
         }
         break;
       case STRING_ESCAPING:
-      
+
         if (c != '"' && c != '\n') {
           add_to_buffer(&buffer, &buff_size, c);
           state = STRING_START;
