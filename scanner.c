@@ -165,7 +165,6 @@ int scanner(tToken *token_out)
             ungetc(c, stdin);
           }
 
-          state = STRING_ESCAPING;
         }
         else { // c == '"'  ||  c == '\n'
           add_to_buffer(&buffer, &buff_size, c);
