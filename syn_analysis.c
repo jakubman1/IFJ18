@@ -107,7 +107,7 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
   static char *nameID = NULL;
   static bool seenID = false;
   int return_value = SUCCESS;
-fprintf(stderr, "HERE4\n");
+
   if (token->type == ID && searchID == NULL)
   {
     nameID = malloc((strlen(token->text) + 1) * sizeof(char));
@@ -162,7 +162,7 @@ int create_local_symtable(tList *symtable_list, tToken *token)
   static bool seenDEF = false;
   int return_value = SUCCESS;
   static int countEND = 0;
-fprintf(stderr, "HERE2\n");
+
   if (token->type == DEF) {
     seenDEF = true;
     countEND++;
@@ -180,7 +180,7 @@ fprintf(stderr, "HERE2\n");
     // insert new element in the list
     list_insert (symtable_list, localTree, token->text);
   }
-fprintf(stderr, "HERE3\n");
+
   return SUCCESS;
 }
 
@@ -221,7 +221,7 @@ int parser()
     else if ( nebylo def) {
       fill_symtable (&globalTree, &currentToken);
     }*/
-fprintf(stderr, "HERE\n");
+
     create_local_symtable(&symtable_list, &currentToken);
     fill_symtable (&globalTree, &currentToken);
     // create_local_symtable
@@ -278,6 +278,15 @@ fprintf(stderr, "HERE\n");
 
   }
   s_free(&stack);
+
+fprintf(stderr, "VYPIS TABULEK SYMBOLU:\n");
+tSymPtr adam = NULL;
+
+if (token->type == ID) {
+  symtable_search(globalTree, "adam", &adam); // searches through global Tree
+}
+fprintf(stderr, "%s\n" adam->name);
+
   return result;
 }
 
