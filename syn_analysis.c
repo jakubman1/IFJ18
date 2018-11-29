@@ -175,7 +175,7 @@ int parser()
     // create abstract syntax tree
     // currentToken contains new token in every iteration
 
-    if (bylo def a ted je ID) {
+    /*if (bylo def a ted je ID) {
       // jestli ID uz je v tabulce a neni UNKNOW, tak ERROR
       // TODO ID funkce nesmi byt shodne s zadnou lokalni ani globalni promennou
       // dej ID do globalni tabulky
@@ -185,7 +185,7 @@ int parser()
     }
     else if ( nebylo def) {
       fill_symtable (&globalTree, &currentToken);
-    }
+    }*/
 
     if(result == 0) {
       result = ll_predict(&currentToken, &stack, &globalTree);
