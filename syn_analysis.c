@@ -165,15 +165,17 @@ int create_local_symtable(tList *symtable_list, tToken *token)
   static int countEND = 0;
 
   if (token->type == DEF) {
+    fprintf(stderr, "HERE0\n");
     seenDEF = true;
     countEND++;
   }
   else if (token->type == ID && searchID == NULL && seenDEF) {
     seenDEF = false;
-    // insert uknown function
+    // insert function to global symtable
     return_value = symtable_insert_function(&(symtable_list->First->table_ptr), token->text, TYPE_NIL, -2, NULL, true);
-    fprintf(stderr, "HERE\n");
+
     if (return_value != SUCCESS) {
+      fprintf(stderr, "HERE1\n");
       return return_value;
     }
     // init new symtable
@@ -183,7 +185,7 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     fprintf(stderr, "PRED LIST_INSERT: %s\n", token->text);
     list_insert (symtable_list, localTree, token->text);
   }
-
+  fprintf(stderr, "HERE2\n");
   return SUCCESS;
 }
 
