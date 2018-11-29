@@ -107,7 +107,7 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
   static char *nameID = NULL;
   static bool seenID = false;
   int return_value = SUCCESS;
-
+fprintf(stderr, "HERE4\n");
   if (token->type == ID && searchID == NULL)
   {
     nameID = malloc((strlen(token->text) + 1) * sizeof(char));
@@ -148,9 +148,9 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
 }
 
 
-/**************************
-         FUNCTIONS
-***************************/
+/*************************************************
+         CREATE NEW TABLE AND ADD FUNCTION
+*************************************************/
 int create_local_symtable(tList *symtable_list, tToken *token)
 {
   tSymPtr searchID = NULL;
@@ -162,7 +162,7 @@ int create_local_symtable(tList *symtable_list, tToken *token)
   static bool seenDEF = false;
   int return_value = SUCCESS;
   static int countEND = 0;
-
+fprintf(stderr, "HERE2\n");
   if (token->type == DEF) {
     seenDEF = true;
     countEND++;
@@ -178,9 +178,9 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     tSymPtr localTree = NULL;
     symtable_init(&localTree);
     // insert new element in the list
-    Insert (symtable_list, localTree, token->text);
+    list_insert (symtable_list, localTree, token->text);
   }
-
+fprintf(stderr, "HERE3\n");
   return SUCCESS;
 }
 
@@ -198,8 +198,8 @@ int parser()
     return INTERNAL_ERR;
   }
 
-  InitList(symtable_list);
-  Insert(symtable_list, globalTree, NULL);
+  list_init(symtable_list);
+  list_insert(symtable_list, globalTree, NULL);
 
   s_init(&stack);
 
@@ -221,7 +221,7 @@ int parser()
     else if ( nebylo def) {
       fill_symtable (&globalTree, &currentToken);
     }*/
-
+fprintf(stderr, "HERE\n");
     create_local_symtable(symtable_list, &currentToken);
     fill_symtable (&globalTree, &currentToken);
     // create_local_symtable

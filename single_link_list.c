@@ -1,13 +1,13 @@
 #include "single_link_list.h"
 
-void InitList (tList *L)
+void list_init (tList *L)
 {
   L->Act = NULL;
   L->First = NULL;
 }
 
 // TODO call DisposeSymtable in every element
-void DisposeList (tList *L)
+void list_dispose (tList *L)
 {
   L->Act = L->First;
 
@@ -19,7 +19,7 @@ void DisposeList (tList *L)
   }
 }
 
-int Insert (tList *L, tSymPtr table_ptr, char *table_name)
+int list_insert (tList *L, tSymPtr table_ptr, char *table_name)
 {
   tElemPtr new_elem = NULL;
 

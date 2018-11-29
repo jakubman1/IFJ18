@@ -32,8 +32,8 @@ typedef struct {
     tElemPtr First;
 } tList;
 
-void InitList (tList *L);
-void DisposeList (tList *L);
-int Insert (tList *L, tSymPtr table_ptr, char *table_name);
+void list_init (tList *L);
+void list_dispose (tList *L);
+int list_insert (tList *L, tSymPtr table_ptr, char *table_name);
 
 #endif
