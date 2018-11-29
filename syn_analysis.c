@@ -97,11 +97,15 @@ int insert_built_in_functions (tSymPtr *root)
 int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
 {
   tSymPtr searchID = NULL;
-  symtable_search(symtable_ptr, token.text, &searchID);
+  symtable_search(symtable_ptr, token->text, &searchID);
 
   char *nameID = NULL;
   static bool seenID = false;
   int return_value = SUCCESS;
+
+  /**************************
+          VARIABLES
+  ***************************/
 
   if (token->type == ID && searchID == NULL)
   {
@@ -137,8 +141,14 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
   }
   else if (seenID) {
     seenID = false;
-    free(idName);
+    free(nameID);
   }
+
+  /**************************
+           FUNCTIONS
+  ***************************/
+
+
 
   return SUCCESS;
 }
@@ -151,8 +161,6 @@ int parser()
   tStack stack;
   tSymPtr globalTree = NULL;
 
-  char *idName = NULL;
-
   symtable_init(&globalTree);
   if (insert_built_in_functions(&globalTree) == INTERNAL_ERR) {
     return INTERNAL_ERR;
@@ -162,16 +170,22 @@ int parser()
   s_push(&stack, LL_BOTTOM);
   s_push(&stack, LL_PROG);
 
-  bool seenID = false;
-
 
   while((scanner_out = scanner(&currentToken)) == SUCCESS && result == SUCCESS) {
     // create abstract syntax tree
     // currentToken contains new token in every iteration
 
-    /*SYMTABLE*/
-    fill_symtable (&globalTree, &currentToken);
-    /*SYMTABLE*/
+    if (bylo def a ted je ID) {
+      // jestli ID uz je v tabulce a neni UNKNOW, tak ERROR
+      // TODO ID funkce nesmi byt shodne s zadnou lokalni ani globalni promennou
+      // dej ID do globalni tabulky
+      // vytvor novou lokalni tabulku
+      // lokalni_tabulka_ptr = create_new_table(...);
+      //fill_symtable (&lokalni_tabulka_ptr, &currentToken);
+    }
+    else if ( nebylo def) {
+      fill_symtable (&globalTree, &currentToken);
+    }
 
     if(result == 0) {
       result = ll_predict(&currentToken, &stack, &globalTree);
