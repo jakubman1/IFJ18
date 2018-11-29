@@ -222,7 +222,7 @@ int parser()
       fill_symtable (&globalTree, &currentToken);
     }*/
 fprintf(stderr, "HERE\n");
-    create_local_symtable(symtable_list, &currentToken);
+    create_local_symtable(&symtable_list, &currentToken);
     fill_symtable (&globalTree, &currentToken);
     // create_local_symtable
     //
