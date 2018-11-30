@@ -288,6 +288,8 @@ int parser()
     }
   } // end while
 
+  fprintf(stderr, "end of while\n");
+
   if(scanner_out != -1) {
     // handle errors during lexical analysis
 
@@ -325,13 +327,13 @@ int parser()
   }
   s_free(&stack);
 
-fprintf(stderr, "VYPIS TABULEK SYMBOLU:\n");
-fprintf(stderr, "Globalni 1. ID (foo): %s\n", symtable_list.First->table_ptr->name);
-fprintf(stderr, "Globalni 2. ID (ref): %s\n", symtable_list.First->table_ptr->rptr->name);
-fprintf(stderr, "Lokalni jmeno: %s\n", symtable_list.Act->table_name);
-fprintf(stderr, "Lokalni 1. ID (a): %s\n", symtable_list.Act->table_ptr->name);
-fprintf(stderr, "Lokalni 2. ID (b): %s\n", symtable_list.Act->table_ptr->rptr->name);
-fprintf(stderr, "KONEC VYPISU:\n");
+  fprintf(stderr, "VYPIS TABULEK SYMBOLU:\n");
+  fprintf(stderr, "Globalni 1. ID (foo): %s\n", symtable_list.First->table_ptr->name);
+  fprintf(stderr, "Globalni 2. ID (ref): %s\n", symtable_list.First->table_ptr->rptr->name);
+  fprintf(stderr, "Lokalni jmeno: %s\n", symtable_list.Act->table_name);
+  fprintf(stderr, "Lokalni 1. ID (a): %s\n", symtable_list.Act->table_ptr->name);
+  fprintf(stderr, "Lokalni 2. ID (b): %s\n", symtable_list.Act->table_ptr->rptr->name);
+  fprintf(stderr, "KONEC VYPISU:\n");
 
   return result;
 }
