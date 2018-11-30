@@ -205,6 +205,7 @@ int create_local_symtable(tList *symtable_list, tToken *token)
   }
   else if (token->type == ID && searchID == NULL && !fill_local_symtable) {
     return_value = fill_symtable (&(symtable_list->First->table_ptr), token);
+    fprintf(stderr, "RESULT Z FILL_SYMTABLE: %d\n", return_value);
     if (return_value != SUCCESS) {
       return return_value;
     }
