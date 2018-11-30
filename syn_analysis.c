@@ -207,10 +207,10 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     fill_local_symtable = true;
   }
   else if (token->type == ID && searchID == NULL && fill_local_symtable) {
-    fill_symtable (symtable_list->Act->table_ptr, &currentToken);
+    fill_symtable (&(symtable_list->Act->table_ptr), token);
   }
   else if (token->type == ID && searchID == NULL && !fill_local_symtable) {
-    fill_symtable (symtable_list->First->table_ptr, &currentToken);
+    fill_symtable (&(symtable_list->First->table_ptr), token);
   }
   else if (fill_local_symtable && (token->type == IF || token->type == WHILE)) {
 countEND++;
@@ -271,6 +271,7 @@ int parser()
       fprintf(stderr, "scanner_out: %d\n", scanner_out);
       break;
     }
+    /*
     result = fill_symtable (&globalTree, &currentToken);
     if (result != SUCCESS) {  //FIX ME FREE ALLOCATED RESOURCES
       fprintf(stderr, "%result: %d\n", result);
@@ -278,6 +279,7 @@ int parser()
       break;
     }
     //
+    */
 
     if(result == 0) {
       result = ll_predict(&currentToken, &stack, &globalTree);
@@ -306,7 +308,7 @@ int parser()
         }
       }
     }
-    else if {
+    else if (scanner_out == INTERNAL_ERR) {
         if(result == INTERNAL_ERR) {
           fprintf(stderr, ANSI_COLOR_RED "Internal error: " ANSI_COLOR_RESET "memory allocation failed. Not enough memory?");
         }
