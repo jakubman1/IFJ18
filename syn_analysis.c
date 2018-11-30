@@ -333,10 +333,11 @@ int parser()
 
   fprintf(stderr, "VYPIS TABULEK SYMBOLU:\n");
   fprintf(stderr, "Globalni 1. ID (foo): %s\n", symtable_list.First->table_ptr->name);
-  fprintf(stderr, "Globalni 2. ID (ref): %s\n", symtable_list.First->table_ptr->rptr->name);
+//  fprintf(stderr, "Globalni 2. ID (ref): %s\n", symtable_list.First->table_ptr->rptr->name);
   fprintf(stderr, "Lokalni jmeno: %s\n", symtable_list.Act->table_name);
   fprintf(stderr, "Lokalni 1. ID (a): %s\n", symtable_list.Act->table_ptr->name);
   fprintf(stderr, "Lokalni 2. ID (b): %s\n", symtable_list.Act->table_ptr->rptr->name);
+  fprintf(stderr, "Lokalni 3. ID (ref): %s\n", symtable_list.Act->table_ptr->rptr->rptr->name);
   fprintf(stderr, "KONEC VYPISU:\n");
 
   return result;
