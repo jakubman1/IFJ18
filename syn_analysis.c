@@ -119,7 +119,6 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
 
   if (token->type == ID && searchID == NULL)
   {
-    fprintf(stderr, "HERE1\n");
     nameID = malloc((strlen(token->text) + 1) * sizeof(char));
 
     if (nameID == NULL)
@@ -202,14 +201,14 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     list_insert (symtable_list, localTree, token->text);
     fill_local_symtable = true;
   }
-  else if (token->type == ID && searchID == NULL && fill_local_symtable) {
+  else if (fill_local_symtable) {
     return_value = fill_symtable (&(symtable_list->Act->table_ptr), token);
     fprintf(stderr, "RESULT Z FILL_SYMTABLE: %d\n", return_value);
     if (return_value != SUCCESS) {
       return return_value;
     }
   }
-  else if (token->type == ID && searchID == NULL && !fill_local_symtable) {
+  else if (!fill_local_symtable) {
     return_value = fill_symtable (&(symtable_list->First->table_ptr), token);
     fprintf(stderr, "RESULT Z FILL_SYMTABLE: %d\n", return_value);
     if (return_value != SUCCESS) {
