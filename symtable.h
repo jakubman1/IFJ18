@@ -92,7 +92,7 @@ Insert a new function into symtable. If function already exists, update it.
 @param root Root of symtable tree.
 @param name Name of a function
 @param returnType Return type of the function (can be TYPE_INT, TYPE_STRING, TYPE_FLOAT or TYPE_NIL)
-@param paramCount Number of parameters that the function has. -1 means any number of parameters.
+@param paramCount Number of parameters that the function has. -1 means any number of parameters. -2 means UNKNOW parameters yet.
 @param params Single-linked list of function parameters
 @param define Was function defined (true) or just called (false)?
 @returns 0 on success, VARIABLE_ERR if name is a variable, 99 on memory allocation errors.
