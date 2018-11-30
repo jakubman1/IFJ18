@@ -141,15 +141,9 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
     }
   }
   else if ((token->type == OPERATOR && (strcmp(token->text, "=") == 0)) && seenID) {
-
-    fprintf(stderr, "NAME ID: %s\n", nameID);
-
     if (strchr(nameID, '!') != NULL || strchr(nameID, '?') != NULL) {
-      fprintf(stderr, "RETURNING VARIABLE_ERR\n");
       return VARIABLE_ERR;
     }
-
-    fprintf(stderr, "SEM UZ SE NEMAME DOSTAT\n");
 
     return_value = symtable_insert_variable(symtable_ptr, nameID, TYPE_NIL, true);
 
@@ -203,7 +197,6 @@ int create_local_symtable(tList *symtable_list, tToken *token)
   }
   else if (fill_local_symtable) {
     return_value = fill_symtable (&(symtable_list->Act->table_ptr), token);
-    fprintf(stderr, "RESULT Z FILL_SYMTABLE: %d\n", return_value);
     if (return_value != SUCCESS) {
       return return_value;
     }
