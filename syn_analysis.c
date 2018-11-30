@@ -184,6 +184,7 @@ int create_local_symtable(tList *symtable_list, tToken *token)
   // TODO pokud searchID neni NULL, tak mozna predefinice, ted nevim, nechce se mi o tom premyslet
 
   static bool seenDEF = false;
+  static bool fill_local_symtable = false;
   int return_value = SUCCESS;
   static int countEND = 0;
 
@@ -203,6 +204,10 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     symtable_init(&localTree);
     // insert new element in the list
     list_insert (symtable_list, localTree, token->text);
+    fill_local_symtable = true;
+  }
+  else if () {
+
   }
   return SUCCESS;
 }
@@ -246,7 +251,13 @@ int parser()
     }*/
 
     result = create_local_symtable(&symtable_list, &currentToken);
+    if (result != SUCCESS) { //FIX ME FREE ALLOCATED RESOURCES
+      break;
+    }
     result = fill_symtable (&globalTree, &currentToken);
+    if (result != SUCCESS) {
+      break;
+    }
     //
 
     if(result == 0) {
