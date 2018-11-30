@@ -142,17 +142,8 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
   }
   else if ((token->type == OPERATOR && (strcmp(token->text, "=") == 0)) && seenID) {
 
-    // ID_function = ... is an illegal operation
-    char *illegal_symbol = NULL;
-    fprintf(stderr, "NAME ID: %s\n", nameID);
-    illegal_symbol = strchr(nameID, '!'); // checks if ! is on the end of the name
-    fprintf(stderr, "illegal_symbol: %p\n", illegal_symbol);
-    if (illegal_symbol != NULL) {
+    if (strchr(nameID, '!') != NULL || strchr(nameID, '?') != NULL) {
       fprintf(stderr, "RETURNING VARIABLE_ERR\n");
-      return VARIABLE_ERR;
-    }
-    illegal_symbol = strchr(nameID, '?'); // checks if ? is on the end of the name
-    if (illegal_symbol != NULL) {
       return VARIABLE_ERR;
     }
 
@@ -272,11 +263,7 @@ int parser()
     }*/
 
     result = create_local_symtable(&symtable_list, &currentToken);
-    if (result != SUCCESS) { //FIX ME FREE ALLOCATED RESOURCES
-      fprintf(stderr, "result: %d\n", result);
-      fprintf(stderr, "scanner_out: %d\n", scanner_out);
-      break;
-    }
+
     /*
     result = fill_symtable (&globalTree, &currentToken);
     if (result != SUCCESS) {  //FIX ME FREE ALLOCATED RESOURCES
@@ -299,6 +286,8 @@ int parser()
     }
     if(result != 0) {
       // TODO: free allocated resources
+      fprintf(stderr, ANSI_COLOR_RED "variable_err: " ANSI_COLOR_RESET "assign into a function");
+      return result;
     }
   } // end while
 
@@ -314,16 +303,11 @@ int parser()
         }
       }
     }
-    else if (scanner_out == INTERNAL_ERR) {
+    else {
         if(result == INTERNAL_ERR) {
           fprintf(stderr, ANSI_COLOR_RED "Internal error: " ANSI_COLOR_RESET "memory allocation failed. Not enough memory?");
         }
       // Free allocated resources and quit (if there are any)
-    }
-    else {
-      if (result == VARIABLE_ERR) {
-        fprintf(stderr, ANSI_COLOR_RED "variable_err: " ANSI_COLOR_RESET "assign into a function");
-      }
     }
   }
   // We no longer need the stack, remove it.
