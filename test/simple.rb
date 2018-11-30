@@ -1,1 +1,4 @@
-b = 2
+a = 0
+def jirka (a)
+  b = 5
+end
