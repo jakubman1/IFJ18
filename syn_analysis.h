@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h> // strchr
 #include "lib/errcodes.h"
 #include "lib/types.h"
 #include "lib/stack.h"

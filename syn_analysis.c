@@ -142,6 +142,17 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
   }
   else if ((token->type == OPERATOR && (strcmp(token->text, "=") == 0)) && seenID) {
 
+    // ID_function = ... is an illegal operation
+    char illegal_symbol = NULL;
+    illegal_symbol = strchr(nameID, '!'); // checks if ! is on the end of the name
+    if (illegal_symbol != NULL) {
+      return SYNTAX_ERR;  // mozna LEXICAL_ERR?
+    }
+    illegal_symbol = strchr(nameID, '?'); // checks if ? is on the end of the name
+    if (illegal_symbol != NULL) {
+      return SYNTAX_ERR;  // mozna LEXICAL_ERR?
+    }
+
     return_value = symtable_insert_variable(symtable_ptr, nameID, TYPE_NIL, true);
 
     seenID = false;
@@ -231,9 +242,8 @@ int parser()
       fill_symtable (&globalTree, &currentToken);
     }*/
 
-    create_local_symtable(&symtable_list, &currentToken);
-    fill_symtable (&globalTree, &currentToken);
-    // create_local_symtable
+    result = create_local_symtable(&symtable_list, &currentToken);
+    result = fill_symtable (&globalTree, &currentToken);
     //
 
     if(result == 0) {
