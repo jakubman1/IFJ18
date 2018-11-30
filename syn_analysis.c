@@ -481,7 +481,6 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       else { // everything else or ID of a function
         tToken endExpression = {"", LL_BOTTOM}; // finish expression
-        fprintf(stderr, "PRISEL EOL, UKONCUJE SE PREC\n");
         if (prec_table(&endExpression) == SYNTAX_ERR) {
           fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET"Unexpected token in expression.\n");
           return SYNTAX_ERR;
