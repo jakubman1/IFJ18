@@ -142,10 +142,14 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
   }
   else if ((token->type == OPERATOR && (strcmp(token->text, "=") == 0)) && seenID) {
 
+    fprintf(stderr, "NAME ID: %s\n", nameID);
+
     if (strchr(nameID, '!') != NULL || strchr(nameID, '?') != NULL) {
       fprintf(stderr, "RETURNING VARIABLE_ERR\n");
       return VARIABLE_ERR;
     }
+
+    fprintf(stderr, "SEM UZ SE NEMAME DOSTAT\n");
 
     return_value = symtable_insert_variable(symtable_ptr, nameID, TYPE_NIL, true);
 
