@@ -146,7 +146,9 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
     char illegal_symbol = NULL;
     fprintf(stderr, "NAME ID: %s\n", nameID);
     illegal_symbol = strchr(nameID, '!'); // checks if ! is on the end of the name
+    fprintf(stderr, "illegal_symbol: %p\n", illegal_symbol);
     if (illegal_symbol != NULL) {
+      fprintf(stderr, "RETURNING VARIABLE_ERR\n");
       return VARIABLE_ERR;
     }
     illegal_symbol = strchr(nameID, '?'); // checks if ? is on the end of the name
