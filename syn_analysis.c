@@ -229,10 +229,11 @@ int parser()
   tSymPtr globalTree = NULL;
 
   symtable_init(&globalTree);
+  /*
   if (insert_built_in_functions(&globalTree) == INTERNAL_ERR) {
     return INTERNAL_ERR;
   }
-
+  */
   list_init(&symtable_list);
   list_insert(&symtable_list, globalTree, NULL);
 
@@ -323,12 +324,15 @@ int parser()
 
   }
   s_free(&stack);
-/*
-fprintf(stderr, "VYPIS POSLEDNI TABULKY SYMBOLU:\n");
-tSymPtr adam = NULL;
-fprintf(stderr, "%s\n", symtable_list.Act->table_name);
+
+fprintf(stderr, "VYPIS TABULEK SYMBOLU:\n");
+fprintf(stderr, "Globalni 1. ID (foo): %s\n", symtable_list.First->table_ptr->name);
+fprintf(stderr, "Globalni 2. ID (ref): %s\n", symtable_list.First->table_ptr->rptr->name);
+fprintf(stderr, "Lokalni jmeno: %s\n", symtable_list.Act->table_name);
+fprintf(stderr, "Lokalni 1. ID (a): %s\n", symtable_list.Act->table_ptr->name);
+fprintf(stderr, "Lokalni 2. ID (b): %s\n", symtable_list.Act->table_ptr->rptr->name);
 fprintf(stderr, "KONEC VYPISU:\n");
-*/
+
   return result;
 }
 
