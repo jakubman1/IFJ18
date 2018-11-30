@@ -180,6 +180,7 @@ int create_local_symtable(tList *symtable_list, tToken *token)
   if (token->type == DEF) {
     seenDEF = true;
     countEND++;
+    fprintf(stderr, "countEND = %d\n", countEND);
   }
   else if (token->type == ID && searchID == NULL && seenDEF) {
     seenDEF = false;
@@ -195,13 +196,13 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     list_insert (symtable_list, localTree, token->text);
     fill_local_symtable = true;
   }
-  else if (fill_local_symtable) {
+  else if (fill_local_symtable == true) {
     return_value = fill_symtable (&(symtable_list->Act->table_ptr), token);
     if (return_value != SUCCESS) {
       return return_value;
     }
   }
-  else if (!fill_local_symtable) {
+  else if (fill_local_symtable == false) {
     fprintf(stderr, "VKLADAME %s\n", token->text);
     return_value = fill_symtable (&(symtable_list->First->table_ptr), token);
     if (return_value != SUCCESS) {
@@ -210,9 +211,11 @@ int create_local_symtable(tList *symtable_list, tToken *token)
   }
   else if (fill_local_symtable && (token->type == IF || token->type == WHILE)) {
     countEND++;
+    fprintf(stderr, "countEND = %d\n", countEND);
   }
   else if (fill_local_symtable && token->type == END) {
     countEND--;
+    fprintf(stderr, "countEND = %d\n", countEND);
     if (countEND == 0) {
       fill_local_symtable = false;
     }
