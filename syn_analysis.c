@@ -202,7 +202,7 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     }
   }
   else if (!fill_local_symtable) {
-    fprintf(stderr, "VKLADAME %s\n", token->name);
+    fprintf(stderr, "VKLADAME %s\n", token->text);
     return_value = fill_symtable (&(symtable_list->First->table_ptr), token);
     if (return_value != SUCCESS) {
       return return_value;
