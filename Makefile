@@ -33,7 +33,3 @@ fulltest:
 
 quack:
 	@echo -e ".__(.)< (quack, quack, i'm a duck)\n \\__)\n~~~~~~~~~~~~~"
-
-gtests:
-	git pull
-	tests
