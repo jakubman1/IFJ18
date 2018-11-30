@@ -119,6 +119,7 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
 
   if (token->type == ID && searchID == NULL)
   {
+    fprintf(stderr, "HERE1\n");
     nameID = malloc((strlen(token->text) + 1) * sizeof(char));
 
     if (nameID == NULL)
