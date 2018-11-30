@@ -143,7 +143,7 @@ int fill_symtable (tSymPtr *symtable_ptr, tToken *token)
   else if ((token->type == OPERATOR && (strcmp(token->text, "=") == 0)) && seenID) {
 
     // ID_function = ... is an illegal operation
-    char illegal_symbol = NULL;
+    char *illegal_symbol = NULL;
     fprintf(stderr, "NAME ID: %s\n", nameID);
     illegal_symbol = strchr(nameID, '!'); // checks if ! is on the end of the name
     fprintf(stderr, "illegal_symbol: %p\n", illegal_symbol);
@@ -273,7 +273,7 @@ int parser()
 
     result = create_local_symtable(&symtable_list, &currentToken);
     if (result != SUCCESS) { //FIX ME FREE ALLOCATED RESOURCES
-      fprintf(stderr, "%result: %d\n", result);
+      fprintf(stderr, "result: %d\n", result);
       fprintf(stderr, "scanner_out: %d\n", scanner_out);
       break;
     }
