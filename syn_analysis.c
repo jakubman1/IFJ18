@@ -263,6 +263,7 @@ int parser()
     }*/
 
     result = create_local_symtable(&symtable_list, &currentToken);
+    fprintf(stderr, "RESULT Z CREATE_LOCAL_SYMTABLE: %d\n", result);
 
     /*
     result = fill_symtable (&globalTree, &currentToken);
