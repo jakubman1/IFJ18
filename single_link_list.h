@@ -18,9 +18,6 @@
 #include "symtable.h"
 #include "expression.h"
 
-#define TRUE 1
-#define FALSE 0
-
 typedef struct tElem {
     char *table_name;
     tSymPtr table_ptr;
