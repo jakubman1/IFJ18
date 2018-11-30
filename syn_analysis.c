@@ -206,7 +206,7 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     list_insert (symtable_list, localTree, token->text);
     fill_local_symtable = true;
   }
-  else if () {
+  else if (fill_local_symtable) {
 
   }
   return SUCCESS;
