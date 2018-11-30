@@ -206,8 +206,23 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     list_insert (symtable_list, localTree, token->text);
     fill_local_symtable = true;
   }
-  else if (fill_local_symtable) {
-
+  else if (token->type == ID && searchID == NULL && fill_local_symtable) {
+    fill_symtable (symtable_list->Act->table_ptr, &currentToken);
+  }
+  else if (token->type == ID && searchID == NULL && !fill_local_symtable) {
+    fill_symtable (symtable_list->First->table_ptr, &currentToken);
+  }
+  else if (fill_local_symtable && (token->type == IF || token->type == WHILE)) {
+countEND++;
+  }
+  else if (fill_local_symtable && token->type == END) {
+    if (countEND != 1) {
+      countEND--;
+    }
+    else {
+      fill_local_symtable = false;
+      countEND--;
+    }
   }
   return SUCCESS;
 }
@@ -252,10 +267,14 @@ int parser()
 
     result = create_local_symtable(&symtable_list, &currentToken);
     if (result != SUCCESS) { //FIX ME FREE ALLOCATED RESOURCES
+      fprintf(stderr, "%result: %d\n", result);
+      fprintf(stderr, "scanner_out: %d\n", scanner_out);
       break;
     }
     result = fill_symtable (&globalTree, &currentToken);
-    if (result != SUCCESS) {
+    if (result != SUCCESS) {  //FIX ME FREE ALLOCATED RESOURCES
+      fprintf(stderr, "%result: %d\n", result);
+      fprintf(stderr, "scanner_out: %d\n", scanner_out);
       break;
     }
     //
@@ -287,11 +306,16 @@ int parser()
         }
       }
     }
-    else {
+    else if {
         if(result == INTERNAL_ERR) {
           fprintf(stderr, ANSI_COLOR_RED "Internal error: " ANSI_COLOR_RESET "memory allocation failed. Not enough memory?");
         }
       // Free allocated resources and quit (if there are any)
+    }
+    else {
+      if (result == VARIABLE_ERR) {
+        fprintf(stderr, ANSI_COLOR_RED "variable_err: " ANSI_COLOR_RESET "assign into a function");
+      }
     }
   }
   // We no longer need the stack, remove it.
