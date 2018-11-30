@@ -1,7 +1,3 @@
-def adam ()
-  test = 5
-end
-
-def jirka ()
-  test = 8
-end
+a = 1
+b! = 2
+c? = 3

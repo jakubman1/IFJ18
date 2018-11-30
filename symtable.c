@@ -86,7 +86,6 @@ int symtable_insert_variable(tSymPtr *root, char *name, data_type type, bool def
       return VARIABLE_ERR;
     }
     if(new->type == UNKNOWN) {
-      fprintf(stderr, "CHANGING TYPE\n");
       new->type = VARIABLE;
     }
   }

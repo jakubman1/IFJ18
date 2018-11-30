@@ -10,9 +10,8 @@
 
 #include "syn_analysis.h"
 
-/* TODO PRACE SE SYMTABLE
+/* TODO UKLADANI FUNKCE
 
-  UKLADANI FUNKCE
 1) kdykoliv narazime na DEF, mela by se inicializovat nova lokalni tabulka symbolu
     def id ( PARAMS ) eol STATEMENT_N end eol PROG
     ^   ^      ^                  ^   ^
@@ -25,6 +24,16 @@ symtable_insert_function
 3) paramCount, params
 4) returnType1
 5) konec ramce lokalni tabulky symbolu - pomoci pocitadla endu
+
+3:
+a) vytvorit bool seen_left_bracket
+  // pozor na volani funkce v definici funkce, abychom neukladali i jeji parametry - meli bychom parametry ukladat jenom potom, co je aktivni seenDef
+b) while (seen_left_bracket && token-type neni right_bracket)
+  {
+  kdyz prijde ID --> param_count++
+                 --> ulozit id do seznamu parametru v te lokalni symtable
+  }
+c) az prijde right_bracket --> uloz param_count
 
 */
 
@@ -165,7 +174,6 @@ int create_local_symtable(tList *symtable_list, tToken *token)
   static int countEND = 0;
 
   if (token->type == DEF) {
-    fprintf(stderr, "HERE0\n");
     seenDEF = true;
     countEND++;
   }
@@ -173,20 +181,15 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     seenDEF = false;
     // insert function to global symtable
     return_value = symtable_insert_function(&(symtable_list->First->table_ptr), token->text, TYPE_NIL, -2, NULL, true);
-    fprintf(stderr, "HERE1\n");
     if (return_value != SUCCESS) {
-      fprintf(stderr, "HERE ERROR\n");
       return return_value;
     }
     // init new symtable
     tSymPtr localTree = NULL;
     symtable_init(&localTree);
     // insert new element in the list
-    fprintf(stderr, "PRED LIST_INSERT: %s\n", token->text);
     list_insert (symtable_list, localTree, token->text);
-    fprintf(stderr, "LOKALNI =: %s\n", symtable_list->Act->table_name);
   }
-  fprintf(stderr, "HERE2\n");
   return SUCCESS;
 }
 
@@ -284,13 +287,12 @@ int parser()
 
   }
   s_free(&stack);
-
-fprintf(stderr, "VYPIS TABULEK SYMBOLU:\n");
+/*
+fprintf(stderr, "VYPIS POSLEDNI TABULKY SYMBOLU:\n");
 tSymPtr adam = NULL;
-//symtable_search(globalTree, "adam", &adam); // searches through global Tree
 fprintf(stderr, "%s\n", symtable_list.Act->table_name);
-fprintf(stderr, "KONEC VYPISU TABULEK SYMBOLU:\n");
-
+fprintf(stderr, "KONEC VYPISU:\n");
+*/
   return result;
 }
 
