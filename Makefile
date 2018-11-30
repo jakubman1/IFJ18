@@ -36,4 +36,4 @@ quack:
 
 gtests:
 	git pull
-	make tests
+	lexical-test syntactic-test
