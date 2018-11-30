@@ -159,9 +159,11 @@ void symtable_insert(tSymPtr *root, tSymPtr node)
         cmpval = strcmp((*root)->name, node->name);
         if(cmpval < 0) {
           symtable_insert(&(((*root)->lptr)), node);
+          fprintf(stderr, "davame doleva %s\n", node->name);
         }
         else if(cmpval > 0) {
           symtable_insert(&(((*root)->rptr)), node);
+          fprintf(stderr, "davame doprava %s\n", node->name);
         }
       }
       else {
