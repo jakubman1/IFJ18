@@ -207,10 +207,16 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     fill_local_symtable = true;
   }
   else if (token->type == ID && searchID == NULL && fill_local_symtable) {
-    fill_symtable (&(symtable_list->Act->table_ptr), token);
+    return_value = fill_symtable (&(symtable_list->Act->table_ptr), token);
+    if (return_value != SUCCESS) {
+      return return_value;
+    }
   }
   else if (token->type == ID && searchID == NULL && !fill_local_symtable) {
-    fill_symtable (&(symtable_list->First->table_ptr), token);
+    return_value = fill_symtable (&(symtable_list->First->table_ptr), token);
+    if (return_value != SUCCESS) {
+      return return_value;
+    }
   }
   else if (fill_local_symtable && (token->type == IF || token->type == WHILE)) {
 countEND++;
