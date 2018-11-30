@@ -36,4 +36,4 @@ quack:
 
 gtests:
 	git pull
-	tests
+	make tests
