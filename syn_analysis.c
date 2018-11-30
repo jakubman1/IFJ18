@@ -196,6 +196,17 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     list_insert (symtable_list, localTree, token->text);
     fill_local_symtable = true;
   }
+  else if (fill_local_symtable && (token->type == IF || token->type == WHILE)) {
+    countEND++;
+    fprintf(stderr, "countEND = %d\n", countEND);
+  }
+  else if (fill_local_symtable && token->type == END) {
+    countEND--;
+    fprintf(stderr, "countEND = %d\n", countEND);
+    if (countEND == 0) {
+      fill_local_symtable = false;
+    }
+  }
   else if (fill_local_symtable == true) {
     return_value = fill_symtable (&(symtable_list->Act->table_ptr), token);
     if (return_value != SUCCESS) {
@@ -207,17 +218,6 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     return_value = fill_symtable (&(symtable_list->First->table_ptr), token);
     if (return_value != SUCCESS) {
       return return_value;
-    }
-  }
-  else if (fill_local_symtable && (token->type == IF || token->type == WHILE)) {
-    countEND++;
-    fprintf(stderr, "countEND = %d\n", countEND);
-  }
-  else if (fill_local_symtable && token->type == END) {
-    countEND--;
-    fprintf(stderr, "countEND = %d\n", countEND);
-    if (countEND == 0) {
-      fill_local_symtable = false;
     }
   }
   return SUCCESS;
@@ -333,11 +333,11 @@ int parser()
 
   fprintf(stderr, "VYPIS TABULEK SYMBOLU:\n");
   fprintf(stderr, "Globalni 1. ID (foo): %s\n", symtable_list.First->table_ptr->name);
-//  fprintf(stderr, "Globalni 2. ID (ref): %s\n", symtable_list.First->table_ptr->rptr->name);
+  fprintf(stderr, "Globalni 2. ID (ref): %s\n", symtable_list.First->table_ptr->rptr->name);
   fprintf(stderr, "Lokalni jmeno: %s\n", symtable_list.Act->table_name);
   fprintf(stderr, "Lokalni 1. ID (a): %s\n", symtable_list.Act->table_ptr->name);
   fprintf(stderr, "Lokalni 2. ID (b): %s\n", symtable_list.Act->table_ptr->rptr->name);
-  fprintf(stderr, "Lokalni 3. ID (ref): %s\n", symtable_list.Act->table_ptr->rptr->rptr->name);
+  //fprintf(stderr, "Lokalni 3. ID (ref): %s\n", symtable_list.Act->table_ptr->rptr->rptr->name);
   fprintf(stderr, "KONEC VYPISU:\n");
 
   return result;
