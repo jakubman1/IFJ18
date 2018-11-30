@@ -204,6 +204,7 @@ int create_local_symtable(tList *symtable_list, tToken *token)
   }
   else if (token->type == ID && searchID == NULL && fill_local_symtable) {
     return_value = fill_symtable (&(symtable_list->Act->table_ptr), token);
+    fprintf(stderr, "RESULT Z FILL_SYMTABLE: %d\n", return_value);
     if (return_value != SUCCESS) {
       return return_value;
     }
@@ -216,15 +217,12 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     }
   }
   else if (fill_local_symtable && (token->type == IF || token->type == WHILE)) {
-countEND++;
+    countEND++;
   }
   else if (fill_local_symtable && token->type == END) {
-    if (countEND != 1) {
-      countEND--;
-    }
-    else {
+    countEND--;
+    if (countEND == 0) {
       fill_local_symtable = false;
-      countEND--;
     }
   }
   return SUCCESS;
@@ -268,8 +266,8 @@ int parser()
       fill_symtable (&globalTree, &currentToken);
     }*/
 
-    //result = create_local_symtable(&symtable_list, &currentToken);
-    result = fill_symtable (&globalTree, &currentToken);
+    result = create_local_symtable(&symtable_list, &currentToken);
+    //result = fill_symtable (&globalTree, &currentToken);
     fprintf(stderr, "RESULT Z CREATE_LOCAL_SYMTABLE: %d\n", result);
 
     /*
@@ -294,7 +292,7 @@ int parser()
     }
     if(result != 0) {
       // TODO: free allocated resources
-      fprintf(stderr, ANSI_COLOR_RED "variable_err: " ANSI_COLOR_RESET "assign into a function");
+      fprintf(stderr, ANSI_COLOR_RED "variable_err: " ANSI_COLOR_RESET "assign into a function\n");
       return result;
     }
   } // end while
@@ -313,7 +311,7 @@ int parser()
     }
     else {
         if(result == INTERNAL_ERR) {
-          fprintf(stderr, ANSI_COLOR_RED "Internal error: " ANSI_COLOR_RESET "memory allocation failed. Not enough memory?");
+          fprintf(stderr, ANSI_COLOR_RED "Internal error: " ANSI_COLOR_RESET "memory allocation failed. Not enough memory?\n");
         }
       // Free allocated resources and quit (if there are any)
     }
