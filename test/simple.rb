@@ -1,4 +1,4 @@
-a = 0
-def jirka (a)
-  b = 5
+n = 5
+def foo (a,b,c)
+  a = n + 2 #error a = 2 + n fakci
 end

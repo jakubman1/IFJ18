@@ -127,39 +127,6 @@ Add parameter to a parameter list
 @pre head cannot be NULL
 @return 0 on success, 99 on memory allocation errors.
 */
-int add_param(tFuncParam *head, data_type type);
-
-/**
-Add built in functions into the symtable
-@param root Symtable where the functions will be inserted
-@return 0 on success, 99 on memory allocation errors.
-*/
-int insert_built_in_functions (tSymPtr *root);
-
-/**
-Inserts unknown variables or modifies already existing ones. Auxiliary function for create_local_symtable. Function has no effect for tokens that shouldn't stored be in symtables.
-@param symtable_ptr Symtable where the data from token will be inserted
-@param token Current token
-@return 0 on success, VARIABLE_ERR if "<id>! = ..." or "<id>? = ..." or if name is a function, 99 on memory allocation errors.
-*/
-int fill_symtable (tSymPtr *symtable_ptr, tToken *token);
-
-/**
-Creates symtables if needed and fills them with data obtained from tokens. Function has no effect for tokens that shouldn't be stored in symtables.
-@param symtable_list List of symtables
-@param token Current token
-@return 0 on success, VARIABLE_ERR if "<id>! = ..." or "<id>? = ..." or if name is a function (when inserting variable) or if name is a variable (when inserting function), 99 on memory allocation errors.
-@pre Head of the list should be global symtable
-*/
-int create_local_symtable(tList *symtable_list, tToken *token);
-
-/**
-Inserts variable into the global symtable.
-@param cur_token Current token
-@param prev_token Previous token
-@param globalTree Global symtable
-@returns 0 on success, VARIABLE_ERR if name is a function, 99 on memory allocation errors.
-*/
-int add_to_symtable(tToken *cur_token, tToken *prev_token, tSymPtr *globalTree);
+int add_param(tFuncParam **head, data_type type);
 
 #endif

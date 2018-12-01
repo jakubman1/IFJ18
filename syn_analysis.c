@@ -10,6 +10,229 @@
 
 #include "syn_analysis.h"
 
+int insert_built_in_functions (tSymPtr *root)
+{
+  tFuncParam *length_params = NULL;
+  if (add_param(&length_params, STRING) == INTERNAL_ERR) {
+    return INTERNAL_ERR;
+  }
+
+  tFuncParam *substr_params = NULL;
+  if (add_param(&substr_params, TYPE_STRING) == INTERNAL_ERR) {
+    return INTERNAL_ERR;
+  }
+  if (add_param(&substr_params, TYPE_INT) == INTERNAL_ERR) {
+    return INTERNAL_ERR;
+  }
+  if (add_param(&substr_params, TYPE_INT) == INTERNAL_ERR) {
+    return INTERNAL_ERR;
+  }
+
+  tFuncParam *ord_params = NULL;
+  if (add_param(&ord_params, TYPE_STRING) == INTERNAL_ERR) {
+    return INTERNAL_ERR;
+  }
+  if (add_param(&ord_params, TYPE_INT) == INTERNAL_ERR) {
+    return INTERNAL_ERR;
+  }
+
+  tFuncParam *chr_params = NULL;
+  if (add_param(&chr_params, TYPE_INT) == INTERNAL_ERR) {
+    return INTERNAL_ERR;
+  }
+
+// Insert builtin functions
+  symtable_insert_function(root, "print", TYPE_NIL, -1, NULL, true); // error returns NIL
+  symtable_insert_function(root, "inputs", TYPE_STRING, 0, NULL, true);
+  symtable_insert_function(root, "inputi", TYPE_INT, 0, NULL, true);
+  symtable_insert_function(root, "inputf", TYPE_FLOAT, 0, NULL, true);
+  symtable_insert_function(root, "length", TYPE_INT, 1, length_params, true);
+  symtable_insert_function(root, "substr", TYPE_STRING, 3, substr_params, true); // error returns NIL
+  symtable_insert_function(root, "ord", TYPE_INT, 2, ord_params, true); // error returns NIL
+  symtable_insert_function(root, "chr", TYPE_STRING, 1, chr_params, true);
+
+  return SUCCESS;
+}
+
+int fill_symtable (tList *symtable_list, tSymPtr *symtable_ptr, tToken *token)
+{
+  tSymPtr searchID = NULL;
+  if (token->type == ID) {
+    symtable_search(*symtable_ptr, token->text, &searchID);
+  }
+  /*
+  if (strcmp(token->text, "foo") == 0) {
+    symtable_search(symtable_list->First->table_ptr, token->text, &searchID);
+    fprintf(stderr, "%p\n", searchID);
+  }
+  */
+  static char *nameID = NULL;
+  static bool seenID = false;
+  int return_value = SUCCESS;
+
+  if (token->type == ID && searchID == NULL)
+  {
+    nameID = malloc((strlen(token->text) + 1) * sizeof(char));
+
+    if (nameID == NULL)
+    {
+      return INTERNAL_ERR;
+    }
+    else
+    {
+      strcpy(nameID, token->text);
+      return_value = symtable_insert_unknown(symtable_ptr, nameID);
+      if (return_value == SUCCESS)
+      {
+        seenID = true;
+      }
+      else
+      {
+        free(nameID);
+      }
+      return return_value;
+    }
+  }
+  else if (token->type == ID && (searchID != NULL && searchID->type == FUNCTION))
+  {
+    return VARIABLE_ERR;
+  }
+  else if ((token->type == OPERATOR && (strcmp(token->text, "=") == 0)) && seenID) {
+    if (strchr(nameID, '!') != NULL || strchr(nameID, '?') != NULL) {
+      return VARIABLE_ERR;
+    }
+
+    return_value = symtable_insert_variable(symtable_ptr, nameID, TYPE_NIL, true);
+
+    seenID = false;
+    free(nameID);
+
+    return return_value;
+  }
+  else if (seenID) {
+    seenID = false;
+    free(nameID);
+  }
+  return SUCCESS;
+}
+
+int create_local_symtable(tList *symtable_list, tToken *token)
+{
+  tSymPtr searchID = NULL;
+
+  if (token->type == ID) {
+    symtable_search(symtable_list->First->table_ptr, token->text, &searchID); // searches through global Tree
+  }
+  // TODO pokud searchID neni NULL, tak mozna predefinice, ted nevim, nechce se mi o tom premyslet
+
+  static bool seenDEF = false;
+  static bool seen_left_bracket = false;
+  static bool fill_local_symtable = false;
+  static int countEND = 0;
+  static int count_param = 0;
+  static char *nameID = NULL;
+  static tFuncParam *params_list = NULL;
+  int return_value = SUCCESS;
+
+  if (token->type == DEF) {
+    seenDEF = true;
+    countEND++;
+  }
+  else if (token->type == ID && searchID == NULL && seenDEF) {
+    fill_local_symtable = true;
+    // insert function to global symtable
+    return_value = symtable_insert_function(&(symtable_list->First->table_ptr), token->text, TYPE_NIL, -2, params_list, true);
+    if (return_value != SUCCESS) {
+      return return_value;
+    }
+    // remember the name of the function for later
+    nameID = malloc((strlen(token->text) + 1) * sizeof(char));
+    if (nameID == NULL) {
+      return INTERNAL_ERR;
+    }
+    strcpy(nameID, token->text);
+    // init new symtable
+    tSymPtr localTree = NULL;
+    symtable_init(&localTree);
+    // insert new element in the list
+    list_insert (symtable_list, localTree, token->text);
+  }
+  else if (token->type == ID && seenDEF && (searchID != NULL && searchID->type == VARIABLE)) {
+    return VARIABLE_ERR;
+  }
+  else if (fill_local_symtable && (token->type == IF || token->type == WHILE)) {
+    countEND++;
+  }
+  else if (fill_local_symtable && token->type == END) {
+    countEND--;
+    if (countEND == 0) {
+      fill_local_symtable = false;
+    }
+  }
+  else if (token->type == OPERATOR && token->text[0] == '(') {
+    seen_left_bracket = true;
+    seenDEF = false; // setting false here prevents from storing params inside the definition if other function is called
+    /*
+    params_list = malloc(sizeof(tFuncParam));
+    if (params_list == NULL) {
+      free(nameID);
+      fprintf(stderr, "Internal Error: No memory left.\n");
+      return INTERNAL_ERR;
+    }
+    else {
+      params_list->type = NONE;
+      params_list->next = NULL;
+    }
+    */
+    //add_param(params_list, NONE);
+  }
+  else if (token->type == OPERATOR && token->text[0] == ')') {
+    seen_left_bracket = false;
+    return_value = symtable_insert_function(&(symtable_list->First->table_ptr), nameID, TYPE_NIL, count_param, params_list, true);
+    if (return_value != SUCCESS) {
+      return return_value;
+    }
+    count_param = 0;
+    free(nameID);
+    //free (params_list); // FIX ME - copy pointer in the symtable_insert_function so it can be freed here
+  }
+  else if (token->type == ID && seen_left_bracket && ( searchID == NULL || (searchID != NULL && searchID->type == VARIABLE))) {
+    count_param++;
+    fprintf(stderr, "params_list pred: %p\n", params_list);
+    return_value = add_param(&params_list, NONE);
+    if (return_value == INTERNAL_ERR) {
+      free(nameID);
+      //free (params_list);  // FIX ME - copy pointer in the symtable_insert_function so it can be freed here
+      return INTERNAL_ERR;
+    }
+    fprintf(stderr, "params_list po: %p\n", params_list);
+
+    return_value = fill_symtable (symtable_list, &(symtable_list->Act->table_ptr), token);
+    if (return_value != SUCCESS) {
+      return return_value;
+    }
+  }
+  else if (token->type == ID && seen_left_bracket && (searchID != NULL && searchID->type != VARIABLE)) {
+    free(nameID);
+    //free (params_list); // FIX ME - copy pointer in the symtable_insert_function so it can be freed here
+    return INTERNAL_ERR;
+  }
+  else if (fill_local_symtable == true) {
+    return_value = fill_symtable (symtable_list, &(symtable_list->Act->table_ptr), token);
+    if (return_value != SUCCESS) {
+      return return_value;
+    }
+  }
+  else if (fill_local_symtable == false) {
+    return_value = fill_symtable (symtable_list, &(symtable_list->First->table_ptr), token);
+    if (return_value != SUCCESS) {
+      return return_value;
+    }
+  }
+  return SUCCESS;
+}
+
+
 int parser()
 {
   int result = SUCCESS;
@@ -37,6 +260,7 @@ int parser()
     // currentToken contains new token in every iteration
 
     result = create_local_symtable(&symtable_list, &currentToken);
+    fprintf(stderr, "create_local_symtable result = %d\n", result);
 
     if(result == 0) {
       result = ll_predict(&currentToken, &stack, &globalTree);
@@ -54,8 +278,6 @@ int parser()
       return result;
     }
   } // end while
-
-  fprintf(stderr, "end of while\n");
 
   if(scanner_out != -1) {
     // handle errors during lexical analysis
@@ -96,10 +318,20 @@ int parser()
 /*
   fprintf(stderr, "VYPIS TABULEK SYMBOLU:\n");
   fprintf(stderr, "Globalni 1. ID (foo): %s\n", symtable_list.First->table_ptr->name);
-  fprintf(stderr, "Globalni 2. ID (ref): %s\n", symtable_list.First->table_ptr->rptr->name);
+  fprintf(stderr, "Globalni 1. ID (foo) param_count: %d\n", symtable_list.First->table_ptr->data.funData.paramCount);
+  fprintf(stderr, "Globalni 1. ID (foo) param_list 1. Element: %p\n", symtable_list.First->table_ptr->data.funData.params);
+  fprintf(stderr, "Globalni 1. ID (foo) param_list 1. Element Typ: %d\n", symtable_list.First->table_ptr->data.funData.params->type);
+  fprintf(stderr, "Globalni 1. ID (foo) param_list 1. (a) Element head: %p\n", symtable_list.First->table_ptr->data.funData.params);
+  fprintf(stderr, "Globalni 1. ID (foo) param_list 2. (b) Element next: %p\n", symtable_list.First->table_ptr->data.funData.params->next);
+  fprintf(stderr, "Globalni 1. ID (foo) param_list 3. (c) Element next->next: %p\n", symtable_list.First->table_ptr->data.funData.params->next->next);
+  //fprintf(stderr, "Globalni 1. ID (foo) param_list 1. Element rptr: %p\n", symtable_list.First->table_ptr->rptr);
+  //fprintf(stderr, "Globalni 1. ID (foo) param_list 2. Element: %p\n", symtable_list.First->table_ptr->rptr->data.funData.params);
+  //fprintf(stderr, "Globalni 1. ID (foo) param_list 2. Element Typ: %d\n", symtable_list.First->table_ptr->rptr->data.funData.params->type);
+  //fprintf(stderr, "Globalni 2. ID (ref): %s\n", symtable_list.First->table_ptr->rptr->name);
   fprintf(stderr, "Lokalni jmeno: %s\n", symtable_list.Act->table_name);
   fprintf(stderr, "Lokalni 1. ID (a): %s\n", symtable_list.Act->table_ptr->name);
   fprintf(stderr, "Lokalni 2. ID (b): %s\n", symtable_list.Act->table_ptr->rptr->name);
+  //fprintf(stderr, "Lokalni 2. ID (b): %s\n", symtable_list.Act->table_ptr->rptr->name);
   fprintf(stderr, "KONEC VYPISU:\n");
 */
   return result;
@@ -197,7 +429,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       if(token->type == EOL) {
         PUSH_RULE_18;
       }
-      else if(token->type == ID) { // TODO must be ID of a function
+      else if(token->type == ID) { // must be ID of a function
         tSymPtr sym = NULL;
         symtable_search(*globalTree, token->text, &sym);
         // Muze byt UNKNOWN,FUNCTION nebo VARIABLE
@@ -443,5 +675,24 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
   // TODO  into tree, derivation tree
 
   // Why can you drink a drink, but not food a food?
+  return SUCCESS;
+}
+
+int add_to_symtable(tToken *cur_token, tToken *prev_token, tSymPtr *globalTree)
+{
+  if(cur_token->type == OPERATOR && (strcmp(cur_token->text, "=") == 0) && prev_token->type == ID) {
+    // nastav predchozi token na promennou
+    int result = SUCCESS;
+    result = symtable_insert_variable(globalTree, prev_token->text, TYPE_NIL, true);
+    return result;
+  }
+  /*
+  if(token->type == ID) {
+    // pridej do symtable, ale prvni sezen jeho typ.
+    // Prislo ID, pockej na dalsi token.
+    // Jesli dalsi token je =, nastav ID jako promenou, jinak nechej unknown
+    return symtable_insert_unknown(globalTree, token->text);
+  }
+  */
   return SUCCESS;
 }
