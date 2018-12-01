@@ -306,7 +306,7 @@ int parser()
   if (insert_built_in_functions(&globalTree) == INTERNAL_ERR) {
     return INTERNAL_ERR;
   }
-  
+
   list_init(&symtable_list);
   list_insert(&symtable_list, globalTree, NULL);
 
@@ -520,9 +520,6 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
           return VARIABLE_ERR;
         }
 
-        // Muze byt UNKNOWN,FUNCTION nebo VARIABLE
-        //printf(stderr, "je v tabulce - %p %s\n", sym , token->text);
-        //fprintf(stderr, "Globalni 1. ID (n): %s\n", (*globalTree)->name);
         if(sym->type == UNKNOWN || sym->type == FUNCTION) {
           PUSH_RULE_16;
         }
