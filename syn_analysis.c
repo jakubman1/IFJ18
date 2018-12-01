@@ -54,80 +54,146 @@ int insert_built_in_functions (tSymPtr *root)
   return SUCCESS;
 }
 
-int fill_symtable (tList *symtable_list, tSymPtr *symtable_ptr, tToken *token)
+int fill_global_symtable (tList *symtable_list, tToken *token)
 {
-  tSymPtr searchID = NULL;
-  if (token->type == ID) {
-    symtable_search(*symtable_ptr, token->text, &searchID);
-  }
-  /*
-  if (strcmp(token->text, "foo") == 0) {
-    symtable_search(symtable_list->First->table_ptr, token->text, &searchID);
-    fprintf(stderr, "%p\n", searchID);
-  }
-  */
   static char *nameID = NULL;
   static bool seenID = false;
   int return_value = SUCCESS;
 
-  if (token->type == ID && searchID == NULL)
-  {
+  tSymPtr ID_global = NULL;
+  tSymPtr ID_local = NULL;
+  tSymPtr searchNameID = NULL;
+
+  if (token->type == ID) {
+    symtable_search(symtable_list->First->table_ptr, token->text, &ID_global); // searches through global Tree
+  }
+  if (token->type == ID) {
+    symtable_search(symtable_list->Act->table_ptr, token->text, &ID_local); // searches through local Tree
+  }
+
+  if (token->type == ID && (ID_global == NULL || (ID_global != NULL && ID_global->type == UNKNOWN))) {
+    // save as unknown
     nameID = malloc((strlen(token->text) + 1) * sizeof(char));
 
-    if (nameID == NULL)
-    {
+    if (nameID == NULL) {
       return INTERNAL_ERR;
     }
-    else
-    {
-      strcpy(nameID, token->text);
-      return_value = symtable_insert_unknown(symtable_ptr, nameID);
-      if (return_value == SUCCESS)
-      {
-        seenID = true;
-      }
-      else
-      {
-        free(nameID);
-      }
-      return return_value;
+    strcpy(nameID, token->text);
+    return_value = symtable_insert_unknown(&(symtable_list->First->table_ptr), nameID);
+    if (return_value != SUCCESS) {
+      free(nameID);
     }
-  }
-  else if (token->type == ID && (searchID != NULL && searchID->type == FUNCTION))
-  {
-    return VARIABLE_ERR;
-  }
-  else if ((token->type == OPERATOR && (strcmp(token->text, "=") == 0)) && seenID) {
-    if (strchr(nameID, '!') != NULL || strchr(nameID, '?') != NULL) {
-      return VARIABLE_ERR;
-    }
-
-    return_value = symtable_insert_variable(symtable_ptr, nameID, TYPE_NIL, true);
-
-    seenID = false;
-    free(nameID);
-
+    seenID = true;
     return return_value;
   }
-  else if (seenID) {
-    seenID = false;
+  else if (token->type == OPERATOR && (strcmp(token->text, "=") == 0) && seenID) {
+    symtable_search(symtable_list->First->table_ptr, nameID, &searchNameID);
+    if (searchNameID == NULL) {
+      free(nameID);
+      return INTERNAL_ERR;
+    }
+    if (searchNameID->type != FUNCTION && strchr(nameID, '!') == NULL && strchr(nameID, '?') == NULL) {
+      return_value = symtable_insert_variable(&(symtable_list->First->table_ptr), nameID, TYPE_NIL, true);
+      free(nameID);
+      seenID = false;
+      return return_value;
+    }
+    else {
+      free(nameID);
+      seenID = false;
+      return VARIABLE_ERR;
+    }
+  }
+  else if (seenID == true) {
     free(nameID);
+    seenID = false;
   }
   return SUCCESS;
 }
 
-int create_local_symtable(tList *symtable_list, tToken *token)
+int fill_local_symtable (tList *symtable_list, tToken *token, bool isParam)
 {
-  tSymPtr searchID = NULL;
+  static char *nameID = NULL;
+  static bool seenID = false;
+  int return_value = SUCCESS;
+
+  tSymPtr ID_global = NULL;
+  tSymPtr ID_local = NULL;
+  tSymPtr searchNameID = NULL;
 
   if (token->type == ID) {
-    symtable_search(symtable_list->First->table_ptr, token->text, &searchID); // searches through global Tree
+    symtable_search(symtable_list->First->table_ptr, token->text, &ID_global); // searches through global Tree
+  }
+  if (token->type == ID) {
+    symtable_search(symtable_list->Act->table_ptr, token->text, &ID_local); // searches through local Tree
+  }
+
+  if (isParam == true && ID_local == NULL && (ID_global == NULL || (ID_global != NULL && ID_global->type != FUNCTION))) {
+    return_value = symtable_insert_variable(&(symtable_list->Act->table_ptr), token->text, TYPE_NIL, true);
+    return return_value;
+  }
+  else if (isParam == true && (ID_local != NULL || (ID_global == NULL && ID_global->type == FUNCTION))) {
+    return VARIABLE_ERR;
+  }
+  else if (isParam == false ) {
+    if (token->type == ID && (ID_local == NULL || (ID_local != NULL && ID_local->type == UNKNOWN))) {
+      // save as unknown
+      nameID = malloc((strlen(token->text) + 1) * sizeof(char));
+
+      if (nameID == NULL) {
+        return INTERNAL_ERR;
+      }
+      strcpy(nameID, token->text);
+      return_value = symtable_insert_unknown(&(symtable_list->Act->table_ptr), nameID);
+      if (return_value != SUCCESS) {
+        free(nameID);
+      }
+      seenID = true;
+      return return_value;
+    }
+    else if (token->type == OPERATOR && (strcmp(token->text, "=") == 0) && seenID) {
+      symtable_search(symtable_list->First->table_ptr, nameID, &searchNameID);
+      if (searchNameID != NULL && searchNameID->type == FUNCTION) {
+        free(nameID);
+        return VARIABLE_ERR;
+      }
+      if (strchr(nameID, '!') == NULL && strchr(nameID, '?') == NULL) {
+        return_value = symtable_insert_variable(&(symtable_list->Act->table_ptr), nameID, TYPE_NIL, true);
+        free(nameID);
+        seenID = false;
+        return return_value;
+      }
+      else {
+        free(nameID);
+        seenID = false;
+        return VARIABLE_ERR;
+      }
+    }
+    else if (seenID == true) {
+      free(nameID);
+      seenID = false;
+    }
+  }
+  return SUCCESS;
+}
+
+int add_to_symtable(tList *symtable_list, tToken *token)
+{
+  tSymPtr ID_global = NULL; // driv bylo searchID, tak to pak prepsat
+  tSymPtr ID_local = NULL;
+
+  if (token->type == ID) {
+    symtable_search(symtable_list->First->table_ptr, token->text, &ID_global); // searches through global Tree
+  }
+  if (token->type == ID) {
+    symtable_search(symtable_list->Act->table_ptr, token->text, &ID_local); // searches through local Tree
   }
   // TODO pokud searchID neni NULL, tak mozna predefinice, ted nevim, nechce se mi o tom premyslet
 
+
   static bool seenDEF = false;
   static bool seen_left_bracket = false;
-  static bool fill_local_symtable = false;
+  static bool local_symtable = false;
   static int countEND = 0;
   static int count_param = 0;
   static char *nameID = NULL;
@@ -138,8 +204,8 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     seenDEF = true;
     countEND++;
   }
-  else if (token->type == ID && searchID == NULL && seenDEF) {
-    fill_local_symtable = true;
+  else if (token->type == ID && seenDEF  && (ID_global == NULL || (ID_global != NULL && ID_global->type == UNKNOWN))) {
+    local_symtable = true;
     // insert function to global symtable
     return_value = symtable_insert_function(&(symtable_list->First->table_ptr), token->text, TYPE_NIL, -2, params_list, true);
     if (return_value != SUCCESS) {
@@ -155,38 +221,37 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     tSymPtr localTree = NULL;
     symtable_init(&localTree);
     // insert new element in the list
-    list_insert (symtable_list, localTree, token->text);
+    list_insert (symtable_list, localTree, nameID);
   }
-  else if (token->type == ID && seenDEF && (searchID != NULL && searchID->type == VARIABLE)) {
+  else if (token->type == ID && seenDEF && (ID_global != NULL && ID_global->type == VARIABLE)) {
     return VARIABLE_ERR;
   }
-  else if (fill_local_symtable && (token->type == IF || token->type == WHILE)) {
-    countEND++;
-  }
-  else if (fill_local_symtable && token->type == END) {
-    countEND--;
-    if (countEND == 0) {
-      fill_local_symtable = false;
-    }
-  }
-  else if (token->type == OPERATOR && token->text[0] == '(') {
+  else if (token->type == OPERATOR && token->text[0] == '(' && seenDEF) {
     seen_left_bracket = true;
     seenDEF = false; // setting false here prevents from storing params inside the definition if other function is called
-    /*
-    params_list = malloc(sizeof(tFuncParam));
-    if (params_list == NULL) {
+  }
+  else if (token->type == ID && seen_left_bracket && (ID_global == NULL || (ID_global != NULL && ID_global->type != FUNCTION)) && ID_local == NULL) {
+    count_param++;
+    return_value = add_param(&params_list, NONE);
+    if (return_value == INTERNAL_ERR) {
       free(nameID);
-      fprintf(stderr, "Internal Error: No memory left.\n");
+      //free (params_list);  // FIX ME - copy pointer in the symtable_insert_function so it can be freed here
       return INTERNAL_ERR;
     }
-    else {
-      params_list->type = NONE;
-      params_list->next = NULL;
+
+    return_value = fill_local_symtable (symtable_list, token, true);
+    if (return_value != SUCCESS) {
+      free(nameID);
+      return return_value;
     }
-    */
-    //add_param(params_list, NONE);
+
   }
-  else if (token->type == OPERATOR && token->text[0] == ')') {
+  else if (token->type == ID && seen_left_bracket && ((ID_global != NULL && ID_global->type == FUNCTION) || ID_local != NULL)) {
+    free(nameID);
+    //free (params_list); // FIX ME - copy pointer in the symtable_insert_function so it can be freed here
+    return VARIABLE_ERR;
+  }
+  else if (token->type == OPERATOR && token->text[0] == ')' && seen_left_bracket) {
     seen_left_bracket = false;
     return_value = symtable_insert_function(&(symtable_list->First->table_ptr), nameID, TYPE_NIL, count_param, params_list, true);
     if (return_value != SUCCESS) {
@@ -196,35 +261,26 @@ int create_local_symtable(tList *symtable_list, tToken *token)
     free(nameID);
     //free (params_list); // FIX ME - copy pointer in the symtable_insert_function so it can be freed here
   }
-  else if (token->type == ID && seen_left_bracket && ( searchID == NULL || (searchID != NULL && searchID->type == VARIABLE))) {
-    count_param++;
-    fprintf(stderr, "params_list pred: %p\n", params_list);
-    return_value = add_param(&params_list, NONE);
-    if (return_value == INTERNAL_ERR) {
-      free(nameID);
-      //free (params_list);  // FIX ME - copy pointer in the symtable_insert_function so it can be freed here
-      return INTERNAL_ERR;
+  else if (local_symtable && (token->type == IF || token->type == WHILE)) {
+    countEND++;
+  }
+  else if (local_symtable && token->type == END) {
+    countEND--;
+    if (countEND == 0) {
+      local_symtable = false;
     }
-    fprintf(stderr, "params_list po: %p\n", params_list);
+  }
+  //BODY OF THE FUNCTION
+  else if (local_symtable == true) {
+    return_value = fill_local_symtable (symtable_list, token, false);
+    if (return_value != SUCCESS) {
+      return return_value;
+    }
 
-    return_value = fill_symtable (symtable_list, &(symtable_list->Act->table_ptr), token);
-    if (return_value != SUCCESS) {
-      return return_value;
-    }
   }
-  else if (token->type == ID && seen_left_bracket && (searchID != NULL && searchID->type != VARIABLE)) {
-    free(nameID);
-    //free (params_list); // FIX ME - copy pointer in the symtable_insert_function so it can be freed here
-    return INTERNAL_ERR;
-  }
-  else if (fill_local_symtable == true) {
-    return_value = fill_symtable (symtable_list, &(symtable_list->Act->table_ptr), token);
-    if (return_value != SUCCESS) {
-      return return_value;
-    }
-  }
-  else if (fill_local_symtable == false) {
-    return_value = fill_symtable (symtable_list, &(symtable_list->First->table_ptr), token);
+  // GLOBAL
+  else if (local_symtable == false) {
+    return_value = fill_global_symtable (symtable_list, token);
     if (return_value != SUCCESS) {
       return return_value;
     }
@@ -242,11 +298,15 @@ int parser()
   tList symtable_list;
   tSymPtr globalTree = NULL;
 
+  int countEND = 0;
+  bool isGlobal = true;
+
   symtable_init(&globalTree);
+
   if (insert_built_in_functions(&globalTree) == INTERNAL_ERR) {
     return INTERNAL_ERR;
   }
-
+  
   list_init(&symtable_list);
   list_insert(&symtable_list, globalTree, NULL);
 
@@ -259,11 +319,27 @@ int parser()
     // create abstract syntax tree
     // currentToken contains new token in every iteration
 
-    result = create_local_symtable(&symtable_list, &currentToken);
-    fprintf(stderr, "create_local_symtable result = %d\n", result);
+    result = add_to_symtable(&symtable_list, &currentToken);
 
     if(result == 0) {
-      result = ll_predict(&currentToken, &stack, &globalTree);
+      if (currentToken.type == DEF) {
+        countEND++;
+      }
+      else if ((currentToken.type == IF || currentToken.type == WHILE) && isGlobal == false) {
+        countEND++;
+      }
+      else if (currentToken.type == END && isGlobal == false) {
+        countEND--;
+      }
+
+      if (countEND == 0) {
+        isGlobal = true;
+      }
+      else {
+        isGlobal = false;
+      }
+
+      result = ll_predict(&currentToken, &stack, &symtable_list, isGlobal);
     }
 
     //// MUSI BYT AZ NA KONCI CYKLU !!!!!!!!!!!!!!!
@@ -338,7 +414,7 @@ int parser()
 }
 
 
-int ll_predict(tToken *token, tStack *stack, tSymPtr *globalTree)
+int ll_predict(tToken *token, tStack *stack, tList *symtable_list, bool isGlobal)
 {
   int top = s_top(stack);
 
@@ -430,9 +506,23 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         PUSH_RULE_18;
       }
       else if(token->type == ID) { // must be ID of a function
+
         tSymPtr sym = NULL;
-        symtable_search(*globalTree, token->text, &sym);
+
+        if (isGlobal) {
+          symtable_search(symtable_list->First->table_ptr, token->text, &sym);
+        }
+        else {
+          symtable_search(symtable_list->Act->table_ptr, token->text, &sym);
+        }
+
+        if (sym == NULL) {
+          return VARIABLE_ERR;
+        }
+
         // Muze byt UNKNOWN,FUNCTION nebo VARIABLE
+        //printf(stderr, "je v tabulce - %p %s\n", sym , token->text);
+        //fprintf(stderr, "Globalni 1. ID (n): %s\n", (*globalTree)->name);
         if(sym->type == UNKNOWN || sym->type == FUNCTION) {
           PUSH_RULE_16;
         }
@@ -512,7 +602,23 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         return SYNTAX_ERR;
       }
       break;
-    case LL_EXPRESSION:
+    case LL_EXPRESSION: // "Skoc na mna" -Adam Melichar 2018
+
+      if (token->type == ID) {
+        tSymPtr sym = NULL;
+
+        if (isGlobal) {
+          symtable_search(symtable_list->First->table_ptr, token->text, &sym);
+        }
+        else {
+          symtable_search(symtable_list->Act->table_ptr, token->text, &sym);
+        }
+
+        if (sym == NULL || (token->type == ID && sym->type != VARIABLE)) {
+          return VARIABLE_ERR;
+        }
+      }
+
       if (token->type == INTEGER || token->type == STRING || token->type == FLOATING_POINT || token->type == OPERATOR || token->type == ID) { // everything that fits in expression,  TODO must be ID of a variable
           if(prec_table(token) == SYNTAX_ERR) {
             fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET"Unexpected token in expression.\n");
@@ -526,7 +632,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
           return SYNTAX_ERR;
         }
         s_pop(stack);
-        ll_predict(token, stack, globalTree); // recall the function in order not to lose a token
+        ll_predict(token, stack, symtable_list, isGlobal); // recall the function in order not to lose a token
       }
       break;
     case LL_ID:
@@ -675,24 +781,5 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
   // TODO  into tree, derivation tree
 
   // Why can you drink a drink, but not food a food?
-  return SUCCESS;
-}
-
-int add_to_symtable(tToken *cur_token, tToken *prev_token, tSymPtr *globalTree)
-{
-  if(cur_token->type == OPERATOR && (strcmp(cur_token->text, "=") == 0) && prev_token->type == ID) {
-    // nastav predchozi token na promennou
-    int result = SUCCESS;
-    result = symtable_insert_variable(globalTree, prev_token->text, TYPE_NIL, true);
-    return result;
-  }
-  /*
-  if(token->type == ID) {
-    // pridej do symtable, ale prvni sezen jeho typ.
-    // Prislo ID, pockej na dalsi token.
-    // Jesli dalsi token je =, nastav ID jako promenou, jinak nechej unknown
-    return symtable_insert_unknown(globalTree, token->text);
-  }
-  */
   return SUCCESS;
 }

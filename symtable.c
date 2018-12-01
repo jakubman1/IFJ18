@@ -180,7 +180,7 @@ tSymPtr symtable_search(tSymPtr root, char *name, tSymPtr *result)
       *result = root;
       //return root;
     }
-    else if(cmpval < 0) {
+    else if(cmpval > 0) {
       symtable_search(root->lptr, name, result);
     }
     else {
