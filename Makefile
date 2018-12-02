@@ -16,8 +16,8 @@ clean:
 
 tests: lexical-test
 
-lexical-test: *.c *.c
-	$(CC) $(CFLAGS) -o $@ *.c *.c -DTEST
+lexical-test: *.c
+	$(CC) $(CFLAGS) -o $@ *.c -DTEST
 
 
 test: tests $(PRJ)
