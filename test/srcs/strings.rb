@@ -10,6 +10,6 @@ print "Zadejte serazenou posloupnost vsech malych pismen a-h, "
 print "pricemz se pismena nesmeji v posloupnosti opakovat: "
 s1 = inputs
 while s1 != "abcdefgh\n" do
-print "Spatne zadana posloupnost, zkuste znovu: "
-s1 = inputs
+    print "Spatne zadana posloupnost, zkuste znovu: "
+    s1 = inputs
 end

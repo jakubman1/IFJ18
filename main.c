@@ -13,19 +13,23 @@
 int main(int argc, char const *argv[]) {
   int retcode = SUCCESS; /* Return code of the compiler */
 
-  retcode = parser();
-
-  #ifdef DEBUG
+  #ifdef TEST
   // lexical analysis test
   tToken t = {"", 0};
   int scanner_out = 0;
   while((scanner_out = scanner(&t)) == 0 || scanner_out == LEXICAL_ERR) {
-    ;
+    if(scanner_out != 0) {
+      // 0 will replace previous errors.
+      retcode = scanner_out;
+    }
   }
   #endif
-  #ifdef DEBUG2
-  // syntactic analysis test
 
-  #endif
+  // If tests were called, don't call parser. No tokens are left anyway.
+  if(retcode == 0) {
+    retcode = parser();
+  }
+
+
   return retcode;
 }

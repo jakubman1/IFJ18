@@ -1,5 +1,5 @@
-# Program 3: Vypocet faktorialu (rekurzivne) + Testovani komentaru
-def n = 5
+# Testovani komentaru
+n = 5
 =begin< 2 then
 result = 1
 else
@@ -17,8 +17,5 @@ a=endian
 end
 =e
 =end
-def endian
-=end
-end
 =begin
 neukonceny komentar na konci souboru

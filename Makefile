@@ -14,19 +14,15 @@ $(PRJ): *.c lib/*.c
 clean:
 	rm -f *.o *.out $(PROGS) lexical-tests *.exe *.tmp *.stackdump
 
-tests: lexical-test syntactic-test
+tests: lexical-test
 
 lexical-test: *.c lib/*.c
-	$(CC) $(CFLAGS) -o $@ *.c lib/*.c -DDEBUG
+	$(CC) $(CFLAGS) -o $@ *.c lib/*.c -DTEST
 
-syntactic-test: *.c lib/*.c
-	$(CC) $(CFLAGS) -o $@ *.c lib/*.c -DDEBUG2
 
-test: tests
+test: tests $(PRJ)
 	test/runtest.sh
 
-lltest: tests
-	./lexical-test < test/factorial.rb
 
 fulltest:
 	ssh -t $(XLOGIN)@merlin.fit.vutbr.cz 'git clone https://github.com/jakubman1/IFJ18.git; cd IFJ18; make; make tests;chmod +x test/runtest.sh;test/runtest.sh;cd ..;echo -e "\n\nCleaning up after tests..."; rm -rf IFJ18;echo "Cleanup done."'

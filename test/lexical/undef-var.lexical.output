@@ -1,0 +1,55 @@
+DEBUG: Added to buffer: 
+, 18
+DEBUG: Added to buffer: 
+, 18
+DEBUG: Added to buffer: 
+, 18
+DEBUG: Added to buffer: 
+, 18
+DEBUG: Added to buffer: 
+, 18
+DEBUG: Added to buffer: if', 4
+DEBUG: Added to buffer: (, 15
+DEBUG: Added to buffer: 1', 10
+DEBUG: Added to buffer: ==', 15
+DEBUG: Added to buffer: 2', 10
+DEBUG: Added to buffer: ), 15
+DEBUG: Added to buffer: then', 7
+DEBUG: Added to buffer: 
+, 18
+DEBUG: Added to buffer: x', 9
+DEBUG: Added to buffer: =', 15
+DEBUG: Added to buffer: 42', 10
+DEBUG: Added to buffer: 
+, 18
+DEBUG: Added to buffer: else', 2
+DEBUG: Added to buffer: 
+, 18
+DEBUG: Added to buffer: end', 3
+DEBUG: Added to buffer: 
+, 18
+DEBUG: Added to buffer: 
+, 18
+DEBUG: Added to buffer: 
+, 18
+DEBUG: Added to buffer: if', 4
+DEBUG: Added to buffer: x', 9
+DEBUG: Added to buffer: ==', 15
+DEBUG: Added to buffer: nil', 6
+DEBUG: Added to buffer: then', 7
+DEBUG: Added to buffer: 
+, 18
+DEBUG: Added to buffer: print', 9
+DEBUG: Added to buffer: "x je nil\n"', 16
+DEBUG: Added to buffer: 
+, 18
+DEBUG: Added to buffer: else', 2
+DEBUG: Added to buffer: 
+, 18
+DEBUG: Added to buffer: print', 9
+DEBUG: Added to buffer: "x neni nil\n"', 16
+DEBUG: Added to buffer: 
+, 18
+DEBUG: Added to buffer: end', 3
+DEBUG: Added to buffer: 
+, 18
