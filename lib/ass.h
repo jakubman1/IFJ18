@@ -69,5 +69,7 @@ Find a father of a node
 */
 tAssPtr ass_find_father(tAssPtr root, tAssPtr current_node);
 
+void in_order (tAssPtr root);
+
 
 #endif

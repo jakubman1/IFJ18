@@ -12,6 +12,7 @@
 
 int main(int argc, char const *argv[]) {
   int retcode = SUCCESS; /* Return code of the compiler */
+  retcode = parser();
 
   #ifdef TEST
   // lexical analysis test

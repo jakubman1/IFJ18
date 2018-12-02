@@ -68,20 +68,17 @@ void ass_empty(tAssPtr *root)
 
 tAssPtr ass_make_tree(int type, char *text, tSymPtr symtable, tAssPtr left, tAssPtr right)
 {
-  fprintf(stderr, "ZACATEK MAKE TREE\n");
   tAssPtr new = ass_make_leaf(type, text, symtable);
   if(new != NULL) {
     new->lptr = left;
     new->rptr = right;
 
   }
-  fprintf(stderr, "KONEC MAKE TREE\n");
   return new;
 }
 
 tAssPtr ass_make_leaf(int type, char *text, tSymPtr symtable)
 {
-  fprintf(stderr, "ZACATEK MAKE LEAF\n");
   tAssPtr new = malloc(sizeof(struct assNode));
   if(new != NULL) {
     new->type = type;
@@ -103,7 +100,6 @@ tAssPtr ass_make_leaf(int type, char *text, tSymPtr symtable)
     // We have a new element
     new->lptr = NULL;
     new->rptr = NULL;
-    fprintf(stderr, "KONEC MAKE LEAF\n");
     return new;
   }
   else {
@@ -132,4 +128,13 @@ tAssPtr ass_find_father(tAssPtr root, tAssPtr current_node)
   }
 
   return NULL;
+}
+
+void in_order (tAssPtr root)
+{
+  if (root != NULL) {
+    in_order(root->lptr);
+    fprintf(stderr, "%s, ", root->text);
+    in_order(root->rptr);
+  }
 }

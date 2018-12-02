@@ -308,7 +308,14 @@ int prec_table(tToken *token, tSymPtr sym)
   }
 
   if (token_input == P_ID) {
-    st_push(&token_stack, *token);
+    char *copyText = malloc(sizeof(char) * (strlen(token->text) + 1));
+    if (copyText == NULL) {
+      return INTERNAL_ERR;
+    }
+    strcpy(copyText, token->text);
+
+    tToken copyToken = {copyText, token->type};
+    st_push(&token_stack, copyToken);
   }
 
   // END OF EXPRESSION
@@ -386,7 +393,6 @@ int prec_table(tToken *token, tSymPtr sym)
           }
 
           if (top_ass == NULL) { // very first node inserted
-            fprintf(stderr, "nastavuje se top ass\n");
             top_ass = new_ass;
             current_ass = new_ass;
           }
@@ -413,8 +419,11 @@ int prec_table(tToken *token, tSymPtr sym)
             return INTERNAL_ERR;
           }
 
-
-          if (current_ass->rptr == NULL) {
+          if (top_ass == NULL) { // very first node inserted
+            top_ass = new_ass;
+            current_ass = new_ass;
+          }
+          else if (current_ass->rptr == NULL) {
             current_ass->rptr = new_ass;
           }
           else if (current_ass->lptr == NULL) {
@@ -422,7 +431,6 @@ int prec_table(tToken *token, tSymPtr sym)
             // move to upper node where lptr is NULL
             current_ass = ass_find_father(top_ass, current_ass);
           }
-
           break;
         default:
 
@@ -430,6 +438,12 @@ int prec_table(tToken *token, tSymPtr sym)
       } // end of 1. switch
     } // end of while
 
+    // VYPIS ASS
+    fprintf(stderr, "ASS: \n");
+    in_order(top_ass);
+    fprintf(stderr, "\n");
+
+    // VYPIS PRAVY ROZBOR
     /*fprintf(stderr, "PRAVY ROZBOR\n");
     while (!s_empty(&stack_rules)) {
       fprintf(stderr, "%d, ", s_pop(&stack_rules));

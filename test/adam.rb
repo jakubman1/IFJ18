@@ -1,11 +1,1 @@
-def foo ()
-  a = 5
-  if 5 then
-    b = 6 + 6
-  else
-    a = 5
-  end
-end
-
-ref = 5
-    
+a = 1 + 2 * 3
