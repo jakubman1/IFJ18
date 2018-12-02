@@ -348,11 +348,12 @@ int parser()
       free(currentToken.text);
       currentToken.text = NULL;
     }
-    if(result != 0) {
-      // TODO: free allocated resources
-      fprintf(stderr, ANSI_COLOR_RED "variable_err: " ANSI_COLOR_RESET "assign into a function\n");
+    if(result == VARIABLE_ERR) {
+      fprintf(stderr, ANSI_COLOR_RED "Variable error: " ANSI_COLOR_RESET "assign into a function\n");
       return result;
     }
+    // TODO: Free allocated resouorces on
+
   } // end while
 
   if(scanner_out != -1) {
@@ -383,6 +384,10 @@ int parser()
       top = s_top(&stack);
       if (top == LL_BOTTOM) {
         result = SUCCESS;
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected end of file.\n");
+        result = SYNTAX_ERR;
       }
     }
     else {
@@ -689,7 +694,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         s_pop(stack);
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected then with no if.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected then, got \"%s\".\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -698,7 +703,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         s_pop(stack);
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected else, got, got \"%s\".\n", token->text);
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected else, got \"%s\".\n", token->text);
         return SYNTAX_ERR;
       }
       break;

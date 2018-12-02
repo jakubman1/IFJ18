@@ -255,6 +255,10 @@ int prec_table(tToken *token, tSymPtr sym)
   else if (token->type == ID || token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING || token->type == NIL) { // i
     token_input = P_ID;
   }
+  else if (token->type == OPERATOR && (strcmp(token->text, "=") == 0)) {
+    // TODO free resources
+    return SYNTAX_ERR;
+  }
   else { // end of expression (== $)
     token_input = P_BOTTOM;
   }
@@ -438,10 +442,28 @@ int prec_table(tToken *token, tSymPtr sym)
       } // end of 1. switch
     } // end of while
 
-    /*  int + int = int
-        int + float = float
-        float + float = float
-        float + int = float
+    /*  SCITANI, ODCITANI, NASOBENI, DELENI, KONKATENACE
+        int , int --> int
+        int , float --> float
+        float , float --> float
+        string , string --> string
+        ------------------------
+        int / 0 --> ERROR
+        float / 0 --> ERROR
+
+        POROVNAVANI (<, >, =<, >=, ==, !=)
+        int , int --> true/false
+        float , float --> true/false
+        string , string --> true/false
+        int2float(int) , float --> true/false
+        int == float/string/nil --> false
+        int != float/string/nil --> false
+        float == int/string/nil --> false
+        float != int/string/nil --> false
+        string == int/float/nil --> false
+        string != int/float/nil --> false
+        nil == int/float/string --> false
+        nil != int/float/string --> false
     */
 
     // VYPIS ASS
