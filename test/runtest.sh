@@ -59,7 +59,7 @@ do
     echo -e "${RED}ERROR: Syntactic analysis of ${FILENAME}.rb returned $SYNOUT (should be 0)!${NC}"
   fi
 done
-for FILENAME in 'synerr1' 'synerr2' 'synerr3' 'synerr4' 'synerr5' 'synerr6' # List of all incorrect files
+for FILENAME in 'synerr1' 'synerr2' 'synerr3' 'synerr4' 'synerr5' 'synerr6' 'syndeferr' 'synwhileerr' # List of all incorrect files
 do
   ./ifj18 < test/srcs/$FILENAME.rb > /dev/null
   SYNOUT=$?
