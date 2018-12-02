@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "errcodes.h"
-#include "../symtable.h"
+#include "symtable.h"
 
 typedef struct assNode {
   int type; // Type of node (for internal use only)

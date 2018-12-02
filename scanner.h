@@ -6,9 +6,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
-#include "lib/errcodes.h"
-#include "lib/types.h"
-#include "lib/strbuff.h"
+#include "errcodes.h"
+#include "types.h"
+#include "strbuff.h"
 
 #define LEFT 0
 #define RIGHT 8 //TODO: Comment magic constants

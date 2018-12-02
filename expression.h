@@ -9,9 +9,9 @@
 
 #include <stdbool.h>
 #include <string.h>
-#include "lib/stack.h"
-#include "lib/token_stack.h"
-#include "lib/ass.h"
+#include "stack.h"
+#include "token_stack.h"
+#include "ass.h"
 
 #define PRECEDENT_TABLE_SIZE 14
 

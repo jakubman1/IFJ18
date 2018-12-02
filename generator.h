@@ -6,7 +6,7 @@
 #define GENERATOR_H
 
 #include <stdio.h>
-#include "lib/ass.h"
+#include "ass.h"
 
 //code
 

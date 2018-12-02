@@ -8,16 +8,16 @@ XLOGIN=xmanja00
 
 all: $(PROGS)
 
-$(PRJ): *.c lib/*.c
-	$(CC) $(CFLAGS) -o $@ *.c lib/*.c
+$(PRJ): *.c
+	$(CC) $(CFLAGS) -o $@ *.c
 
 clean:
 	rm -f *.o *.out $(PROGS) lexical-tests *.exe *.tmp *.stackdump
 
 tests: lexical-test
 
-lexical-test: *.c lib/*.c
-	$(CC) $(CFLAGS) -o $@ *.c lib/*.c -DTEST
+lexical-test: *.c *.c
+	$(CC) $(CFLAGS) -o $@ *.c *.c -DTEST
 
 
 test: tests $(PRJ)

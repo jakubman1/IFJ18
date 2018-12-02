@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include "lib/errcodes.h"
+#include "errcodes.h"
 
 
 typedef enum {

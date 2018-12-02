@@ -11,9 +11,9 @@
 #include<stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "lib/errcodes.h"
-#include "lib/types.h"
-#include "lib/stack.h"
+#include "errcodes.h"
+#include "types.h"
+#include "stack.h"
 #include "scanner.h"
 #include "symtable.h"
 #include "expression.h"

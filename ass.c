@@ -4,7 +4,6 @@
  * @date 22.11. 2018
  * @brief Abstract syntax tree library (A.S.S. -> abstraktni syntakticky strom)
  */
-
 #include "ass.h"
 
 
