@@ -77,7 +77,6 @@ int fill_global_symtable (tList *symtable_list, tToken *token)
 
   if (token->type == ID && (ID_global == NULL || (ID_global != NULL && ID_global->type == UNKNOWN))) {
     // save as unknown
-
     return_value = symtable_insert_unknown(&(symtable_list->First->table_ptr), nameID);
     if (return_value != SUCCESS) {
       free(nameID);
@@ -103,7 +102,7 @@ int fill_global_symtable (tList *symtable_list, tToken *token)
       return VARIABLE_ERR;
     }
   }
-  else if (seenID == true && ID_global->type != FUNCTION) {
+  else if (seenID == true && (ID_global != NULL && ID_global->type != FUNCTION)) {
     free(nameID);
     seenID = false;
   }
