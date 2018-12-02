@@ -386,6 +386,7 @@ int prec_table(tToken *token, tSymPtr sym)
           }
 
           if (top_ass == NULL) { // very first node inserted
+            fprintf(stderr, "nastavuje se top ass\n");
             top_ass = new_ass;
             current_ass = new_ass;
           }
