@@ -70,6 +70,11 @@ int scanner(tToken *token_out)
           add_to_buffer(&buffer, &buff_size, c);
           state = ZERO;
         }
+        else if(!isspace(c)) {
+          // Error token, unknown character (excluding whitespace characters)
+          state = ERR;
+          ungetc(c, stdin);
+        }
         break;
       case NEW_LINE:
         if (c == '=') {
@@ -460,7 +465,7 @@ int scanner(tToken *token_out)
 
 void correct_token (tToken *token)
 {
-  const char *key_words[] = {"def", "do", "else", "end", "if", "nil", "not", "then", "while"};
+  const char *key_words[] = {"def", "do", "else", "end", "if", "not", "nil", "then", "while"};
   int l = LEFT;
   int r = RIGHT;
 
@@ -505,7 +510,7 @@ void send_buffer(token_type type, tBuffer *buffer, tToken *token_out)
   }
 
   (*buffer)[0] = 0;
-  #ifdef DEBUG
+  #ifdef TEST
   printf("DEBUG: Added to buffer: %s', %d\n", token_out->text, token_out->type);
   #endif
 }
@@ -516,7 +521,7 @@ void send_char(token_type type, char c, tToken *token_out) {
   text[0] = c;
   token_out->text = text;
   token_out->type = type;
-  #ifdef DEBUG
+  #ifdef TEST
   printf("DEBUG: Added to buffer: %s, %d\n", token_out->text, token_out->type);
   #endif
 }

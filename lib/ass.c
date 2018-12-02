@@ -66,20 +66,22 @@ void ass_empty(tAssPtr *root)
   }
 }
 
-tAssPtr ass_make_tree(int type, char *text, tSymPtr symtable, tAssPtr left, tAssPtr right, tAssPtr middle)
+tAssPtr ass_make_tree(int type, char *text, tSymPtr symtable, tAssPtr left, tAssPtr right)
 {
+  fprintf(stderr, "ZACATEK MAKE TREE\n");
   tAssPtr new = ass_make_leaf(type, text, symtable);
   if(new != NULL) {
     new->lptr = left;
     new->rptr = right;
-    new->fptr = middle;
 
   }
+  fprintf(stderr, "KONEC MAKE TREE\n");
   return new;
 }
 
 tAssPtr ass_make_leaf(int type, char *text, tSymPtr symtable)
 {
+  fprintf(stderr, "ZACATEK MAKE LEAF\n");
   tAssPtr new = malloc(sizeof(struct assNode));
   if(new != NULL) {
     new->type = type;
@@ -101,10 +103,31 @@ tAssPtr ass_make_leaf(int type, char *text, tSymPtr symtable)
     // We have a new element
     new->lptr = NULL;
     new->rptr = NULL;
-    new->fptr = NULL;
+    fprintf(stderr, "KONEC MAKE LEAF\n");
     return new;
   }
   else {
     return NULL;
   }
+}
+
+tAssPtr ass_find_father(tAssPtr root, tAssPtr current_node)
+{
+  fprintf(stderr, "ZACATEK FIND_FATHER\n");
+  if (root == NULL) {
+    fprintf(stderr, "KONEC FIND_FATHER\n");
+    return NULL;
+  }
+
+  if (ass_find_father(root->rptr, current_node) == current_node) {
+    fprintf(stderr, "KONEC FIND_FATHER\n");
+    return root;
+  }
+
+  if (ass_find_father(root->lptr, current_node) == current_node) {
+    fprintf(stderr, "KONEC FIND_FATHER\n");
+    return root;
+  }
+  fprintf(stderr, "KONEC FIND_FATHER\n");
+  return NULL;
 }

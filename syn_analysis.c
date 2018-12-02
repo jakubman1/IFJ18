@@ -366,6 +366,7 @@ int parser()
           free(currentToken.text);
         }
       }
+      result = LEXICAL_ERR;
     }
     else {
         if(result == INTERNAL_ERR) {
@@ -589,6 +590,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
   } // end while non-terminals
 
   // TERMINALS
+  tSymPtr sym = NULL;
   switch(s_top(stack)) {
     case LL_DEF:
       if (token->type == DEF) {
@@ -600,10 +602,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       break;
     case LL_EXPRESSION: // "Skoc na mna" -Adam Melichar 2018
-
       if (token->type == ID) {
-        tSymPtr sym = NULL;
-
         if (isGlobal) {
           symtable_search(symtable_list->First->table_ptr, token->text, &sym);
         }
@@ -615,17 +614,25 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
           return VARIABLE_ERR;
         }
       }
+      else {
+        if (isGlobal) {
+          sym = symtable_list->First->table_ptr;
+        }
+        else {
+          sym = symtable_list->Act->table_ptr;
+        }
+      }
 
-      if (token->type == INTEGER || token->type == STRING || token->type == FLOATING_POINT || token->type == OPERATOR || token->type == ID) { // everything that fits in expression,  TODO must be ID of a variable
-          if(prec_table(token) == SYNTAX_ERR) {
-            fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET"Unexpected token in expression.\n");
+      if (token->type == INTEGER || token->type == STRING || token->type == FLOATING_POINT || token->type == NIL || token->type == OPERATOR || token->type == ID) { // everything that fits in expression,  TODO must be ID of a variable
+          if(prec_table(token, sym) == SYNTAX_ERR) {
+            fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected token \"%s\" in expression.\n", token->text);
             return SYNTAX_ERR;
           }
       }
       else { // everything else or ID of a function
         tToken endExpression = {"", LL_BOTTOM}; // finish expression
-        if (prec_table(&endExpression) == SYNTAX_ERR) {
-          fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET"Unexpected token in expression.\n");
+        if (prec_table(&endExpression, sym) == SYNTAX_ERR) {
+          fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected token \"%s\" in expression.\n", token->text);
           return SYNTAX_ERR;
         }
         s_pop(stack);
@@ -664,7 +671,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         s_pop(stack);
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected comma.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected comma, got \"%s\".\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -673,7 +680,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         s_pop(stack);
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected if.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected if, got \"%s\".\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -691,7 +698,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         s_pop(stack);
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected else with no if.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected else, got, got \"%s\".\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -700,7 +707,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         s_pop(stack);
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected while.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected while, got \"%s\".\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -709,7 +716,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         s_pop(stack);
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected do.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected do, got \"%s\".\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -718,7 +725,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         s_pop(stack);
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" = unexpected.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected =, got \"%s\".\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -727,7 +734,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         s_pop(stack);
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected (.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected (, got \"%s\".\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -745,7 +752,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         s_pop(stack);
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected integer.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected integer, got \"%s\".\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -754,7 +761,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         s_pop(stack);
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected float.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected float, got \"%s\".\n", token->text);
         return SYNTAX_ERR;
       }
       break;
@@ -763,7 +770,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         s_pop(stack);
       }
       else {
-        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected string.\n");
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected string, got \"%s\".\n", token->text);
         return SYNTAX_ERR;
       }
       break;

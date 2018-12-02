@@ -229,9 +229,10 @@ int add_param(tFuncParam **head, data_type type)
   }
   else {
     tFuncParam *last = *head;
-    for(last; last->next != NULL; last = last->next) {
-      ; // Go to the end of the list
+    while (last->next != NULL) {
+      last = last->next;
     }
+
     new = malloc(sizeof(tFuncParam));
     if (new == NULL) {
       return INTERNAL_ERR;

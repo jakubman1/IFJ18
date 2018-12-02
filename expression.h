@@ -22,26 +22,6 @@ typedef enum {
   N = 103   // NONE
 } p_table_sign;
 
-static int precedent_table[PRECEDENT_TABLE_SIZE][PRECEDENT_TABLE_SIZE] =
-{
-  //+ |- |* |/ |< |<=|> |>=|==|!=|( |) |i |$ |          token_input -->
-   {R, R, S, S, R, R, R, R, R, R, S, R, S, R}, // +     stack_pushdown
-   {R, R, S, S, R, R, R, R, R, R, S, R, S, R}, // -      |
-   {R, R, R, R, R, R, R, R, R, R, S, R, S, R}, // *      V
-   {R, R, R, R, R, R, R, R, R, R, S, R, S, R}, // /
-   {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // <
-   {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // <=
-   {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // >
-   {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // >=
-   {S, S, S, S, S, S, S, S, N, N, S, R, S, R}, // ==
-   {S, S, S, S, S, S, S, S, N, N, S, R, S, R}, // !=
-   {S, S, S, S, S, S, S, S, S, S, S, E, S, N}, // (
-   {R, R, R, R, R, R, R, R, R, R, N, R, N, R}, // )
-   {R, R, R, R, R, R, R, R, R, R, N, R, N, R}, // i
-   {S, S, S, S, S, S, S, S, S, S, S, N, S, N}  // $
-};
-
-
 typedef enum {
   P_PLUS,           // 0
   P_MINUS,          // 1
@@ -63,28 +43,11 @@ typedef enum {
 #define NUMBER_OF_RULES 12
 #define MAX_RULE_LENGHT 3
 
-static int rule_table[NUMBER_OF_RULES][MAX_RULE_LENGHT] =
-{
-  {P_E, P_PLUS, P_E},                       // E → E + E    0
-  {P_E, P_MINUS, P_E},                      // E → E - E    1
-  {P_E, P_MULTIPLY, P_E},                   // E → E * E    2
-  {P_E, P_DIVIDE, P_E},                     // E → E / E    3
-  {P_E, P_LOWER, P_E},                      // E → E < E    4
-  {P_E, P_LOWEREQ, P_E},                    // E → E <= E   5
-  {P_E, P_GREATER, P_E},                    // E → E > E    6
-  {P_E, P_GREATEREQ, P_E},                  // E → E >= E   7
-  {P_E, P_EQ, P_E},                         // E → E == E   8
-  {P_E, P_NOTEQ, P_E},                      // E → E != E   9
-  {P_LEFT_BRACKET, P_E, P_RIGHT_BRACKET},   // E → (E)      10
-  {P_ID, -1, -1}                            // E → i        11
-};
-
 /**
 @brief Find first terminal closest to the top of the stack
 */
 int stack_terminal_top(tStack *searched_stack, tStack *aux_stack);
-int prec_table(tToken *token);
+int prec_table(tToken *token, tSymPtr sym);
 int evaluate_rule (tStack *stack_temp, tStack *stack_pushdown, tStack *stack_rules);
-
 
 #endif

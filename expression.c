@@ -10,6 +10,41 @@
 
 #include "expression.h"
 
+const int precedent_table[PRECEDENT_TABLE_SIZE][PRECEDENT_TABLE_SIZE] =
+{
+  //+ |- |* |/ |< |<=|> |>=|==|!=|( |) |i |$ |          token_input -->
+   {R, R, S, S, R, R, R, R, R, R, S, R, S, R}, // +     stack_pushdown
+   {R, R, S, S, R, R, R, R, R, R, S, R, S, R}, // -      |
+   {R, R, R, R, R, R, R, R, R, R, S, R, S, R}, // *      V
+   {R, R, R, R, R, R, R, R, R, R, S, R, S, R}, // /
+   {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // <
+   {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // <=
+   {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // >
+   {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // >=
+   {S, S, S, S, S, S, S, S, N, N, S, R, S, R}, // ==
+   {S, S, S, S, S, S, S, S, N, N, S, R, S, R}, // !=
+   {S, S, S, S, S, S, S, S, S, S, S, E, S, N}, // (
+   {R, R, R, R, R, R, R, R, R, R, N, R, N, R}, // )
+   {R, R, R, R, R, R, R, R, R, R, N, R, N, R}, // i
+   {S, S, S, S, S, S, S, S, S, S, S, N, S, N}  // $
+};
+
+const int rule_table[NUMBER_OF_RULES][MAX_RULE_LENGHT] =
+{
+  {P_E, P_PLUS, P_E},                       // E → E + E    0
+  {P_E, P_MINUS, P_E},                      // E → E - E    1
+  {P_E, P_MULTIPLY, P_E},                   // E → E * E    2
+  {P_E, P_DIVIDE, P_E},                     // E → E / E    3
+  {P_E, P_LOWER, P_E},                      // E → E < E    4
+  {P_E, P_LOWEREQ, P_E},                    // E → E <= E   5
+  {P_E, P_GREATER, P_E},                    // E → E > E    6
+  {P_E, P_GREATEREQ, P_E},                  // E → E >= E   7
+  {P_E, P_EQ, P_E},                         // E → E == E   8
+  {P_E, P_NOTEQ, P_E},                      // E → E != E   9
+  {P_LEFT_BRACKET, P_E, P_RIGHT_BRACKET},   // E → (E)      10
+  {P_ID, -1, -1}                            // E → i        11
+};
+
 /*
 *     ASS se da sestrojit z praveho rozboru
 */
@@ -159,7 +194,7 @@ int evaluate_rule (tStack *stack_temp, tStack *stack_pushdown, tStack *stack_rul
   return -2;
 }
 
-int prec_table(tToken *token)
+int prec_table(tToken *token, tSymPtr sym)
 {
   static tStack stack_rules; // stores postfix notation
   static tStack stack_pushdown; // auxiliary stack
@@ -217,7 +252,7 @@ int prec_table(tToken *token)
   else if (token->type == OPERATOR && token->text[0] == ')') {
     token_input = P_RIGHT_BRACKET;
   }
-  else if (token->type == ID || token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING) { // i
+  else if (token->type == ID || token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING || token->type == NIL) { // i
     token_input = P_ID;
   }
   else { // end of expression (== $)
@@ -256,7 +291,7 @@ int prec_table(tToken *token)
         else {
           // po vyhodnoceni pravidla se vola se stejnym tokenem
           if (token_input != P_BOTTOM || (stack_terminal_top(&stack_pushdown, &stack_temp) != P_BOTTOM)) {
-            if (prec_table(token) == SYNTAX_ERR) {
+            if (prec_table(token, sym) == SYNTAX_ERR) {
               return SYNTAX_ERR;
             }
           }
@@ -272,20 +307,134 @@ int prec_table(tToken *token)
       break;
   }
 
-  if (token_input == P_ID) {
+  if (token_input != ID) {
     st_push(&token_stack, *token);
   }
 
-  // nevime proc to funguje
+  // END OF EXPRESSION
   if (token_input == P_BOTTOM && s_top(&stack_pushdown) != P_BOTTOM) {
     s_pop(&stack_pushdown); // get rid of E, stack is now ready for new expression
+
+
+    /**********************
+         GENERATING ASS
+    **********************/
+    // right parse in STACK_RULES
+    // data in TOKEN_STACK
+    // we know the types of every token here in expression
+
+    //
+    tAssPtr top_ass = NULL;
+    tAssPtr current_ass = NULL; // ass_make_tree()
+    tAssPtr new_ass = NULL; // ass_make_leaf()
+
+    while (!s_empty(&stack_rules)) {
+      int top_rule = s_pop(&stack_rules);
+      tToken top_token = {"",ERROR};
+      if (top_rule == 11) {
+        top_token = st_pop(&token_stack);
+      }
+
+      switch (top_rule) {
+        case 0: // E → E + E
+        case 1: // E → E - E
+        case 2: // E → E * E
+        case 3: // E → E / E
+        case 4: // E → E < E
+        case 5: // E → E <= E
+        case 6: // E → E > E
+        case 7: // E → E >= E
+        case 8: // E → E == E
+        case 9: // E → E != E
+
+          switch (top_rule) {
+            case 0: // E → E + E
+              new_ass = ass_make_tree(OPERATOR, "+", NULL, NULL, NULL);
+              break;
+            case 1: // E → E - E
+              new_ass = ass_make_tree(OPERATOR, "-", NULL, NULL, NULL);
+              break;
+            case 2: // E → E * E
+              new_ass = ass_make_tree(OPERATOR, "*", NULL, NULL, NULL);
+              break;
+            case 3: // E → E / E
+              new_ass = ass_make_tree(OPERATOR, "/", NULL, NULL, NULL);
+              break;
+            case 4: // E → E < E
+              new_ass = ass_make_tree(OPERATOR, "<", NULL, NULL, NULL);
+              break;
+            case 5: // E → E <= E
+              new_ass = ass_make_tree(OPERATOR, "<=", NULL, NULL, NULL);
+              break;
+            case 6: // E → E > E
+              new_ass = ass_make_tree(OPERATOR, ">", NULL, NULL, NULL);
+              break;
+            case 7: // E → E >= E
+              new_ass = ass_make_tree(OPERATOR, ">=", NULL, NULL, NULL);
+              break;
+            case 8: // E → E == E
+              new_ass = ass_make_tree(OPERATOR, "==", NULL, NULL, NULL);
+              break;
+            case 9: // E → E != E
+              new_ass = ass_make_tree(OPERATOR, "!=", NULL, NULL, NULL);
+              break;
+          } // end of 2. switch
+
+          if (new_ass == NULL) {
+            // TODO uvolnit stacky
+            return INTERNAL_ERR;
+          }
+
+          if (top_ass == NULL) { // very first node inserted
+            top_ass = new_ass;
+            current_ass = new_ass;
+          }
+          else if (current_ass->rptr == NULL) {
+              current_ass->rptr = new_ass;
+          }
+          else if (current_ass->lptr == NULL) {
+            current_ass->lptr = new_ass;
+          }
+          current_ass = new_ass;
+          break;
+
+        case 10: // E → (E)
+          break;
+        case 11: // E → i
+          if (top_token.type == ID) {
+            new_ass = ass_make_leaf(top_token.type, top_token.text, sym);
+          }
+          else { // token->type == INTEGER || FLOATING_POINT || STRING
+            new_ass = ass_make_leaf(top_token.type, top_token.text, NULL);
+          }
+          if (new_ass == NULL) {
+            // TODO uvolnit stacky
+            return INTERNAL_ERR;
+          }
+
+
+          if (current_ass->rptr == NULL) {
+            current_ass->rptr = new_ass;
+          }
+          else if (current_ass->lptr == NULL) {
+            current_ass->lptr = new_ass;
+            // move to upper node where lptr is NULL
+            current_ass = ass_find_father(top_ass, current_ass);
+          }
+
+          break;
+        default:
+
+          break;
+      } // end of 1. switch
+    } // end of while
 
     /*fprintf(stderr, "PRAVY ROZBOR\n");
     while (!s_empty(&stack_rules)) {
       fprintf(stderr, "%d, ", s_pop(&stack_rules));
-    }
-    fprintf(stderr, "\n");*/
-  }
+          fprintf(stderr, "\n");
+    }*/
+  } // end of if
 
   /*TODO: if (konec) {
   s_free(&stack_pushdown);

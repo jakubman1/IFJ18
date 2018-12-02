@@ -69,18 +69,19 @@ int ll_predict(tToken *token, tStack *stack, tList *symtable_list, bool isGlobal
  int insert_built_in_functions (tSymPtr *root);
 
  /**
-       Inserts unknown variables or modifies already existing ones. Auxiliary function for create_local_symtable. Function has no effect for tokens that shouldn't stored be in symtables.
-       @param symtable_ptr Symtable where the data from token will be inserted
-       @param token Current token
-       @return 0 on success, VARIABLE_ERR if "<id>! = ..." or "<id>? = ..." or if name is a function, 99 on memory allocation errors.
+ Inserts unknown variables or modifies already existing ones. Auxiliary function for add_to_symtable. Function has no effect for tokens that shouldn't stored be in symtables.
+ @param symtable_list List of symtables
+ @param token Current token
+ @return 0 on success, VARIABLE_ERR if "<id>! = ..." or "<id>? = ..." or if name is a function, 99 on memory allocation errors.
  */
 int fill_global_symtable (tList *symtable_list, tToken *token);
 
  /**
-       Inserts unknown variables or modifies already existing ones. Auxiliary function for create_local_symtable. Function has no effect for tokens that shouldn't stored be in symtables.
-       @param symtable_ptr Symtable where the data from token will be inserted
-       @param token Current token
-       @return 0 on success, VARIABLE_ERR if "<id>! = ..." or "<id>? = ..." or if name is a function, 99 on memory allocation errors.
+ Inserts unknown variables or modifies already existing ones. Auxiliary function for add_to_symtable. Function has no effect for tokens that shouldn't stored be in symtables.
+ @param symtable_list List of symtables
+ @param token Current token
+ @param isParam Whether is a param of defined function or param inside the body of defined function
+ @return 0 on success, VARIABLE_ERR if "<id>! = ..." or "<id>? = ..." or if name is a function, 99 on memory allocation errors.
  */
 int fill_local_symtable (tList *symtable_list, tToken *token, bool isParam);
 
