@@ -130,11 +130,53 @@ tAssPtr ass_find_father(tAssPtr root, tAssPtr current_node)
   return NULL;
 }
 
-void in_order (tAssPtr root)
+void in_order(tAssPtr root)
 {
   if (root != NULL) {
     in_order(root->lptr);
     // fprintf(stderr, "%s, ", root->text);
     in_order(root->rptr);
   }
+}
+
+int ass_check_data_types(tAssPtr root)
+{
+  if (root != NULL) {
+    ass_check_data_types(root->lptr);
+    ass_check_data_types(root->rptr);
+    int ret_value = ass_check_data_types_aux(root);
+    if (ret_value != SUCCESS) {
+      return ret_value;
+    }
+  }
+}
+
+int ass_check_data_types_aux(tAssPtr root)
+{
+
+  /*  SCITANI, ODCITANI, NASOBENI, DELENI, KONKATENACE
+      int , int --> int
+      int , float --> float
+      float , float --> float
+      string , string --> string
+      ------------------------
+      int / 0 --> ERROR
+      float / 0 --> ERROR
+      true/false, int/float/string/nil --> ERROR
+
+      POROVNAVANI (<, >, =<, >=, ==, !=)
+      int , int --> true/false
+      float , float --> true/false
+      string , string --> true/false
+      int2float(int) , float --> true/false
+      int == float/string/nil --> false
+      int != float/string/nil --> false
+      float == int/string/nil --> false
+      float != int/string/nil --> false
+      string == int/float/nil --> false
+      string != int/float/nil --> false
+      nil == int/float/string --> false
+      nil != int/float/string --> false
+  */
+  return SUCCESS;
 }
