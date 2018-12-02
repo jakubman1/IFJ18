@@ -66,19 +66,18 @@ int fill_global_symtable (tList *symtable_list, tToken *token)
 
   if (token->type == ID) {
     symtable_search(symtable_list->First->table_ptr, token->text, &ID_global); // searches through global Tree
-  }
-  if (token->type == ID) {
     symtable_search(symtable_list->Act->table_ptr, token->text, &ID_local); // searches through local Tree
-  }
-
-  if (token->type == ID && (ID_global == NULL || (ID_global != NULL && ID_global->type == UNKNOWN))) {
-    // save as unknown
+    seenID = true;
     nameID = malloc((strlen(token->text) + 1) * sizeof(char));
-
     if (nameID == NULL) {
       return INTERNAL_ERR;
     }
     strcpy(nameID, token->text);
+  }
+
+  if (token->type == ID && (ID_global == NULL || (ID_global != NULL && ID_global->type == UNKNOWN))) {
+    // save as unknown
+
     return_value = symtable_insert_unknown(&(symtable_list->First->table_ptr), nameID);
     if (return_value != SUCCESS) {
       free(nameID);
@@ -104,7 +103,7 @@ int fill_global_symtable (tList *symtable_list, tToken *token)
       return VARIABLE_ERR;
     }
   }
-  else if (seenID == true) {
+  else if (seenID == true && ID_global->type != FUNCTION) {
     free(nameID);
     seenID = false;
   }
@@ -123,8 +122,6 @@ int fill_local_symtable (tList *symtable_list, tToken *token, bool isParam)
 
   if (token->type == ID) {
     symtable_search(symtable_list->First->table_ptr, token->text, &ID_global); // searches through global Tree
-  }
-  if (token->type == ID) {
     symtable_search(symtable_list->Act->table_ptr, token->text, &ID_local); // searches through local Tree
   }
 
@@ -204,10 +201,14 @@ int add_to_symtable(tList *symtable_list, tToken *token)
     seenDEF = true;
     countEND++;
   }
-  else if (token->type == ID && seenDEF  && (ID_global == NULL || (ID_global != NULL && ID_global->type == UNKNOWN))) {
+  else if (token->type == ID && seenDEF && (ID_global == NULL || (ID_global != NULL && ID_global->type == UNKNOWN))) {
     local_symtable = true;
     // insert function to global symtable
     return_value = symtable_insert_function(&(symtable_list->First->table_ptr), token->text, TYPE_NIL, -2, params_list, true);
+    /*fprintf(stderr, "inserted: %s\n", token->text);
+    tSymPtr tmp = NULL;
+    symtable_search(symtable_list->First->table_ptr, token->text, &tmp);
+    fprintf(stderr, "tmp: name %s, type: %d \n", tmp->name, tmp->type);*/
     if (return_value != SUCCESS) {
       return return_value;
     }
@@ -349,7 +350,7 @@ int parser()
       currentToken.text = NULL;
     }
     if(result == VARIABLE_ERR) {
-      fprintf(stderr, ANSI_COLOR_RED "Variable error: " ANSI_COLOR_RESET "assign into a function\n");
+      fprintf(stderr, ANSI_COLOR_RED "Variable error: " ANSI_COLOR_RESET "Can not assign value into a function\n");
       return result;
     }
     // TODO: Free allocated resouorces on
