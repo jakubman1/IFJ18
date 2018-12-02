@@ -70,13 +70,11 @@ do
   fi
 done
 
-for FILENAME in 'varerr'  # List of all incorrect files
-do
-  ./ifj18 < tests/srcs/$FILENAME.rb > /dev/null
+
+  ./ifj18 < tests/srcs/varerr.rb > /dev/null
   SYNOUT=$?
   if [ $SYNOUT == 3 ]; then
     echo -e "${GREEN}Syntactic analysis of ${FILENAME}.rb returned $SYNOUT (passed)!${NC}"
   else
     echo -e "${RED}ERROR: Syntactic analysis of ${FILENAME}.rb returned $SYNOUT (should be 3)!${NC}"
   fi
-done
