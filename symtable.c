@@ -159,11 +159,9 @@ void symtable_insert(tSymPtr *root, tSymPtr node)
         cmpval = strcmp((*root)->name, node->name);
         if(cmpval > 0) {
           symtable_insert(&(((*root)->lptr)), node);
-          fprintf(stderr, "davame doleva %s\n", node->name);
         }
         else if(cmpval < 0) {
           symtable_insert(&(((*root)->rptr)), node);
-          fprintf(stderr, "davame doprava %s\n", node->name);
         }
       }
       else {
@@ -182,7 +180,7 @@ tSymPtr symtable_search(tSymPtr root, char *name, tSymPtr *result)
       *result = root;
       //return root;
     }
-    else if(cmpval < 0) {
+    else if(cmpval > 0) {
       symtable_search(root->lptr, name, result);
     }
     else {
@@ -215,26 +213,32 @@ void symtable_clear(tSymPtr *root)
   }
 }
 
-int add_param(tFuncParam *head, data_type type)
+int add_param(tFuncParam **head, data_type type)
 {
-  // TODO: check NULL
-  if(head != NULL) {
-    tFuncParam *current = NULL;
-    for(current = head; current != NULL; current = current->next) {
-      // Go to the end of the list
-      if(current->next == NULL) {
-        // insert a new element
-        current->next = malloc(sizeof(tFuncParam));
-        if(current->next != NULL) {
-          current->next->next = NULL;
-          current->next->type = type;
-          break;
-        }
-        else {
-          return INTERNAL_ERR;
-        }
-      }
+  tFuncParam *new = NULL;
+
+  if (*head == NULL) {
+    new = malloc(sizeof(tFuncParam));
+    if (new == NULL) {
+      return INTERNAL_ERR;
     }
+    new->type = type;
+    new->next = NULL;
+
+    *head = new;
+  }
+  else {
+    tFuncParam *last = *head;
+    for(last; last->next != NULL; last = last->next) {
+      ; // Go to the end of the list
+    }
+    new = malloc(sizeof(tFuncParam));
+    if (new == NULL) {
+      return INTERNAL_ERR;
+    }
+    last->next = new;
+    new->type = type;
+    new->next = NULL;
   }
   return SUCCESS;
 }

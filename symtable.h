@@ -24,7 +24,8 @@ typedef enum {
   TYPE_INT,
   TYPE_STRING,
   TYPE_FLOAT,
-  TYPE_NIL
+  TYPE_NIL,
+  NONE // for first param in the param_list
 } data_type;
 
 /* typedef union {
@@ -126,7 +127,6 @@ Add parameter to a parameter list
 @pre head cannot be NULL
 @return 0 on success, 99 on memory allocation errors.
 */
-int add_param(tFuncParam *head, data_type type);
-
+int add_param(tFuncParam **head, data_type type);
 
 #endif
