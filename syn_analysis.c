@@ -381,7 +381,9 @@ int parser()
     // EOF
     int top = s_top(&stack);
     if (top == LL_PROG) {
-      top = s_top(&stack);
+      while(top == LL_PROG) {
+        top = s_pop(&stack);
+      }
       if (top == LL_BOTTOM) {
         result = SUCCESS;
       }
