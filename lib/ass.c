@@ -115,26 +115,21 @@ tAssPtr ass_make_leaf(int type, char *text, tSymPtr symtable)
 
 tAssPtr ass_find_father(tAssPtr root, tAssPtr current_node)
 {
-  fprintf(stderr, "ZACATEK FIND_FATHER\n");
   if (root == current_node) {
-    fprintf(stderr, "KONEC FIND_FATHER, found\n");
     return root;
   }
 
   if (root == NULL) {
-    fprintf(stderr, "KONEC FIND_FATHER - null\n");
     return NULL;
   }
 
   if (ass_find_father(root->rptr, current_node) == current_node) {
-    fprintf(stderr, "KONEC FIND_FATHER\n");
     return root;
   }
 
   if (ass_find_father(root->lptr, current_node) == current_node) {
-    fprintf(stderr, "KONEC FIND_FATHER\n");
     return root;
   }
-  fprintf(stderr, "KONEC FIND_FATHER - not found\n");
+
   return NULL;
 }

@@ -307,7 +307,7 @@ int prec_table(tToken *token, tSymPtr sym)
       break;
   }
 
-  if (token_input != ID) {
+  if (token_input == P_ID) {
     st_push(&token_stack, *token);
   }
 
