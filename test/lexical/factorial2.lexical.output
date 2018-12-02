@@ -1,99 +1,99 @@
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: def', 0
-DEBUG: Added to buffer: factorial', 9
+DEBUG: Added to buffer: def, 0
+DEBUG: Added to buffer: factorial, 9
 DEBUG: Added to buffer: (, 15
-DEBUG: Added to buffer: n', 9
+DEBUG: Added to buffer: n, 9
 DEBUG: Added to buffer: ), 15
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: if', 4
-DEBUG: Added to buffer: n', 9
-DEBUG: Added to buffer: <', 15
-DEBUG: Added to buffer: 2', 10
-DEBUG: Added to buffer: then', 7
+DEBUG: Added to buffer: if, 4
+DEBUG: Added to buffer: n, 9
+DEBUG: Added to buffer: <, 15
+DEBUG: Added to buffer: 2, 10
+DEBUG: Added to buffer: then, 7
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: result', 9
-DEBUG: Added to buffer: =', 15
-DEBUG: Added to buffer: 1', 10
+DEBUG: Added to buffer: result, 9
+DEBUG: Added to buffer: =, 15
+DEBUG: Added to buffer: 1, 10
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: else', 2
+DEBUG: Added to buffer: else, 2
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: decremented_n', 9
-DEBUG: Added to buffer: =', 15
-DEBUG: Added to buffer: n', 9
+DEBUG: Added to buffer: decremented_n, 9
+DEBUG: Added to buffer: =, 15
+DEBUG: Added to buffer: n, 9
 DEBUG: Added to buffer: -, 15
-DEBUG: Added to buffer: 1', 10
+DEBUG: Added to buffer: 1, 10
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: temp_result', 9
-DEBUG: Added to buffer: =', 15
-DEBUG: Added to buffer: factorial', 9
-DEBUG: Added to buffer: decremented_n', 9
+DEBUG: Added to buffer: temp_result, 9
+DEBUG: Added to buffer: =, 15
+DEBUG: Added to buffer: factorial, 9
+DEBUG: Added to buffer: decremented_n, 9
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: result', 9
-DEBUG: Added to buffer: =', 15
-DEBUG: Added to buffer: n', 9
+DEBUG: Added to buffer: result, 9
+DEBUG: Added to buffer: =, 15
+DEBUG: Added to buffer: n, 9
 DEBUG: Added to buffer: *, 15
-DEBUG: Added to buffer: temp_result', 9
+DEBUG: Added to buffer: temp_result, 9
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: end', 3
+DEBUG: Added to buffer: end, 3
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: result', 9
+DEBUG: Added to buffer: result, 9
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: end', 3
+DEBUG: Added to buffer: end, 3
 DEBUG: Added to buffer: 
 , 18
 DEBUG: Added to buffer: 
 , 18
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: print', 9
-DEBUG: Added to buffer: "Zadejte cislo pro vypocet faktorialu: "', 16
+DEBUG: Added to buffer: print, 9
+DEBUG: Added to buffer: "Zadejte cislo pro vypocet faktorialu: ", 16
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: a', 9
-DEBUG: Added to buffer: =', 15
-DEBUG: Added to buffer: inputi', 9
+DEBUG: Added to buffer: a, 9
+DEBUG: Added to buffer: =, 15
+DEBUG: Added to buffer: inputi, 9
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: if', 4
-DEBUG: Added to buffer: a', 9
-DEBUG: Added to buffer: <', 15
-DEBUG: Added to buffer: 0', 10
-DEBUG: Added to buffer: then', 7
+DEBUG: Added to buffer: if, 4
+DEBUG: Added to buffer: a, 9
+DEBUG: Added to buffer: <, 15
+DEBUG: Added to buffer: 0, 10
+DEBUG: Added to buffer: then, 7
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: print', 9
-DEBUG: Added to buffer: "\nFaktorial nelze spocitat\n"', 16
+DEBUG: Added to buffer: print, 9
+DEBUG: Added to buffer: "\nFaktorial nelze spocitat\n", 16
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: else', 2
+DEBUG: Added to buffer: else, 2
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: vysl', 9
-DEBUG: Added to buffer: =', 15
-DEBUG: Added to buffer: factorial', 9
-DEBUG: Added to buffer: a', 9
+DEBUG: Added to buffer: vysl, 9
+DEBUG: Added to buffer: =, 15
+DEBUG: Added to buffer: factorial, 9
+DEBUG: Added to buffer: a, 9
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: print', 9
+DEBUG: Added to buffer: print, 9
 DEBUG: Added to buffer: (, 15
-DEBUG: Added to buffer: "\nVysledek je:"', 16
+DEBUG: Added to buffer: "\nVysledek je:", 16
 DEBUG: Added to buffer: ,, 19
-DEBUG: Added to buffer: vysl', 9
+DEBUG: Added to buffer: vysl, 9
 DEBUG: Added to buffer: ,, 19
-DEBUG: Added to buffer: "\n"', 16
+DEBUG: Added to buffer: "\n", 16
 DEBUG: Added to buffer: ), 15
 DEBUG: Added to buffer: 
 , 18
-DEBUG: Added to buffer: end', 3
+DEBUG: Added to buffer: end, 3
 DEBUG: Added to buffer: 
 , 18

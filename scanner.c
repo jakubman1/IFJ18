@@ -511,7 +511,7 @@ void send_buffer(token_type type, tBuffer *buffer, tToken *token_out)
 
   (*buffer)[0] = 0;
   #ifdef TEST
-  printf("DEBUG: Added to buffer: %s', %d\n", token_out->text, token_out->type);
+  printf("DEBUG: Added to buffer: %s, %d\n", token_out->text, token_out->type);
   #endif
 }
 

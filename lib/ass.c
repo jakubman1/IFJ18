@@ -134,7 +134,7 @@ void in_order (tAssPtr root)
 {
   if (root != NULL) {
     in_order(root->lptr);
-    fprintf(stderr, "%s, ", root->text);
+    // fprintf(stderr, "%s, ", root->text);
     in_order(root->rptr);
   }
 }

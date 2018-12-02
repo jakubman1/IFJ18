@@ -438,10 +438,16 @@ int prec_table(tToken *token, tSymPtr sym)
       } // end of 1. switch
     } // end of while
 
+    /*  int + int = int
+        int + float = float
+        float + float = float
+        float + int = float
+    */
+
     // VYPIS ASS
-    fprintf(stderr, "ASS: \n");
+  /*  fprintf(stderr, "ASS: ");
     in_order(top_ass);
-    fprintf(stderr, "\n");
+    fprintf(stderr, "\n");*/
 
     // VYPIS PRAVY ROZBOR
     /*fprintf(stderr, "PRAVY ROZBOR\n");
