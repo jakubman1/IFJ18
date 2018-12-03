@@ -11,27 +11,6 @@
 #include "expression.h"
 
 
-
-/*const int rule_table[NUMBER_OF_RULES][MAX_RULE_LENGHT] =
-{
-  {P_E, P_PLUS, P_E},                       // E → E + E    0
-  {P_E, P_MINUS, P_E},                      // E → E - E    1
-  {P_E, P_MULTIPLY, P_E},                   // E → E * E    2
-  {P_E, P_DIVIDE, P_E},                     // E → E / E    3
-  {P_E, P_LOWER, P_E},                      // E → E < E    4
-  {P_E, P_LOWEREQ, P_E},                    // E → E <= E   5
-  {P_E, P_GREATER, P_E},                    // E → E > E    6
-  {P_E, P_GREATEREQ, P_E},                  // E → E >= E   7
-  {P_E, P_EQ, P_E},                         // E → E == E   8
-  {P_E, P_NOTEQ, P_E},                      // E → E != E   9
-  {P_LEFT_BRACKET, P_E, P_RIGHT_BRACKET},   // E → (E)      10
-  {P_ID, -1, -1}                            // E → i        11
-};*/
-
-/*
-*     ASS se da sestrojit z praveho rozboru
-*/
-
 int stack_terminal_top(tStack *searched_stack, tStack *aux_stack)
 {
   // pop from searched stack
