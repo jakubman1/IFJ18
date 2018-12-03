@@ -11,7 +11,7 @@ NC='\033[0m' # No Color
 echo -e "\n\n"
 echo "Running valgrind"
 echo "----------------------------------"
-valgrind ./ifj18 < tests/srcs/factorial.rb
+valgrind ./ifj18 < tests/srcs/simple.rb
 
 ###########################
 # Tests for lexical analysis
