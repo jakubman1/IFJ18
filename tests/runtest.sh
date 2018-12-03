@@ -70,7 +70,7 @@ do
   fi
 done
 
-
+FILENAME='varerr'
   ./ifj18 < tests/srcs/varerr.rb > /dev/null
   SYNOUT=$?
   if [ $SYNOUT == 3 ]; then

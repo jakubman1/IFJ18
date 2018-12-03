@@ -276,8 +276,12 @@ int prec_table(tToken *token, tSymPtr sym)
         else {
           // po vyhodnoceni pravidla se vola se stejnym tokenem
           if (token_input != P_BOTTOM || (stack_terminal_top(&stack_pushdown, &stack_temp) != P_BOTTOM)) {
-            if (prec_table(token, sym) == SYNTAX_ERR) {
+            int return_value = prec_table(token, sym);
+            if (return_value == SYNTAX_ERR) {
               return SYNTAX_ERR;
+            }
+            else if (return_value == TYPE_ERR) {
+              return TYPE_ERR;
             }
           }
         }
@@ -422,6 +426,11 @@ int prec_table(tToken *token, tSymPtr sym)
           break;
       } // end of 1. switch
     } // end of while
+
+
+    int abc = ass_check_data_types(top_ass);
+    fprintf(stderr, "Expression vraci: %d\n", abc);
+    return abc;
 
     /*  SCITANI, ODCITANI, NASOBENI, DELENI, KONKATENACE
         int , int --> int

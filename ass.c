@@ -3,6 +3,7 @@
  * @author Jakub Man
  * @date 22.11. 2018
  * @brief Abstract syntax tree library (A.S.S. -> abstraktni syntakticky strom)
+ * Víme že se jedná o nekonzistentní pojmenování, ale název knihovny ass.h držel morálku našeho týmu nad vodou. ;)
  */
 #include "ass.h"
 
@@ -140,7 +141,7 @@ void in_order(tAssPtr root)
 
 int ass_check_data_types(tAssPtr root)
 {
-  if (root != NULL) {
+  /*if (root != NULL) {
     ass_check_data_types(root->lptr);
     ass_check_data_types(root->rptr);
     int ret_value = ass_check_data_types_aux(root);
@@ -148,6 +149,29 @@ int ass_check_data_types(tAssPtr root)
       return ret_value;
     }
   }
+  return SUCCESS;*/
+
+
+  if (root->lptr != NULL && root->lptr->type == OPERATOR) {
+    return ass_check_data_types(root->lptr);
+  }
+
+  if (root->rptr != NULL && root->rptr->type == OPERATOR) {
+    return ass_check_data_types(root->rptr);
+  }
+
+  // last operator
+  int type_left = root->lptr->type;
+  int type_right = root->rptr->type;
+
+  fprintf(stderr, "left node type: %d\n", type_left);
+  fprintf(stderr, "right node type: %d\n", type_right);
+  // for testing
+  if (type_left != type_right) {
+    return TYPE_ERR;
+  }
+
+  return SUCCESS;
 }
 
 int ass_check_data_types_aux(tAssPtr root)

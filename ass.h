@@ -12,6 +12,7 @@
 #include <string.h>
 #include "errcodes.h"
 #include "symtable.h"
+#include "types.h"
 
 typedef struct assNode {
   int type; // Type of node (for internal use only)
