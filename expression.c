@@ -10,26 +10,9 @@
 
 #include "expression.h"
 
-const int precedent_table[PRECEDENT_TABLE_SIZE][PRECEDENT_TABLE_SIZE] =
-{
-  //+ |- |* |/ |< |<=|> |>=|==|!=|( |) |i |$ |          token_input -->
-   {R, R, S, S, R, R, R, R, R, R, S, R, S, R}, // +     stack_pushdown
-   {R, R, S, S, R, R, R, R, R, R, S, R, S, R}, // -      |
-   {R, R, R, R, R, R, R, R, R, R, S, R, S, R}, // *      V
-   {R, R, R, R, R, R, R, R, R, R, S, R, S, R}, // /
-   {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // <
-   {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // <=
-   {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // >
-   {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // >=
-   {S, S, S, S, S, S, S, S, N, N, S, R, S, R}, // ==
-   {S, S, S, S, S, S, S, S, N, N, S, R, S, R}, // !=
-   {S, S, S, S, S, S, S, S, S, S, S, E, S, N}, // (
-   {R, R, R, R, R, R, R, R, R, R, N, R, N, R}, // )
-   {R, R, R, R, R, R, R, R, R, R, N, R, N, R}, // i
-   {S, S, S, S, S, S, S, S, S, S, S, N, S, N}  // $
-};
 
-const int rule_table[NUMBER_OF_RULES][MAX_RULE_LENGHT] =
+
+/*const int rule_table[NUMBER_OF_RULES][MAX_RULE_LENGHT] =
 {
   {P_E, P_PLUS, P_E},                       // E → E + E    0
   {P_E, P_MINUS, P_E},                      // E → E - E    1
@@ -43,7 +26,7 @@ const int rule_table[NUMBER_OF_RULES][MAX_RULE_LENGHT] =
   {P_E, P_NOTEQ, P_E},                      // E → E != E   9
   {P_LEFT_BRACKET, P_E, P_RIGHT_BRACKET},   // E → (E)      10
   {P_ID, -1, -1}                            // E → i        11
-};
+};*/
 
 /*
 *     ASS se da sestrojit z praveho rozboru
@@ -201,6 +184,25 @@ int prec_table(tToken *token, tSymPtr sym)
   static tStack stack_temp; // auxiliary stack for searching for first terminal
   static tTStack token_stack; // stores text and type of the tokens until the end of the expression
   static bool init = false;
+
+  const int precedent_table[PRECEDENT_TABLE_SIZE][PRECEDENT_TABLE_SIZE] =
+  {
+    //+ |- |* |/ |< |<=|> |>=|==|!=|( |) |i |$ |          token_input -->
+     {R, R, S, S, R, R, R, R, R, R, S, R, S, R}, // +     stack_pushdown
+     {R, R, S, S, R, R, R, R, R, R, S, R, S, R}, // -      |
+     {R, R, R, R, R, R, R, R, R, R, S, R, S, R}, // *      V
+     {R, R, R, R, R, R, R, R, R, R, S, R, S, R}, // /
+     {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // <
+     {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // <=
+     {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // >
+     {S, S, S, S, N, N, N, N, R, R, S, R, S, R}, // >=
+     {S, S, S, S, S, S, S, S, N, N, S, R, S, R}, // ==
+     {S, S, S, S, S, S, S, S, N, N, S, R, S, R}, // !=
+     {S, S, S, S, S, S, S, S, S, S, S, E, S, N}, // (
+     {R, R, R, R, R, R, R, R, R, R, N, R, N, R}, // )
+     {R, R, R, R, R, R, R, R, R, R, N, R, N, R}, // i
+     {S, S, S, S, S, S, S, S, S, S, S, N, S, N}  // $
+  };
 
   if (!init)
   {
