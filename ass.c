@@ -111,22 +111,14 @@ tAssPtr ass_make_leaf(int type, char *text, tSymPtr symtable)
 
 void ass_find_father(tAssPtr root, tAssPtr current_node, tAssPtr *father_node)
 {
-  if (root == current_node) {
-    *father_node = root;
-    return;
-  }
- else if (root == NULL) {
-    return;
-  }
-  ass_find_father(root->rptr, current_node, father_node);
-  if (*father_node == current_node) {
-    *father_node = root;
-    return;
-  }
-  ass_find_father(root->lptr, current_node, father_node);
-  if (*father_node == current_node) {
-    *father_node = root;
-    return;
+  if (root != NULL) {
+    // preorder search
+    if (root->lptr == current_node || root->rptr == current_node || root == current_node) { // root == current_node --> when there is only 1 node in the tree
+      *father_node = root;
+      return;
+    }
+    ass_find_father(root->lptr, current_node, father_node);
+    ass_find_father(root->rptr, current_node, father_node);
   }
 }
 

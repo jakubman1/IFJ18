@@ -65,12 +65,17 @@ tAssPtr ass_make_leaf(int type, char *text, tSymPtr symtable);
 Find a father of a node
 @param root Root of the Ass
 @param current_node Child of the searched Father
-@return Father of the current_node or root if root == current_node
-@pre root != NULL, current_node != NULL, root and current_node must be part of the same tree
+@param father_node Variable where the father node is stored when found. If tree has only 1 node the root is also it's own father.
+@pre root != NULL, current_node != NULL, root and current_node must be part of the same tree.
 */
 void ass_find_father(tAssPtr root, tAssPtr current_node, tAssPtr *father_node);
 
-
+/**
+Evaluate data types of node in the tree.
+@param root Root of the evaluated tree.
+@returns Final data type, TYPE_ERR if data types don't match, DIVISION_BY_ZERO if division by zero.
+@pre root != NULL
+*/
 int ass_check_data_types(tAssPtr root);
 
 

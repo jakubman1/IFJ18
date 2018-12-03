@@ -417,7 +417,6 @@ int prec_table(tToken *token, tSymPtr sym)
           else if (current_ass->lptr == NULL) {
             current_ass->lptr = new_ass;
             // move to upper node where lptr is NULL
-            //current_ass = ass_find_father(top_ass, current_ass);
             tAssPtr temp = NULL;
             ass_find_father(top_ass, current_ass, &temp);
             current_ass = temp;
@@ -430,9 +429,7 @@ int prec_table(tToken *token, tSymPtr sym)
     } // end of while
 
     if (top_ass != NULL) {
-      int abc = ass_check_data_types(top_ass);
-      fprintf(stderr, "Expression vraci: %d\n", abc);
-      return abc;
+      return ass_check_data_types(top_ass);
     }
 
     /*  SCITANI, ODCITANI, NASOBENI, DELENI, KONKATENACE
