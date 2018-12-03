@@ -387,12 +387,12 @@ int parser()
       if (top == LL_BOTTOM) {
         result = SUCCESS;
       }
-      else {
+      else if(result == SUCCESS){
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected end of file.\n");
         result = SYNTAX_ERR;
       }
     }
-    else {
+    else if(result == SUCCESS){
       fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected end of file.\n");
       result = SYNTAX_ERR;
     }
@@ -535,7 +535,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
           PUSH_RULE_17;
         }
       }
-      else if (token->type == INTEGER || token->type == STRING || token->type == FLOATING_POINT || token->type == OPERATOR) { // everything that fits in expression,
+      else if (token->type == INTEGER || token->type == STRING || token->type == FLOATING_POINT || token->type == NIL || token->type == OPERATOR) { // everything that fits in expression,
         PUSH_RULE_17;
       }
       else {
@@ -632,26 +632,24 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       int return_value = 0;
       if (token->type == INTEGER || token->type == STRING || token->type == FLOATING_POINT || token->type == NIL || token->type == OPERATOR || token->type == ID) { // everything that fits in expression,  TODO must be ID of a variable
         return_value = prec_table(token, sym);
-        fprintf(stderr, "1) v LL_table return value: %d\n", return_value);
           if(return_value == SYNTAX_ERR) {
             fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected token \"%s\" in expression.\n", token->text);
             return SYNTAX_ERR;
           }
           else if(return_value == TYPE_ERR) {
-            fprintf(stderr, ANSI_COLOR_RED "Type error: " ANSI_COLOR_RESET "Operation on incompatible types.\n", token->text);
+            fprintf(stderr, ANSI_COLOR_RED "Type error: " ANSI_COLOR_RESET "Operation on incompatible types.\n");
             return TYPE_ERR;
           }
       }
       else { // everything else or ID of a function
         tToken endExpression = {"", LL_BOTTOM}; // finish expression
         return_value = prec_table(&endExpression, sym);
-        fprintf(stderr, "2) v LL_table return value: %d\n", return_value);
         if (return_value == SYNTAX_ERR) {
           fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected token \"%s\" in expression.\n", token->text);
           return SYNTAX_ERR;
         }
         else if (return_value == TYPE_ERR) {
-          fprintf(stderr, ANSI_COLOR_RED "Type error: " ANSI_COLOR_RESET "Operation on incompatible types.\n", token->text);
+          fprintf(stderr, ANSI_COLOR_RED "Type error: " ANSI_COLOR_RESET "Operation on incompatible types.\n");
           return TYPE_ERR;
         }
         s_pop(stack);

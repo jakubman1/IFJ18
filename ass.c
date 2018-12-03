@@ -109,25 +109,25 @@ tAssPtr ass_make_leaf(int type, char *text, tSymPtr symtable)
 /*  mozna neco takove ukroot = root a na konci return ukroot*/
 // co je ukroot?
 
-tAssPtr ass_find_father(tAssPtr root, tAssPtr current_node)
+void ass_find_father(tAssPtr root, tAssPtr current_node, tAssPtr *father_node)
 {
   if (root == current_node) {
-    return root;
+    *father_node = root;
+    return;
   }
-
-  if (root == NULL) {
-    return NULL;
+ else if (root == NULL) {
+    return;
   }
-
-  if (ass_find_father(root->rptr, current_node) == current_node) {
-    return root;
+  ass_find_father(root->rptr, current_node, father_node);
+  if (*father_node == current_node) {
+    *father_node = root;
+    return;
   }
-
-  if (ass_find_father(root->lptr, current_node) == current_node) {
-    return root;
+  ass_find_father(root->lptr, current_node, father_node);
+  if (*father_node == current_node) {
+    *father_node = root;
+    return;
   }
-
-  return NULL;
 }
 
 void in_order(tAssPtr root)
@@ -141,41 +141,40 @@ void in_order(tAssPtr root)
 
 int ass_check_data_types(tAssPtr root)
 {
-  /*if (root != NULL) {
-    ass_check_data_types(root->lptr);
-    ass_check_data_types(root->rptr);
-    int ret_value = ass_check_data_types_aux(root);
-    if (ret_value != SUCCESS) {
-      return ret_value;
-    }
-  }
-  return SUCCESS;*/
 
+  //fprintf(stderr, "opraveno mistrem rekurze\n");
+
+  int type_left = -1;
+  int type_right = -1;
+
+  if (root->lptr == NULL && root->rptr == NULL) { // single node in the tree
+    return root->type;
+  }
 
   if (root->lptr != NULL && root->lptr->type == OPERATOR) {
-    return ass_check_data_types(root->lptr);
+    type_left = ass_check_data_types(root->lptr);
   }
 
   if (root->rptr != NULL && root->rptr->type == OPERATOR) {
-    return ass_check_data_types(root->rptr);
+    type_right = ass_check_data_types(root->rptr);
   }
 
   // last operator
-  int type_left = root->lptr->type;
-  int type_right = root->rptr->type;
+  if (type_left == -1) {
+    type_left = root->lptr->type;
+  }
+  if (type_right == -1) {
+    type_right = root->rptr->type;
+  }
 
-  fprintf(stderr, "left node type: %d\n", type_left);
-  fprintf(stderr, "right node type: %d\n", type_right);
   // for testing
   if (type_left != type_right) {
     return TYPE_ERR;
   }
-
-  return SUCCESS;
+  else {
+    return INTEGER;
+  }
 }
-
-int ass_check_data_types_aux(tAssPtr root)
-{
 
   /*  SCITANI, ODCITANI, NASOBENI, DELENI, KONKATENACE
       int , int --> int
@@ -192,14 +191,12 @@ int ass_check_data_types_aux(tAssPtr root)
       float , float --> true/false
       string , string --> true/false
       int2float(int) , float --> true/false
-      int == float/string/nil --> false
-      int != float/string/nil --> false
-      float == int/string/nil --> false
-      float != int/string/nil --> false
+      int == string/nil --> false
+      int != string/nil --> true
+      float == string/nil --> false
+      float != string/nil --> true
       string == int/float/nil --> false
-      string != int/float/nil --> false
+      string != int/float/nil --> true
       nil == int/float/string --> false
-      nil != int/float/string --> false
+      nil != int/float/string --> true
   */
-  return SUCCESS;
-}

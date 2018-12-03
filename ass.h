@@ -68,11 +68,11 @@ Find a father of a node
 @return Father of the current_node or root if root == current_node
 @pre root != NULL, current_node != NULL, root and current_node must be part of the same tree
 */
-tAssPtr ass_find_father(tAssPtr root, tAssPtr current_node);
+void ass_find_father(tAssPtr root, tAssPtr current_node, tAssPtr *father_node);
+
 
 int ass_check_data_types(tAssPtr root);
 
-int ass_check_data_types_aux(tAssPtr root);
 
 
 #endif

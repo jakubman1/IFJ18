@@ -243,7 +243,6 @@ int prec_table(tToken *token, tSymPtr sym)
   else { // end of expression (== $)
     token_input = P_BOTTOM;
   }
-
   int top_terminal = stack_terminal_top(&stack_pushdown, &stack_temp);
 
   switch (precedent_table[top_terminal][token_input])
@@ -302,7 +301,6 @@ int prec_table(tToken *token, tSymPtr sym)
       return INTERNAL_ERR;
     }
     strcpy(copyText, token->text);
-
     tToken copyToken = {copyText, token->type};
     st_push(&token_stack, copyToken);
   }
@@ -381,9 +379,9 @@ int prec_table(tToken *token, tSymPtr sym)
             return INTERNAL_ERR;
           }
 
+
           if (top_ass == NULL) { // very first node inserted
             top_ass = new_ass;
-            current_ass = new_ass;
           }
           else if (current_ass->rptr == NULL) {
               current_ass->rptr = new_ass;
@@ -391,6 +389,7 @@ int prec_table(tToken *token, tSymPtr sym)
           else if (current_ass->lptr == NULL) {
             current_ass->lptr = new_ass;
           }
+
           current_ass = new_ass;
           break;
 
@@ -418,7 +417,10 @@ int prec_table(tToken *token, tSymPtr sym)
           else if (current_ass->lptr == NULL) {
             current_ass->lptr = new_ass;
             // move to upper node where lptr is NULL
-            current_ass = ass_find_father(top_ass, current_ass);
+            //current_ass = ass_find_father(top_ass, current_ass);
+            tAssPtr temp = NULL;
+            ass_find_father(top_ass, current_ass, &temp);
+            current_ass = temp;
           }
           break;
         default:
@@ -427,10 +429,11 @@ int prec_table(tToken *token, tSymPtr sym)
       } // end of 1. switch
     } // end of while
 
-
-    int abc = ass_check_data_types(top_ass);
-    fprintf(stderr, "Expression vraci: %d\n", abc);
-    return abc;
+    if (top_ass != NULL) {
+      int abc = ass_check_data_types(top_ass);
+      fprintf(stderr, "Expression vraci: %d\n", abc);
+      return abc;
+    }
 
     /*  SCITANI, ODCITANI, NASOBENI, DELENI, KONKATENACE
         int , int --> int
