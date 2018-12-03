@@ -303,9 +303,9 @@ int parser()
 
   symtable_init(&globalTree);
 
-  if (insert_built_in_functions(&globalTree) == INTERNAL_ERR) {
+  /*if (insert_built_in_functions(&globalTree) == INTERNAL_ERR) {
     return INTERNAL_ERR;
-  }
+  }*/
 
   list_init(&symtable_list);
   list_insert(&symtable_list, globalTree, NULL);
@@ -314,6 +314,11 @@ int parser()
 
   s_push(&stack, LL_BOTTOM);
   s_push(&stack, LL_PROG);
+
+  char *id_name_assign = malloc(sizeof(char) * 4);
+  if(id_name_assign == NULL) {
+    return INTERNAL_ERR;
+  }
 
   while((scanner_out = scanner(&currentToken)) == SUCCESS && result == SUCCESS) {
     // create abstract syntax tree
@@ -339,7 +344,7 @@ int parser()
         isGlobal = false;
       }
 
-      result = ll_predict(&currentToken, &stack, &symtable_list, isGlobal);
+      result = ll_predict(&currentToken, &stack, &symtable_list, isGlobal, id_name_assign);
     }
 
     //// MUSI BYT AZ NA KONCI CYKLU !!!!!!!!!!!!!!!
@@ -350,6 +355,8 @@ int parser()
     }
     if(result == VARIABLE_ERR) {
       fprintf(stderr, ANSI_COLOR_RED "Variable error: " ANSI_COLOR_RESET "Can not assign value into a function\n");
+      // nechybi tu free stack?
+      free(id_name_assign);
       return result;
     }
     // TODO: Free allocated resouorces on
@@ -399,30 +406,33 @@ int parser()
 
   }
   s_free(&stack);
-/*
-  fprintf(stderr, "VYPIS TABULEK SYMBOLU:\n");
-  fprintf(stderr, "Globalni 1. ID (foo): %s\n", symtable_list.First->table_ptr->name);
-  fprintf(stderr, "Globalni 1. ID (foo) param_count: %d\n", symtable_list.First->table_ptr->data.funData.paramCount);
-  fprintf(stderr, "Globalni 1. ID (foo) param_list 1. Element: %p\n", symtable_list.First->table_ptr->data.funData.params);
-  fprintf(stderr, "Globalni 1. ID (foo) param_list 1. Element Typ: %d\n", symtable_list.First->table_ptr->data.funData.params->type);
-  fprintf(stderr, "Globalni 1. ID (foo) param_list 1. (a) Element head: %p\n", symtable_list.First->table_ptr->data.funData.params);
-  fprintf(stderr, "Globalni 1. ID (foo) param_list 2. (b) Element next: %p\n", symtable_list.First->table_ptr->data.funData.params->next);
-  fprintf(stderr, "Globalni 1. ID (foo) param_list 3. (c) Element next->next: %p\n", symtable_list.First->table_ptr->data.funData.params->next->next);
+
+  /*fprintf(stderr, "VYPIS TABULEK SYMBOLU:\n");
+  //fprintf(stderr, "Globalni 1. ID (foo): %s\n", symtable_list.First->table_ptr->name);
+  //fprintf(stderr, "Globalni 1. ID (foo) param_count: %d\n", symtable_list.First->table_ptr->data.funData.paramCount);
+  //fprintf(stderr, "Globalni 1. ID (foo) param_list 1. Element: %p\n", symtable_list.First->table_ptr->data.funData.params);
+  //fprintf(stderr, "Globalni 1. ID (foo) param_list 1. Element Typ: %d\n", symtable_list.First->table_ptr->data.funData.params->type);
+  //fprintf(stderr, "Globalni 1. ID (foo) param_list 1. (a) Element head: %p\n", symtable_list.First->table_ptr->data.funData.params);
+  //fprintf(stderr, "Globalni 1. ID (foo) param_list 2. (b) Element next: %p\n", symtable_list.First->table_ptr->data.funData.params->next);
+  //fprintf(stderr, "Globalni 1. ID (foo) param_list 3. (c) Element next->next: %p\n", symtable_list.First->table_ptr->data.funData.params->next->next);
   //fprintf(stderr, "Globalni 1. ID (foo) param_list 1. Element rptr: %p\n", symtable_list.First->table_ptr->rptr);
   //fprintf(stderr, "Globalni 1. ID (foo) param_list 2. Element: %p\n", symtable_list.First->table_ptr->rptr->data.funData.params);
   //fprintf(stderr, "Globalni 1. ID (foo) param_list 2. Element Typ: %d\n", symtable_list.First->table_ptr->rptr->data.funData.params->type);
   //fprintf(stderr, "Globalni 2. ID (ref): %s\n", symtable_list.First->table_ptr->rptr->name);
-  fprintf(stderr, "Lokalni jmeno: %s\n", symtable_list.Act->table_name);
-  fprintf(stderr, "Lokalni 1. ID (a): %s\n", symtable_list.Act->table_ptr->name);
-  fprintf(stderr, "Lokalni 2. ID (b): %s\n", symtable_list.Act->table_ptr->rptr->name);
+  //fprintf(stderr, "Lokalni jmeno: %s\n", symtable_list.Act->table_name);
+  //fprintf(stderr, "Lokalni 1. ID (a): %s\n", symtable_list.Act->table_ptr->name);
   //fprintf(stderr, "Lokalni 2. ID (b): %s\n", symtable_list.Act->table_ptr->rptr->name);
-  fprintf(stderr, "KONEC VYPISU:\n");
-*/
+  //fprintf(stderr, "Lokalni 2. ID (b): %s\n", symtable_list.Act->table_ptr->rptr->name);
+  fprintf(stderr, "%s type: %d\n", symtable_list.First->table_ptr->name, symtable_list.First->table_ptr->data.varData.type);
+  fprintf(stderr, "%s type: %d\n", symtable_list.First->table_ptr->rptr->name, symtable_list.First->table_ptr->rptr->data.varData.type);
+  fprintf(stderr, "KONEC VYPISU:\n");*/
+
+  free(id_name_assign);
   return result;
 }
 
 
-int ll_predict(tToken *token, tStack *stack, tList *symtable_list, bool isGlobal)
+int ll_predict(tToken *token, tStack *stack, tList *symtable_list, bool isGlobal, char *id_name_assign)
 {
   int top = s_top(stack);
 
@@ -470,6 +480,11 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_STATEMENT:
       if(token->type == ID) {
         PUSH_RULE_10;
+        id_name_assign = (char *)realloc(id_name_assign, strlen(token->text) + 1);
+        if (id_name_assign == NULL) {
+          return INTERNAL_ERR;
+        }
+        strcpy(id_name_assign, token->text);
       }
       else if(token->type == EOL) {
         PUSH_RULE_11;
@@ -632,11 +647,17 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       int return_value = 0;
       if (token->type == INTEGER || token->type == STRING || token->type == FLOATING_POINT || token->type == NIL || token->type == OPERATOR || token->type == ID) { // everything that fits in expression,  TODO must be ID of a variable
         return_value = prec_table(token, sym);
+        fprintf(stderr, "1) v LL table: %d\n", return_value);
           if(return_value == SYNTAX_ERR) {
             fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected token \"%s\" in expression.\n", token->text);
             return SYNTAX_ERR;
           }
+          else if (return_value == DIVISION_BY_ZERO) {
+            fprintf(stderr, ANSI_COLOR_RED "Fatal error: " ANSI_COLOR_RESET "Division by zero.\n");
+            return DIVISION_BY_ZERO;
+          }
           else if(return_value == TYPE_ERR) {
+            fprintf(stderr, "rule34\n");
             fprintf(stderr, ANSI_COLOR_RED "Type error: " ANSI_COLOR_RESET "Operation on incompatible types.\n");
             return TYPE_ERR;
           }
@@ -644,6 +665,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       else { // everything else or ID of a function
         tToken endExpression = {"", LL_BOTTOM}; // finish expression
         return_value = prec_table(&endExpression, sym);
+        fprintf(stderr, "2) v LL table: %d\n", return_value);
         if (return_value == SYNTAX_ERR) {
           fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected token \"%s\" in expression.\n", token->text);
           return SYNTAX_ERR;
@@ -652,8 +674,18 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
           fprintf(stderr, ANSI_COLOR_RED "Type error: " ANSI_COLOR_RESET "Operation on incompatible types.\n");
           return TYPE_ERR;
         }
+        else if (return_value == DIVISION_BY_ZERO) {
+          fprintf(stderr, ANSI_COLOR_RED "Fatal error: " ANSI_COLOR_RESET "Division by zero.\n");
+          return DIVISION_BY_ZERO;
+        }
+        else if (return_value == NIL || return_value == INTEGER || return_value == FLOATING_POINT || return_value == STRING || return_value == BOOL) {
+          int retval = symtable_insert_variable(&sym, id_name_assign, return_value, true);
+          if (retval == INTERNAL_ERR) {
+            return INTERNAL_ERR;
+          }
+        }
         s_pop(stack);
-        ll_predict(token, stack, symtable_list, isGlobal); // recall the function in order not to lose a token
+        ll_predict(token, stack, symtable_list, isGlobal, id_name_assign); // recall the function in order not to lose a token
       }
       break;
     case LL_ID:

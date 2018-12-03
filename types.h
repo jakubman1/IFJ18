@@ -36,7 +36,8 @@ typedef enum {
   STRING, //16
   ERROR, // Error type (unknown character) 17
   EOL, // 18
-  COMMA
+  COMMA,
+  BOOL
 } token_type;
 
 typedef enum {

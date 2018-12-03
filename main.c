@@ -9,6 +9,7 @@
 
 /* Import local libraries */
 #include "syn_analysis.h"
+#include "generator.h"
 
 int main(int argc, char const *argv[]) {
   int retcode = SUCCESS; /* Return code of the compiler */

@@ -59,7 +59,7 @@
   */
  int parser();
 
-int ll_predict(tToken *token, tStack *stack, tList *symtable_list, bool isGlobal);
+int ll_predict(tToken *token, tStack *stack, tList *symtable_list, bool isGlobal, char *id_name_assign);
 
  /**
  Add built in functions into the symtable

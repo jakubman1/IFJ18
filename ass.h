@@ -76,7 +76,9 @@ Evaluate data types of node in the tree.
 @returns Final data type, TYPE_ERR if data types don't match, DIVISION_BY_ZERO if division by zero.
 @pre root != NULL
 */
-int ass_check_data_types(tAssPtr root);
+int ass_check_data_types(tAssPtr root, tSymPtr sym);
+
+int ass_evaluate_types(tAssPtr left_node, tAssPtr right_node, char *operator, tSymPtr sym);
 
 
 

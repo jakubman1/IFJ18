@@ -126,57 +126,78 @@ void in_order(tAssPtr root)
 {
   if (root != NULL) {
     in_order(root->lptr);
-    // fprintf(stderr, "%s, ", root->text);
     in_order(root->rptr);
+    fprintf(stderr, "%s, ", root->text);
   }
 }
 
-int ass_check_data_types(tAssPtr root)
+int ass_check_data_types(tAssPtr root, tSymPtr sym)
 {
-
-  //fprintf(stderr, "opraveno mistrem rekurze\n");
-
-  int type_left = 0;
-  int type_right = 0;
-  fprintf(stderr, "root: %p\n", root);
+  int type_left = -1;
+  int type_right = -1;
   if (root->lptr == NULL && root->rptr == NULL) { // single node in the tree
     return root->type;
   }
-  fprintf(stderr, "root: %p\n", root);
   if (root->lptr != NULL && root->lptr->type == OPERATOR) {
-    type_left = ass_check_data_types(root->lptr);
+    type_left = ass_check_data_types(root->lptr, sym);
   }
-  fprintf(stderr, "root: %p\n", root);
   if (root->rptr != NULL && root->rptr->type == OPERATOR) {
-    type_right = ass_check_data_types(root->rptr);
+    type_right = ass_check_data_types(root->rptr, sym);
   }
 
   // last operator
-  if (type_left == 0) {
-    fprintf(stderr, "root: %p\n", root);
+  if (type_left == -1) {
     type_left = root->lptr->type;
   }
-  if (type_right == 0) {
-    fprintf(stderr, "root: %p\n", root);
+  if (type_right == -1) {
     type_right = root->rptr->type;
   }
 
-  // for testing
-  if (type_left != type_right) {
-    return TYPE_ERR;
-  }
-  else {
-    return INTEGER;
-  }
-  //return ass_evaluate_types(left_node, right_node, root->text);
+  root->lptr->type = type_left;
+  root->rptr->type = type_right;
+  return ass_evaluate_types(root->lptr, root->rptr, root->text, sym);
 }
 
-int ass_evaluate_types(int left_node, int right_node, char *operator)
+int ass_evaluate_types(tAssPtr left_node, tAssPtr right_node, char *operator, tSymPtr sym)
 {
+  if ((strcmp(operator, "/") == 0) && (strcmp(right_node->text, "0") == 0)) {
+    fprintf(stderr, "fatal error(%d) delime jirkou\n", DIVISION_BY_ZERO);
+    return DIVISION_BY_ZERO;
+  }
   if ((strcmp(operator, "+") == 0) || (strcmp(operator, "-") == 0) || (strcmp(operator, "*") == 0) || (strcmp(operator, "/") == 0)) {
-    if (3) {
-
+    if (left_node->type == INTEGER && right_node->type == INTEGER) {
+      return INTEGER;
     }
+    else if ((left_node->type == FLOATING_POINT && right_node->type == FLOATING_POINT) || (left_node->type == INTEGER && right_node->type == FLOATING_POINT) || (left_node->type == FLOATING_POINT && right_node->type == INTEGER)) {
+      return FLOATING_POINT;
+    }
+    else if (left_node->type == STRING && right_node->type == STRING) {
+      return STRING;
+    }
+    else {
+      fprintf(stderr, "jsme tady a tady se to posere\n");
+      return TYPE_ERR;
+    }
+  }
+  else if ((strcmp(operator, "<") == 0) || (strcmp(operator, "<=") == 0) || (strcmp(operator, ">") == 0) || (strcmp(operator, ">=") == 0)) {
+    if (left_node->type == INTEGER && right_node->type == INTEGER) {
+      return BOOL;
+    }
+    else if ((left_node->type == FLOATING_POINT && right_node->type == FLOATING_POINT) || (left_node->type == INTEGER && right_node->type == FLOATING_POINT) || (left_node->type == FLOATING_POINT && right_node->type == INTEGER)) {
+      return BOOL;
+    }
+    else if (left_node->type == STRING && right_node->type == STRING) {
+      return BOOL;
+    }
+    else if (left_node->type == NIL && right_node->type == NIL) {
+      return BOOL;
+    }
+    else {
+      return TYPE_ERR;
+    }
+  }
+  else {
+    return BOOL;
   }
 }
 
@@ -194,7 +215,8 @@ int ass_evaluate_types(int left_node, int right_node, char *operator)
       int , int --> true/false
       float , float --> true/false
       string , string --> true/false
-      int2float(int) , float --> true/false
+      int2float(int) , float --> true/false // TODO
+      ----------------------------
       int == string/nil --> false
       int != string/nil --> true
       float == string/nil --> false

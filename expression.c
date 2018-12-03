@@ -163,6 +163,7 @@ int prec_table(tToken *token, tSymPtr sym)
   static tStack stack_temp; // auxiliary stack for searching for first terminal
   static tTStack token_stack; // stores text and type of the tokens until the end of the expression
   static bool init = false;
+  static int ret = 0;
 
   const int precedent_table[PRECEDENT_TABLE_SIZE][PRECEDENT_TABLE_SIZE] =
   {
@@ -379,7 +380,6 @@ int prec_table(tToken *token, tSymPtr sym)
             return INTERNAL_ERR;
           }
 
-          fprintf(stderr, "current_ass %p\n", current_ass);
           if (top_ass == NULL) { // very first node inserted
             top_ass = new_ass;
           }
@@ -397,7 +397,11 @@ int prec_table(tToken *token, tSymPtr sym)
           break;
         case 11: // E → i
           if (top_token.type == ID) {
-            new_ass = ass_make_leaf(top_token.type, top_token.text, sym);
+            tSymPtr temp = NULL;
+            symtable_search(sym, top_token.text, &temp);
+            if (temp != NULL) {
+              new_ass = ass_make_leaf(temp->data.varData.type, top_token.text, sym);
+            }
           }
           else { // token->type == INTEGER || FLOATING_POINT || STRING
             new_ass = ass_make_leaf(top_token.type, top_token.text, NULL);
@@ -417,9 +421,16 @@ int prec_table(tToken *token, tSymPtr sym)
           else if (current_ass->lptr == NULL) {
             current_ass->lptr = new_ass;
             // move to upper node where lptr is NULL
-            tAssPtr temp = NULL;
-            ass_find_father(top_ass, current_ass, &temp);
-            current_ass = temp;
+            if (!s_empty(&stack_rules)) {
+              while (current_ass->lptr != NULL) {
+                tAssPtr temp = NULL;
+                ass_find_father(top_ass, current_ass, &temp);
+                current_ass = temp;
+              }
+            }
+            else {
+              current_ass = top_ass;
+            }
           }
           break;
         default:
@@ -428,10 +439,27 @@ int prec_table(tToken *token, tSymPtr sym)
       } // end of 1. switch
     } // end of while
 
-    if (top_ass != NULL) {
-      return ass_check_data_types(top_ass);
-    }
+    /*// VYPIS ASS
+    fprintf(stderr, "ASS: ");
+    in_order(top_ass);
+    fprintf(stderr, "\n");*/
 
+    // VYPIS ADAM
+    /*int res1 = 0;
+    int res2 = 0;
+
+    if (top_ass != NULL) {
+      ass_check_data_types(top_ass, &res1, &res2);
+      fprintf(stderr, "Vyraz typu: %d nebo %d\n", res1, res2);
+    }*/
+
+    // VYPIS JIRKA
+    if (top_ass != NULL) {
+      ret = ass_check_data_types(top_ass, sym);
+
+      //fprintf(stderr, "Vyraz typu: %d\n", ret);
+    }
+fprintf(stderr, "v EXPRESSION: %d\n", ret);
     /*  SCITANI, ODCITANI, NASOBENI, DELENI, KONKATENACE
         int , int --> int
         int , float --> float
@@ -456,11 +484,6 @@ int prec_table(tToken *token, tSymPtr sym)
         nil != int/float/string --> false
     */
 
-    // VYPIS ASS
-  /*  fprintf(stderr, "ASS: ");
-    in_order(top_ass);
-    fprintf(stderr, "\n");*/
-
     // VYPIS PRAVY ROZBOR
     /*fprintf(stderr, "PRAVY ROZBOR\n");
     while (!s_empty(&stack_rules)) {
@@ -475,5 +498,6 @@ int prec_table(tToken *token, tSymPtr sym)
   s_free(&stack_rules);
   st_free(&token_stack);
   }*/
-  return SUCCESS;
+
+  return ret;
 }
