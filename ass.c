@@ -160,8 +160,9 @@ int ass_check_data_types(tAssPtr root, tSymPtr sym)
 
 int ass_evaluate_types(tAssPtr left_node, tAssPtr right_node, char *operator, tSymPtr sym)
 {
+  static int error_code = -1;
   if ((strcmp(operator, "/") == 0) && (strcmp(right_node->text, "0") == 0)) {
-    fprintf(stderr, "fatal error(%d) delime jirkou\n", DIVISION_BY_ZERO);
+    error_code = DIVISION_BY_ZERO;
     return DIVISION_BY_ZERO;
   }
   if ((strcmp(operator, "+") == 0) || (strcmp(operator, "-") == 0) || (strcmp(operator, "*") == 0) || (strcmp(operator, "/") == 0)) {
@@ -175,8 +176,12 @@ int ass_evaluate_types(tAssPtr left_node, tAssPtr right_node, char *operator, tS
       return STRING;
     }
     else {
-      fprintf(stderr, "jsme tady a tady se to posere\n");
-      return TYPE_ERR;
+      if (error_code == DIVISION_BY_ZERO) {
+        return DIVISION_BY_ZERO;
+      }
+      else {
+        return TYPE_ERR;
+      }
     }
   }
   else if ((strcmp(operator, "<") == 0) || (strcmp(operator, "<=") == 0) || (strcmp(operator, ">") == 0) || (strcmp(operator, ">=") == 0)) {

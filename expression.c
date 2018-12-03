@@ -459,7 +459,6 @@ int prec_table(tToken *token, tSymPtr sym)
 
       //fprintf(stderr, "Vyraz typu: %d\n", ret);
     }
-fprintf(stderr, "v EXPRESSION: %d\n", ret);
     /*  SCITANI, ODCITANI, NASOBENI, DELENI, KONKATENACE
         int , int --> int
         int , float --> float
