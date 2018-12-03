@@ -1,5 +1,6 @@
 /**
  * @file generator.c
+ * @author Jakub Man (AKA BIG DICK IN TOWN)
  * @author Jan Martinák
  * @date 28.11. 2018
  * @brief Implementation of code generator
@@ -16,12 +17,15 @@ void start() {
 
 }
 
-/*void opetator {
-  switch () {
-    case :
+void rewrite_string(char *str) {
+  for(int i = 0; i < strlen(str); i++) {
+    if(str[i] == )
   }
-}*/
+}
 
+void insert_char_to_string() {
+
+}
 
 /*
  * INTEGRATED FUNCTIONS

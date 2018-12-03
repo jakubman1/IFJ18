@@ -379,7 +379,7 @@ int prec_table(tToken *token, tSymPtr sym)
             return INTERNAL_ERR;
           }
 
-
+          fprintf(stderr, "current_ass %p\n", current_ass);
           if (top_ass == NULL) { // very first node inserted
             top_ass = new_ass;
           }

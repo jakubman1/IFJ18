@@ -136,26 +136,28 @@ int ass_check_data_types(tAssPtr root)
 
   //fprintf(stderr, "opraveno mistrem rekurze\n");
 
-  int type_left = -1;
-  int type_right = -1;
-
+  int type_left = 0;
+  int type_right = 0;
+  fprintf(stderr, "root: %p\n", root);
   if (root->lptr == NULL && root->rptr == NULL) { // single node in the tree
     return root->type;
   }
-
+  fprintf(stderr, "root: %p\n", root);
   if (root->lptr != NULL && root->lptr->type == OPERATOR) {
     type_left = ass_check_data_types(root->lptr);
   }
-
+  fprintf(stderr, "root: %p\n", root);
   if (root->rptr != NULL && root->rptr->type == OPERATOR) {
     type_right = ass_check_data_types(root->rptr);
   }
 
   // last operator
-  if (type_left == -1) {
+  if (type_left == 0) {
+    fprintf(stderr, "root: %p\n", root);
     type_left = root->lptr->type;
   }
-  if (type_right == -1) {
+  if (type_right == 0) {
+    fprintf(stderr, "root: %p\n", root);
     type_right = root->rptr->type;
   }
 
@@ -165,6 +167,16 @@ int ass_check_data_types(tAssPtr root)
   }
   else {
     return INTEGER;
+  }
+  //return ass_evaluate_types(left_node, right_node, root->text);
+}
+
+int ass_evaluate_types(int left_node, int right_node, char *operator)
+{
+  if ((strcmp(operator, "+") == 0) || (strcmp(operator, "-") == 0) || (strcmp(operator, "*") == 0) || (strcmp(operator, "/") == 0)) {
+    if (3) {
+
+    }
   }
 }
 
