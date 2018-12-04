@@ -91,6 +91,7 @@ int fill_global_symtable (tList *symtable_list, tToken *token)
       return INTERNAL_ERR;
     }
     if (searchNameID->type != FUNCTION && strchr(nameID, '!') == NULL && strchr(nameID, '?') == NULL) {
+      fprintf(stderr, "inserting1: %s\n", nameID);
       return_value = symtable_insert_variable(&(symtable_list->First->table_ptr), nameID, TYPE_NIL, true);
       free(nameID);
       seenID = false;
@@ -125,6 +126,7 @@ int fill_local_symtable (tList *symtable_list, tToken *token, bool isParam)
   }
 
   if (isParam == true && ID_local == NULL && (ID_global == NULL || (ID_global != NULL && ID_global->type != FUNCTION))) {
+    fprintf(stderr, "inserting2: %s\n", token->text);
     return_value = symtable_insert_variable(&(symtable_list->Act->table_ptr), token->text, TYPE_NIL, true);
     return return_value;
   }
@@ -154,6 +156,7 @@ int fill_local_symtable (tList *symtable_list, tToken *token, bool isParam)
         return VARIABLE_ERR;
       }
       if (strchr(nameID, '!') == NULL && strchr(nameID, '?') == NULL) {
+        fprintf(stderr, "inserting3: %s\n", nameID);
         return_value = symtable_insert_variable(&(symtable_list->Act->table_ptr), nameID, TYPE_NIL, true);
         free(nameID);
         seenID = false;
@@ -203,11 +206,16 @@ int add_to_symtable(tList *symtable_list, tToken *token)
   else if (token->type == ID && seenDEF && (ID_global == NULL || (ID_global != NULL && ID_global->type == UNKNOWN))) {
     local_symtable = true;
     // insert function to global symtable
-    return_value = symtable_insert_function(&(symtable_list->First->table_ptr), token->text, TYPE_NIL, -2, params_list, true);
-    /*fprintf(stderr, "inserted: %s\n", token->text);
-    tSymPtr tmp = NULL;
-    symtable_search(symtable_list->First->table_ptr, token->text, &tmp);
-    fprintf(stderr, "tmp: name %s, type: %d \n", tmp->name, tmp->type);*/
+    if (ID_global == NULL) {
+      return_value = symtable_insert_function(&(symtable_list->First->table_ptr), token->text, TYPE_NIL, -2, params_list, true);
+    }
+    /*
+    else if (ID_global != NULL && ID_global->type == UNKNOWN) {
+      tSymPtr res = NULL;
+      symtable_search(symtable_list->First->table_ptr, token->text, &res);
+      fprintf(stderr, "poslany pocet param %d\n", res->data.funData.paramCount);
+    }
+    */
     if (return_value != SUCCESS) {
       return return_value;
     }
@@ -253,6 +261,15 @@ int add_to_symtable(tList *symtable_list, tToken *token)
   }
   else if (token->type == OPERATOR && token->text[0] == ')' && seen_left_bracket) {
     seen_left_bracket = false;
+
+    tSymPtr rest = NULL;
+    symtable_search(symtable_list->First->table_ptr, nameID, &rest);
+
+    if (rest->type == UNKNOWN && count_param != rest->data.funData.paramCount) {
+      fprintf(stderr, ANSI_COLOR_RED "Param error: "ANSI_COLOR_RESET" wrong number of arguments.\n");
+      return PARAM_ERR;
+    }
+
     return_value = symtable_insert_function(&(symtable_list->First->table_ptr), nameID, TYPE_NIL, count_param, params_list, true);
     if (return_value != SUCCESS) {
       return return_value;
@@ -303,9 +320,9 @@ int parser()
 
   symtable_init(&globalTree);
 
-  /*if (insert_built_in_functions(&globalTree) == INTERNAL_ERR) {
+  if (insert_built_in_functions(&globalTree) == INTERNAL_ERR) {
     return INTERNAL_ERR;
-  }*/
+  }
 
   list_init(&symtable_list);
   list_insert(&symtable_list, globalTree, NULL);
@@ -315,8 +332,13 @@ int parser()
   s_push(&stack, LL_BOTTOM);
   s_push(&stack, LL_PROG);
 
-  char *id_name_assign = malloc(sizeof(char) * 4);
-  if(id_name_assign == NULL) {
+  char *id_name = malloc(sizeof(char) * 4);
+  if(id_name == NULL) {
+    return INTERNAL_ERR;
+  }
+
+  char *id_func_name = malloc(sizeof(char) * 4);
+  if(id_func_name == NULL) {
     return INTERNAL_ERR;
   }
 
@@ -344,7 +366,7 @@ int parser()
         isGlobal = false;
       }
 
-      result = ll_predict(&currentToken, &stack, &symtable_list, isGlobal, id_name_assign);
+      result = ll_predict(&currentToken, &stack, &symtable_list, isGlobal, id_name, id_func_name);
     }
 
     //// MUSI BYT AZ NA KONCI CYKLU !!!!!!!!!!!!!!!
@@ -356,7 +378,8 @@ int parser()
     if(result == VARIABLE_ERR) {
       fprintf(stderr, ANSI_COLOR_RED "Variable error: " ANSI_COLOR_RESET "Can not assign value into a function\n");
       // nechybi tu free stack?
-      free(id_name_assign);
+      free(id_name);
+      free(id_func_name);
       return result;
     }
     // TODO: Free allocated resouorces on
@@ -427,14 +450,16 @@ int parser()
   fprintf(stderr, "%s type: %d\n", symtable_list.First->table_ptr->rptr->name, symtable_list.First->table_ptr->rptr->data.varData.type);
   fprintf(stderr, "KONEC VYPISU:\n");*/
 
-  free(id_name_assign);
+  free(id_name);
+  free(id_func_name);
   return result;
 }
 
 
-int ll_predict(tToken *token, tStack *stack, tList *symtable_list, bool isGlobal, char *id_name_assign)
+int ll_predict(tToken *token, tStack *stack, tList *symtable_list, bool isGlobal, char *id_name, char *id_func_name)
 {
   int top = s_top(stack);
+  static int paramCount = 0;
 
   // NON TERMINALS
 while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
@@ -480,11 +505,19 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_STATEMENT:
       if(token->type == ID) {
         PUSH_RULE_10;
-        id_name_assign = (char *)realloc(id_name_assign, strlen(token->text) + 1);
-        if (id_name_assign == NULL) {
+        id_name = (char *)realloc(id_name, strlen(token->text) + 1);
+        if (id_name == NULL) {
           return INTERNAL_ERR;
         }
-        strcpy(id_name_assign, token->text);
+        strcpy(id_name, token->text);
+
+        fprintf(stderr, "ukladame %s\n", token->text);
+        id_func_name = (char *) realloc(id_func_name, sizeof(char) * (strlen(token->text) + 1));
+        if (id_func_name == NULL) {
+          return INTERNAL_ERR;
+        }
+        strcpy(id_func_name, token->text);
+
       }
       else if(token->type == EOL) {
         PUSH_RULE_11;
@@ -543,6 +576,15 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
           return VARIABLE_ERR;
         }
 
+        if (sym->type == FUNCTION || sym->type == UNKNOWN) {
+          fprintf(stderr, "ukladame %s\n", sym->name);
+          id_func_name = (char *) realloc(id_func_name, sizeof(char) * (strlen(sym->name) + 1));
+          if (id_func_name == NULL) {
+            return INTERNAL_ERR;
+          }
+          strcpy(id_func_name, sym->name);
+        }
+
         if(sym->type == UNKNOWN || sym->type == FUNCTION) {
           PUSH_RULE_16;
         }
@@ -561,10 +603,28 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_ARGS:
       if(token->type == ID || token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING) {
         PUSH_RULE_21;
-        // ZACATEK KONTROLY PARAMETRU FUNKCE, ID ulozene jako id_name_assign
       }
       else if(token->type == EOL || (token->type == OPERATOR && token->text[0] == ')')) {
         PUSH_RULE_19;
+        // insert data type - ID_variable = ID_function
+        tSymPtr result = NULL;
+        symtable_search(symtable_list->First->table_ptr, id_name, &result);
+        if (result->type != FUNCTION) {
+          symtable_search(symtable_list->First->table_ptr, id_func_name, &result);
+          fprintf(stderr, "inserting4: %s\n", id_name);
+          symtable_insert_variable(&(symtable_list->First->table_ptr), id_name, result->data.funData.returnType, true);
+        }
+        // check param count
+        if (result->type == UNKNOWN) {
+          result->data.funData.paramCount = paramCount;
+        }
+        else if (paramCount != result->data.funData.paramCount) {
+          fprintf(stderr, "paramCount: %d\n", paramCount);
+          fprintf(stderr, "%s paramCount: %d\n", result->name, result->data.funData.paramCount);
+          fprintf(stderr, "error1\n");
+          fprintf(stderr, ANSI_COLOR_RED "Param error: "ANSI_COLOR_RESET" wrong number of arguments.\n");
+          return PARAM_ERR;
+        }
         // KONEC KONTROLY PARAMETRU FUNKCE (muze nastat i bez toho, aniz bychom zacali kontrolovat -> volani fce bez parametru)
       }
       else if(token->type == OPERATOR && token->text[0] == '(') {
@@ -578,6 +638,34 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_ARGS_N:
       if (token->type == EOL || (token->type == OPERATOR && token->text[0] == ')')) {
         PUSH_RULE_23;
+        // insert data type - ID_variable = ID_function
+        tSymPtr result = NULL;
+        symtable_search(symtable_list->First->table_ptr, id_func_name, &result);
+        if (result->type != FUNCTION) {
+          symtable_search(symtable_list->First->table_ptr, id_func_name, &result);
+          fprintf(stderr, "inserting5: %s\n", id_name);
+          if (result->type == VARIABLE) {
+            symtable_insert_variable(&(symtable_list->First->table_ptr), id_name, result->data.funData.returnType, true);
+          }
+        }
+
+        // check param count
+        fprintf(stderr, "typ funkce %s je %d\n", result->name, result->type);
+        if (result->type == UNKNOWN) {
+          result->data.funData.paramCount = paramCount;
+        }
+        else if (paramCount != result->data.funData.paramCount) {
+          fprintf(stderr, "paramCount: %d\n", paramCount);
+          fprintf(stderr, "%s paramCount: %d\n", result->name, result->data.funData.paramCount);
+          fprintf(stderr, "error2\n");
+          fprintf(stderr, ANSI_COLOR_RED "Param error: "ANSI_COLOR_RESET" wrong number of arguments.\n");
+          return PARAM_ERR;
+        }
+        /*
+        else {
+          result->data.funData.paramCount = paramCount;
+        }
+        */
       }
       else if (token->type == COMMA) {
         PUSH_RULE_22;
@@ -588,6 +676,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       break;
     case LL_VALUE:
+      paramCount++; // start of func param check
       if (token->type == ID) {
         PUSH_RULE_26;
       }
@@ -626,41 +715,27 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       break;
     case LL_EXPRESSION: // "Skoc na mna" -Adam Melichar 2018
-      if (token->type == ID) {
-        if (isGlobal) {
-          symtable_search(symtable_list->First->table_ptr, token->text, &sym);
-        }
-        else {
-          symtable_search(symtable_list->Act->table_ptr, token->text, &sym);
-        }
-
-        if (sym == NULL || (token->type == ID && sym->type != VARIABLE)) {
-          return VARIABLE_ERR;
-        }
+      if (isGlobal) {
+        sym = symtable_list->First->table_ptr;
       }
       else {
-        if (isGlobal) {
-          sym = symtable_list->First->table_ptr;
-        }
-        else {
-          sym = symtable_list->Act->table_ptr;
-        }
+        sym = symtable_list->Act->table_ptr;
       }
       int return_value = 0;
       if (token->type == INTEGER || token->type == STRING || token->type == FLOATING_POINT || token->type == NIL || token->type == OPERATOR || token->type == ID) { // everything that fits in expression,  TODO must be ID of a variable
         return_value = prec_table(token, sym);
-          if(return_value == SYNTAX_ERR) {
-            fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected token \"%s\" in expression.\n", token->text);
-            return SYNTAX_ERR;
-          }
-          else if (return_value == DIVISION_BY_ZERO) {
-            fprintf(stderr, ANSI_COLOR_RED "Fatal error: " ANSI_COLOR_RESET "Division by zero.\n");
-            return DIVISION_BY_ZERO;
-          }
-          else if(return_value == TYPE_ERR) {
-            fprintf(stderr, ANSI_COLOR_RED "Type error: " ANSI_COLOR_RESET "Operation on incompatible types.\n");
-            return TYPE_ERR;
-          }
+        if(return_value == SYNTAX_ERR) {
+          fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected token \"%s\" in expression.\n", token->text);
+          return SYNTAX_ERR;
+        }
+        else if (return_value == DIVISION_BY_ZERO) {
+          fprintf(stderr, ANSI_COLOR_RED "Fatal error: " ANSI_COLOR_RESET "Division by zero.\n");
+          return DIVISION_BY_ZERO;
+        }
+        else if(return_value == TYPE_ERR) {
+          fprintf(stderr, ANSI_COLOR_RED "Type error: " ANSI_COLOR_RESET "Operation on incompatible types.\n");
+          return TYPE_ERR;
+        }
       }
       else { // everything else or ID of a function
         tToken endExpression = {"", LL_BOTTOM}; // finish expression
@@ -678,13 +753,16 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
           return DIVISION_BY_ZERO;
         }
         else if (return_value == NIL || return_value == INTEGER || return_value == FLOATING_POINT || return_value == STRING || return_value == BOOL) {
-          int retval = symtable_insert_variable(&sym, id_name_assign, return_value, true);
-          if (retval == INTERNAL_ERR) {
-            return INTERNAL_ERR;
+          if (token->type == EOL) {
+            fprintf(stderr, "inserting6: %s\n", id_name);
+            int retval = symtable_insert_variable(&sym, id_name, return_value, true);
+            if (retval == INTERNAL_ERR) {
+              return INTERNAL_ERR;
+            }
           }
         }
         s_pop(stack);
-        ll_predict(token, stack, symtable_list, isGlobal, id_name_assign); // recall the function in order not to lose a token
+        ll_predict(token, stack, symtable_list, isGlobal, id_name, id_func_name); // recall the function in order not to lose a token
       }
       break;
     case LL_ID:
