@@ -561,9 +561,11 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_ARGS:
       if(token->type == ID || token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING) {
         PUSH_RULE_21;
+        // ZACATEK KONTROLY PARAMETRU FUNKCE, ID ulozene jako id_name_assign
       }
       else if(token->type == EOL || (token->type == OPERATOR && token->text[0] == ')')) {
         PUSH_RULE_19;
+        // KONEC KONTROLY PARAMETRU FUNKCE (muze nastat i bez toho, aniz bychom zacali kontrolovat -> volani fce bez parametru)
       }
       else if(token->type == OPERATOR && token->text[0] == '(') {
         PUSH_RULE_20;
