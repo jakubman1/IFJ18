@@ -175,6 +175,18 @@ int ass_evaluate_types(tAssPtr left_node, tAssPtr right_node, char *operator, tS
     else if (left_node->type == STRING && right_node->type == STRING) {
       return STRING;
     }
+    else if ((left_node->type == UNIVERSAL && right_node->type == INTEGER) || (left_node->type == INTEGER && right_node->type == UNIVERSAL)) {
+      return INTEGER;
+    }
+    else if ((left_node->type == UNIVERSAL && right_node->type == FLOATING_POINT) || (left_node->type == FLOATING_POINT && right_node->type == UNIVERSAL)) {
+      return FLOATING_POINT;
+    }
+    else if ((left_node->type == UNIVERSAL && right_node->type == STRING) || (left_node->type == STRING && right_node->type == UNIVERSAL)) {
+      return STRING;
+    }
+    else if ((left_node->type == UNIVERSAL && right_node->type == NIL) || (left_node->type == NIL && right_node->type == UNIVERSAL)) {
+      return NIL;
+    }
     else {
       if (error_code == DIVISION_BY_ZERO) {
         return DIVISION_BY_ZERO;
@@ -195,6 +207,15 @@ int ass_evaluate_types(tAssPtr left_node, tAssPtr right_node, char *operator, tS
       return BOOL;
     }
     else if (left_node->type == NIL && right_node->type == NIL) {
+      return BOOL;
+    }
+    else if ((left_node->type == UNIVERSAL && right_node->type == INTEGER) || (left_node->type == INTEGER && right_node->type == UNIVERSAL)) {
+      return BOOL;
+    }
+    else if ((left_node->type == UNIVERSAL && right_node->type == FLOATING_POINT) || (left_node->type == FLOATING_POINT && right_node->type == UNIVERSAL)) {
+      return BOOL;
+    }
+    else if ((left_node->type == UNIVERSAL && right_node->type == STRING) || (left_node->type == STRING && right_node->type == UNIVERSAL)) {
       return BOOL;
     }
     else {

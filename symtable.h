@@ -25,7 +25,7 @@ typedef enum {
   TYPE_STRING = 16,
   TYPE_FLOAT = 11,
   TYPE_NIL = 6,
-  NONE = -1 // for first param in the param_list
+  UNIVERSAL = -1 // for not known params and return types
 } data_type;
 
 /* typedef union {

@@ -60,7 +60,7 @@ Prirazeni hodnoty do globalni:
   prvni parametr je ukazatel do tabulky symbolu, druhy je hodnota. Pro jednotlive typy:
   gen_var_seti() pro int
   gen_var_setf() pro float
-  gen_var_setn() pro nil (bey druheho parametru)
+  gen_var_setn() pro nil (bez druheho parametru)
   gen_var_sets pro string
 
 Vestavene funkce:
@@ -71,6 +71,9 @@ Vestavene funkce:
     STRLEN(printf("ramec@promenna"), printf("hodnota"), printf("hodnota")); Prvni printf je promenna, do ktere bude ulozeny vysledek.
     Druhy printf je hodnota bud v promenne (vcetne ramce), nebo primo hodnota stringu jako string@text (musi byt string).
     Treti printf je hodnota bud v promenne (vcetne ramce), nebo primo hodnota int jako int@hodnota (musi byt int).
+
+  print:
+    pro každý parametr zavolat PRINT(x) -> x = volani printf na hodnotu nebo promennou vcetne ramce. Muze byt libovolny datovy typ (TODO: TEST!!!)
 
 */
 
@@ -113,6 +116,8 @@ Vestavene funkce:
 
 #define STRLEN(out, x) printf("STRLEN "); out; x
 #define ORD(out, x, i) printf("STR2INT "); out; x; i
+#define CHR(out, i) printf("INT2CHAR "); out, i
+#define PRINT(x) printf("WRITE "); x
 
 void gen_start();
 
