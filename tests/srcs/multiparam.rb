@@ -1,11 +1,11 @@
 # Program 2: Vypocet faktorialu (rekurzivne)
 hdshafjjgsdfhsghsfdjghjsdffjgfhdsjjdfghskhghsfdkhg = 9
-def factorial (n, m, o)
+def factorial (n)
 if n < 2 then
 result = 1
 else
 decremented_n = n - 1
-temp_result = factorial decremented_n, m, o, p
+temp_result = factorial decremented_n
 result = n * temp_result
 end # if
 result

@@ -1,6 +1,6 @@
 /**
  * @file generator.c
- * @author Jakub Man (AKA BIG DICK IN TOWN)
+ * @author Jakub Man
  * @author Jan Martinák
  * @date 28.11. 2018
  * @brief Implementation of code generator
@@ -8,20 +8,15 @@
 
 #include "generator.h"
 
-#define STR_HELPER(x) #x
-#define STR(x) STR_HELPER(x)
+//#define STR_HELPER(x) #x
+//#define STR(x) STR_HELPER(x)
 
-
-void gen_test(int val) {
-
-}
 
 void gen_start() {
+  printf(".IFJcode18\n");
   printf("# Generated using ifj18 compiler by\n");
   printf("# Jakub Man, Adam Melichar, Jiri Tykva and Jan Martinak\n");
-  printf(".IFJcode18\nJUMP $$MAIN\n");
 }
-
 
 /*************
   BASIC CONSTRUCTIONS
@@ -29,6 +24,7 @@ void gen_start() {
 
 void gen_def(tSymPtr func) {
   printf("\n\n");
+  printf("JUMP $$END-%s", func->name);
   printf("LABEL $%s\n", func->name);
   printf("PUSHFRAME\n");
   printf("DEFVAR LF@%%retval\n");
@@ -45,14 +41,43 @@ void gen_def(tSymPtr func) {
   }
 }
 
-void gen_end_def() {
+
+void gen_end_def(char *name) {
   printf("POPFRAME\nRETURN\n\n");
+  printf("LABEL $$END-%s", name);
+}
+
+void gen_while(unsigned int num, char *varname) {
+
+  printf("LABEL $$WHILE%d\n", num);
+  // podminka
+  printf("JUMPIFEQ $$WHILEEND%d %s bool@false\n", num, varname);
+
+}
+
+void gen_while_end(unsigned int num) {
+  printf("JUMP $$WHILE%d\n", num);
+  printf("LABEL $$WHILEEND%d", num);
+}
+
+// Podminka byla vyhodnocena
+void gen_if(unsigned int num, char *varname) {
+  printf("JUMPIFEQ $$IFELSE%d %s bool@false", num, varname);
+}
+// Prisel token else
+void gen_else(unsigned int num) {
+  printf("JUMP $$IFEND%d", num);
+  printf("LABEL $$IFELSE%d", num);
+}
+// prisel token end patrici k if.
+void gen_if_end(unsigned int num) {
+  printf("LABEL $$IFEND%d", num);
 }
 
 void gen_call(tSymPtr func) {
   printf("CREATEFRAME");
-
 }
+
 
 void gen_var_global(tSymPtr var) {
   printf("DEFVAR GF@%s\n", var->name);
@@ -85,18 +110,7 @@ void gen_var_setn(tSymPtr var) {
   ARITHMETIC OPERATIONS
 ************ */
 
-void gen_add_ii(char *varName, int i, int j)
-{
 
-}
-void gen_add_ff(char *varName, double i, double j)
-{
-
-}
-void gen_add_vv(char *result, char *op1, char *op2)
-{
-
-}
 
 /*************
   CONSTANTS
@@ -150,10 +164,10 @@ void insert_string_to_string(char **toStr, char *inStr, int pos) {
 }
 
 /*
- * INTEGRATED FUNCTIONS (KYS)
+ * INTEGRATED FUNCTIONS
  */
 
-void in_substr() {
+/*void in_substr() {
   printf("# Integrated function substr\n"
          "\n");
 }
@@ -162,8 +176,8 @@ void in_length() {
   printf("# Integrated function length\n"
          "LABEL @length\n"
          "PUSHFRAME\n"
-         "DEFVAR LF@_ret\n"
-         "STRLEN LF@_delka LF@0\n"
+         "DEFVAR LF@%ret\n"
+         "STRLEN LF@%delka LF@%0\n"
          "POPFRAME\n"
          "RETURN\n"
          "# End of function length\n");
@@ -179,11 +193,11 @@ void in_chr() {
          "LABEL @chr\n"
          "PUSHFRAME\n"
          "DEFVAR\n"
-         "MOVE LF@_ret string@\n"
-         "DEFVAR LF@support\n"
-         "MOVE LF@support string@\n"
-         "INT2CHAR LF@ret LF@i\n"
+         "MOVE LF@%ret string@\n"
+         "DEFVAR LF@%support\n"
+         "MOVE LF@%support string@\n"
+         "INT2CHAR LF@%ret LF@%i\n"
          "POPFRAME\n"
          "RETURN\n"
          "# End f integrated function chr\n");
-}
+}*/
