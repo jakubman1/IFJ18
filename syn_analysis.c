@@ -493,6 +493,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       break;
     case LL_STATEMENT:
+    fprintf(stderr, "jirka nema vydrz koc si stezuji\n");
       if(token->type == ID) {
         PUSH_RULE_10;
         id_name = (char *)realloc(id_name, strlen(token->text) + 1);
@@ -592,6 +593,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_ARGS:
       if(token->type == ID || token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING) {
         PUSH_RULE_21;
+        fprintf(stderr, "tady\n");
       }
       else if(token->type == EOL || (token->type == OPERATOR && token->text[0] == ')')) {
         PUSH_RULE_19;
@@ -638,6 +640,18 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_ARGS_N:
       if (token->type == EOL || (token->type == OPERATOR && token->text[0] == ')')) {
         PUSH_RULE_23;
+        /*
+        fprintf(stderr, "id_name %s a id_func_name %s\n", id_name, id_func_name);
+        if (strcmp(id_name, id_func_name) == 0) {
+          tSymPtr result = NULL;
+          symtable_search(symtable_list->First->table_ptr, id_func_name, &result);
+          paramCount++;
+          fprintf(stderr, "paramCount %d\n", paramCount);
+          result->data.funData.paramCount = paramCount;
+          fprintf(stderr, "proc\n");
+          break;
+        }
+        */
         // insert data type - ID_variable = ID_function
         tSymPtr result = NULL;
         if (isGlobal) {
@@ -686,6 +700,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       else if (token->type == INTEGER) {
         PUSH_RULE_24;
+        fprintf(stderr, "ted tady\n");
       }
       else if (token->type == FLOATING_POINT) {
         PUSH_RULE_25;

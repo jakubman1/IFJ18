@@ -1,5 +1,22 @@
-a = 4
-b = a / 0
-#a = 3 + 1 * 5 - 5 / 2 + 5.3 - 45 * ( 5 / 1 - (3 - 3))
-#a = 1 + 3 * 4
-#a = "ah" + "oj"
+factorial 3
+# na co cumis vole
+# Program 2: Vypocet faktorialu (rekurzivne)
+def factorial (n)
+  if n < 2 then
+     result = 1
+  else
+    decremented_n = n - 1
+    temp_result = 0
+    factorial 8
+    temp_result = 0
+    result = n * temp_result
+  end # if
+  result
+  temp_result = 3
+end # function factorial
+# 8======3
+a = 1
+factorial a #error#
+=begin
+Param error:  wrong number of arguments.
+=end
