@@ -52,7 +52,28 @@ vyhodnoceni vyrazu:
   napr. makro ADDS pro +.
   DIV je pouze pro int, IDIV pouze pro float. Je nutne kontrolovat spravnost typu pred volanim,
   pripadne provest konverzi int -> float.
+
+definice globalni promenne:
+  gen_var_global(tSymPtr fun) <- fun = odkaz na promennou do tabulky symbolu
+
+Prirazeni hodnoty do globalni:
+  prvni parametr je ukazatel do tabulky symbolu, druhy je hodnota. Pro jednotlive typy:
+  gen_var_seti() pro int
+  gen_var_setf() pro float
+  gen_var_setn() pro nil (bey druheho parametru)
+  gen_var_sets pro string
+
+Vestavene funkce:
+  strlen:
+    STRLEN(printf("ramec@promenna"), printf("hodnota")); Prvni printf je promenna, do ktere bude ulozeny vysledek.
+    Druhy pritnf je hodnota bud v promenne (vcetne ramce), nebo primo hodnota stringu jako string@text
+  ord:
+    STRLEN(printf("ramec@promenna"), printf("hodnota"), printf("hodnota")); Prvni printf je promenna, do ktere bude ulozeny vysledek.
+    Druhy printf je hodnota bud v promenne (vcetne ramce), nebo primo hodnota stringu jako string@text (musi byt string).
+    Treti printf je hodnota bud v promenne (vcetne ramce), nebo primo hodnota int jako int@hodnota (musi byt int).
+
 */
+
 
 /*
   Macros
@@ -81,6 +102,17 @@ vyhodnoceni vyrazu:
 #define MULS printf("MULS\n")
 #define DIVS printf("DIVS\n")
 #define IDIVS printf("IDIVS\n")
+
+#define LTS printf("LTS\n")
+#define GTS printf("GTS\n")
+#define EQS printf("EQS\n")
+#define NOTS printf("NOTS\n")
+
+#define INT2FLOATS printf("INT2FLOATS\n")
+#define FLOAT2INTS printf("FLOAT2INTS\n")
+
+#define STRLEN(out, x) printf("STRLEN "); out; x
+#define ORD(out, x, i) printf("STR2INT "); out; x; i
 
 void gen_start();
 

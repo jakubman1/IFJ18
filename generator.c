@@ -107,9 +107,17 @@ void gen_var_setn(tSymPtr var) {
 }
 
 /*************
-  ARITHMETIC OPERATIONS
+  INTEGRATED FUNCTIONS
 ************ */
-
+void gen_inputi(char *varName, char *frame) {
+  printf("READ %s@%s int", frame, varName);
+}
+void gen_inputf(char *varName, char *frame) {
+  printf("READ %s@%s float", frame, varName);
+}
+void gen_inputs(char *varName, char *frame) {
+  printf("READ %s@%s string", frame, varName);
+}
 
 
 /*************
@@ -174,9 +182,9 @@ void insert_string_to_string(char **toStr, char *inStr, int pos) {
 
 void in_length() {
   printf("# Integrated function length\n"
-         "LABEL @length\n"
+         "LABEL length\n"
          "PUSHFRAME\n"
-         "DEFVAR LF@%ret\n"
+         "DEFVAR LF@%retval\n"
          "STRLEN LF@%delka LF@%0\n"
          "POPFRAME\n"
          "RETURN\n"
@@ -193,7 +201,7 @@ void in_chr() {
          "LABEL @chr\n"
          "PUSHFRAME\n"
          "DEFVAR\n"
-         "MOVE LF@%ret string@\n"
+         "MOVE LF@%retval string@\n"
          "DEFVAR LF@%support\n"
          "MOVE LF@%support string@\n"
          "INT2CHAR LF@%ret LF@%i\n"
