@@ -326,6 +326,10 @@ int scanner(tToken *token_out)
           add_to_buffer(&buffer, &buff_size, c);
           state = OCT;
         }
+        else if (c == '.') {
+          add_to_buffer(&buffer, &buff_size, c);
+          state = FLOAT;
+        }
         else { // for 09 sends two INT tokens 0 and 9
           send_buffer(INTEGER, &buffer, token_out);
           ungetc(c, stdin);
