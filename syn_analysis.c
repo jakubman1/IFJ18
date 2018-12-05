@@ -92,6 +92,10 @@ int fill_global_symtable (tList *symtable_list, tToken *token)
     }
     if (searchNameID->type != FUNCTION && strchr(nameID, '!') == NULL && strchr(nameID, '?') == NULL) {
       return_value = symtable_insert_variable(&(symtable_list->First->table_ptr), nameID, TYPE_NIL, true);
+      // GENERATING IFJcode18
+      /*  symtable_search(symtable_list->First->table_ptr, nameID, &gen_var);
+          gen_var_global(gen_var);
+        }*/
       free(nameID);
       seenID = false;
       return return_value;
@@ -264,6 +268,12 @@ int add_to_symtable(tList *symtable_list, tToken *token)
     if (return_value != SUCCESS) {
       return return_value;
     }
+
+    // GENERATING IFJcode18
+    /*tSymPtr gen_func = NULL;
+    symtable_search(symtable_list->First->table_ptr, nameID, gen_func);
+    gen_def(gen_func);*/
+
     count_param = 0;
     free(nameID);
   }
@@ -274,6 +284,8 @@ int add_to_symtable(tList *symtable_list, tToken *token)
     countEND--;
     if (countEND == 0) {
       local_symtable = false;
+      // GENERATING IFJcode18
+      //gen_end_def(symtable_list->Act->table_name);
     }
   }
   //BODY OF THE FUNCTION
@@ -613,6 +625,8 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
           }
           if (result->type == FUNCTION || result->type == UNKNOWN) {
             symtable_insert_variable(&(symtable_list->First->table_ptr), id_name, result->data.funData.returnType, true);
+            // GENERATING IFJcode18
+            // prirazeni hodnoty do globalni
           }
         }
         if (result->type == VARIABLE) {

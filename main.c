@@ -14,6 +14,7 @@
 int main(int argc, char const *argv[]) {
   int retcode = SUCCESS; /* Return code of the compiler */
 
+  // GENERATING IFJcode18
   //gen_start();
   //ADD("GF@a", print_int(0), print_int(5));
   #ifdef TEST
