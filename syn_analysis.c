@@ -896,7 +896,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_END:
       if (token->type == END) {
         s_pop(stack);
-        if (isGlobal) {
+        if (isGlobal && !s_empty(gen_stack)) {
           if (is_end_while) {
             gen_while_end(gen_stack);
           }

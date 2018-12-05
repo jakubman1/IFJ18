@@ -17,9 +17,9 @@ void gen_start() {
   printf("# Generated using ifj18 compiler by\n");
   printf("# Jakub Man, Adam Melichar, Jiri Tykva and Jan Martinak\n\n");
   printf("#main frame\nCREATEFRAME\nPUSHFRAME\n\n");
-  char *tmp = malloc(sizeof(char) * 50);
-  strcpy(tmp, "\"Twoja mama mele maso\"");
-  print_string(tmp);
+  /*char *tmp = malloc(sizeof(char) * 50);
+  strcpy(tmp, "\"Test string\"");
+  print_string(tmp);*/
 }
 
 /*************
@@ -225,8 +225,11 @@ void print_float(char *val) {
   printf("float@%a", d);
 }
 void print_string(char *s) {
-  rewrite_string(&s);
-  printf("string@%s", s);
+  char *tmp = malloc(sizeof(char) * (strlen(s) + 1));
+  strcpy(tmp, s);
+  rewrite_string(&tmp);
+  printf("string@%s", tmp);
+  free(tmp);
 }
 void print_bool(bool b) {
   if(b) {
