@@ -18,7 +18,7 @@ void gen_start() {
   printf("# Jakub Man, Adam Melichar, Jiri Tykva and Jan Martinak\n\n");
   printf("#main frame\nCREATEFRAME\nPUSHFRAME\n\n");
   char *tmp = malloc(sizeof(char) * 50);
-  strcpy(tmp, "\"Toto je testovaci string\"");
+  strcpy(tmp, "\"Twoja mama mele maso\"");
   print_string(tmp);
 }
 
@@ -246,47 +246,50 @@ void print_nil() {
   HELPER FUNCTIONS
 ************ */
 void rewrite_string(char **str) {
-  fprintf(stderr, "got rewrite string\n");
+  int j = 0;
+  for(j = 1; (*str)[j] != '\0'; j++) {
+    // remove ""
+    (*str)[j - 1] = (*str)[j];
+  }
+  (*str)[j - 1] = (*str)[j];
+
   for(int i = 0; (*str)[i] != '\0'; i++) {
-    if(i == 0) {
-      char *p = *str;
-      p++;
-      *str = p;
+    if( i == (strlen(*str) - 1)) {
+      //fprintf(stderr, "Replacing char %c(%d) with 0\n", *str[i], *str[i]);
+      (*str)[i] = '\0';
     }
-    else if( i == (strlen(*str) - 1)) {
-      str[i] = '\0';
-    }
-    if((*str)[i] == 35 || (*str)[i] <= 32 || (*str)[i] == 92 ) {
+    if((*str)[i] == 35 || ((*str)[i] <= 32 && (*str)[i] != 0) || (*str)[i] == 92 ) {
       char buff[5] = {0,};
       // Convert letter to \xyz, where xyz is decimal value of the letter.
       sprintf(buff, "\\%03d", (*str)[i]);
       insert_string_to_string(str, buff, i);
+      i += 3;
       //fprintf(stderr, "string is now %d\n", **str);
     }
   }
 }
 
 void insert_string_to_string(char **toStr, char *inStr, int pos) {
-  fprintf(stderr, "got insert to string. String is %s. InStr is %s Pos is %d\n", *toStr, inStr, pos);
+  //fprintf(stderr, "got insert to string. String is %s. InStr is %s Pos is %d\n", *toStr, inStr, pos);
   *toStr = realloc(*toStr, (strlen(*toStr) + strlen(inStr) + 2) * sizeof(char));
-  fprintf(stderr, "Got after realloc\n");
+  //fprintf(stderr, "Got after realloc\n");
   char *tmp = malloc((strlen(*toStr) + strlen(inStr) + 2) * sizeof(char));
-  fprintf(stderr, "Got after tmp malloc\n");
+  //fprintf(stderr, "Got after tmp malloc\n");
   if(tmp == NULL || *toStr == NULL) {
     fprintf(stderr, "ERROR: No memory left!!!!\n");
     exit(99);
     return;
   }
-  fprintf(stderr, "reallocated\n");
+  //fprintf(stderr, "reallocated\n");
   strncpy(tmp, *toStr, pos);
   tmp[pos] = '\0';
-  fprintf(stderr, "strncpy 1: %s\n", tmp);
+  //fprintf(stderr, "strncpy 1: %s\n", tmp);
   strcat(tmp, inStr);
-  fprintf(stderr, "strcat 1: %s\n", tmp);
+  //fprintf(stderr, "strcat 1: %s\n", tmp);
   strcat(tmp, *toStr + pos + 1);
-  fprintf(stderr, "strcat 2: %s\n", tmp);
+  //fprintf(stderr, "strcat 2: %s\n", tmp);
   strcpy(*toStr, tmp);
-  fprintf(stderr, "strncpy 2: %s\n", *toStr);
+  //fprintf(stderr, "strncpy 2: %s\n", *toStr);
   free(tmp);
 }
 

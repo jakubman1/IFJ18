@@ -655,8 +655,6 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
           }
           if (result->type == FUNCTION || result->type == UNKNOWN) {
             symtable_insert_variable(&(symtable_list->First->table_ptr), id_name, result->data.funData.returnType, true);
-            // GENERATING IFJcode18
-            fprintf(stderr, "tady 1\n");
             //call_function(result, id_name, isGlobal, args);
             tSymPtr temp = NULL;
             symtable_search(symtable_list->First->table_ptr, id_name, &temp);
@@ -696,17 +694,20 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         else {
           symtable_search(symtable_list->Act->table_ptr, id_name, &result);
         }
+        if (strcmp(id_name, id_func_name) == 0) {
+          call_function(result, id_name, isGlobal, args);
+        }
         if (result->type != FUNCTION) {
-          fprintf(stderr, "asdasfdasfdasf\n");
           symtable_search(symtable_list->First->table_ptr, id_func_name, &result);
           if (result->type == UNKNOWN) {
             result->data.funData.returnType = UNIVERSAL;
           }
-          if (result->type == FUNCTION || result->type == UNKNOWN) {
+          if ((result->type == FUNCTION || result->type == UNKNOWN) && (strcmp(id_name, id_func_name) != 0)) {
             symtable_insert_variable(&(symtable_list->First->table_ptr), id_name, result->data.funData.returnType, true);
             // GENERATING IFJcode18
-            fprintf(stderr, "tady 2\n");
-            call_function(result, id_name, isGlobal, args);
+            if (strcmp(id_name, id_func_name) != 0) {
+              call_function(result, id_name, isGlobal, args);
+            }
             tSymPtr temp = NULL;
             symtable_search(symtable_list->First->table_ptr, id_name, &temp);
             set_variable(temp, id_name, result->data.funData.returnType, isGlobal);
