@@ -13,35 +13,35 @@
 int insert_built_in_functions (tSymPtr *root)
 {
   tFuncParam *length_params = NULL;
-  if (add_param(&length_params, STRING) == INTERNAL_ERR) {
+  if (add_param(&length_params, STRING, "") == INTERNAL_ERR) {
     return INTERNAL_ERR;
   }
 
   tFuncParam *substr_params = NULL;
-  if (add_param(&substr_params, TYPE_STRING) == INTERNAL_ERR) {
+  if (add_param(&substr_params, TYPE_STRING, "") == INTERNAL_ERR) {
     return INTERNAL_ERR;
   }
-  if (add_param(&substr_params, TYPE_INT) == INTERNAL_ERR) {
+  if (add_param(&substr_params, TYPE_INT, "") == INTERNAL_ERR) {
     return INTERNAL_ERR;
   }
-  if (add_param(&substr_params, TYPE_INT) == INTERNAL_ERR) {
+  if (add_param(&substr_params, TYPE_INT, "") == INTERNAL_ERR) {
     return INTERNAL_ERR;
   }
 
   tFuncParam *ord_params = NULL;
-  if (add_param(&ord_params, TYPE_STRING) == INTERNAL_ERR) {
+  if (add_param(&ord_params, TYPE_STRING, "") == INTERNAL_ERR) {
     return INTERNAL_ERR;
   }
-  if (add_param(&ord_params, TYPE_INT) == INTERNAL_ERR) {
+  if (add_param(&ord_params, TYPE_INT, "") == INTERNAL_ERR) {
     return INTERNAL_ERR;
   }
 
   tFuncParam *chr_params = NULL;
-  if (add_param(&chr_params, TYPE_INT) == INTERNAL_ERR) {
+  if (add_param(&chr_params, TYPE_INT, "") == INTERNAL_ERR) {
     return INTERNAL_ERR;
   }
 
-// Insert builtin functions
+// Insert built in functions
   symtable_insert_function(root, "print", TYPE_NIL, -1, NULL, true); // error returns NIL
   symtable_insert_function(root, "inputs", TYPE_STRING, 0, NULL, true);
   symtable_insert_function(root, "inputi", TYPE_INT, 0, NULL, true);
@@ -63,6 +63,7 @@ int fill_global_symtable (tList *symtable_list, tToken *token)
   tSymPtr ID_global = NULL;
   tSymPtr ID_local = NULL;
   tSymPtr searchNameID = NULL;
+  tSymPtr gen_var = NULL;
 
   if (token->type == ID) {
     symtable_search(symtable_list->First->table_ptr, token->text, &ID_global); // searches through global Tree
@@ -93,9 +94,8 @@ int fill_global_symtable (tList *symtable_list, tToken *token)
     if (searchNameID->type != FUNCTION && strchr(nameID, '!') == NULL && strchr(nameID, '?') == NULL) {
       return_value = symtable_insert_variable(&(symtable_list->First->table_ptr), nameID, TYPE_NIL, true);
       // GENERATING IFJcode18
-      /*  symtable_search(symtable_list->First->table_ptr, nameID, &gen_var);
-          gen_var_global(gen_var);
-        }*/
+      symtable_search(symtable_list->First->table_ptr, nameID, &gen_var);
+      gen_var_global(gen_var);
       free(nameID);
       seenID = false;
       return return_value;
@@ -236,7 +236,7 @@ int add_to_symtable(tList *symtable_list, tToken *token)
   }
   else if (token->type == ID && seen_left_bracket && (ID_global == NULL || (ID_global != NULL && ID_global->type != FUNCTION)) && ID_local == NULL) {
     count_param++;
-    return_value = add_param(&params_list, UNIVERSAL);
+    return_value = add_param(&params_list, UNIVERSAL, token->text);
     if (return_value == INTERNAL_ERR) {
       return INTERNAL_ERR;
     }
@@ -270,9 +270,9 @@ int add_to_symtable(tList *symtable_list, tToken *token)
     }
 
     // GENERATING IFJcode18
-    /*tSymPtr gen_func = NULL;
-    symtable_search(symtable_list->First->table_ptr, nameID, gen_func);
-    gen_def(gen_func);*/
+    tSymPtr gen_func = NULL;
+    symtable_search(symtable_list->First->table_ptr, nameID, &gen_func);
+    gen_def(gen_func);
 
     count_param = 0;
     free(nameID);
@@ -285,7 +285,7 @@ int add_to_symtable(tList *symtable_list, tToken *token)
     if (countEND == 0) {
       local_symtable = false;
       // GENERATING IFJcode18
-      //gen_end_def(symtable_list->Act->table_name);
+      gen_end_def(symtable_list->Act->table_name);
     }
   }
   //BODY OF THE FUNCTION
@@ -461,6 +461,7 @@ int ll_predict(tToken *token, tStack *stack, tList *symtable_list, bool isGlobal
 {
   int top = s_top(stack);
   static int paramCount = 0;
+  static tFuncParam *args = NULL;
 
   // NON TERMINALS
 while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
@@ -470,7 +471,6 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       break;
     case LL_PROG:
       if(token->type == DEF) {
-        printf("Adamova mama je tak tlusta, ze pod ni rupla vetev rodokmenu\n");
         PUSH_RULE_1;
       }
       else if(token->type == ID || token->type == IF || token->type == WHILE || token->type == EOL) {
@@ -505,7 +505,6 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       break;
     case LL_STATEMENT:
-    fprintf(stderr, "jirka nema vydrz koc si stezuji\n");
       if(token->type == ID) {
         PUSH_RULE_10;
         id_name = (char *)realloc(id_name, strlen(token->text) + 1);
@@ -549,7 +548,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       break;
     case LL_DEF_ARGS:
-      if(token->type == ID || token->type == EOL || (token->type == OPERATOR && token->text[0] == '(') || token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING ) {
+      if(token->type == ID || token->type == EOL || (token->type == OPERATOR && token->text[0] == '(') || token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING || token->type == NIL) {
         PUSH_RULE_15;
       }
       else if(token->type == OPERATOR && (strcmp(token->text, "=") == 0)) {
@@ -603,9 +602,13 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       break;
     case LL_ARGS:
-      if(token->type == ID || token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING) {
+      if(token->type == ID || token->type == INTEGER || token->type == FLOATING_POINT || token->type == STRING || token->type == NIL) {
         PUSH_RULE_21;
-        fprintf(stderr, "tady\n");
+        // GENERATING IFJcode18
+        // start of call func
+        if (!BUILT_IN_FUNCTION) {
+         CREATEFRAME;
+        }
       }
       else if(token->type == EOL || (token->type == OPERATOR && token->text[0] == ')')) {
         PUSH_RULE_19;
@@ -620,13 +623,30 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         if (result->type != FUNCTION) {
           symtable_search(symtable_list->First->table_ptr, id_func_name, &result);
           if (result->type == UNKNOWN) {
-            fprintf(stderr, "a honza je taky tlustej\n");
             result->data.funData.returnType = UNIVERSAL;
           }
           if (result->type == FUNCTION || result->type == UNKNOWN) {
             symtable_insert_variable(&(symtable_list->First->table_ptr), id_name, result->data.funData.returnType, true);
             // GENERATING IFJcode18
-            // prirazeni hodnoty do globalni
+            call_function(result, id_name, isGlobal, args);
+
+            /* should be somewhere else
+            tSymPtr gen_var = NULL;
+            symtable_search(symtable_list->First->table_ptr, id_name, &gen_var);
+
+            if (result->data.funData.returnType == TYPE_INT) {
+              gen_var_seti(gen_var, gen_var->name);
+            }
+            else if (result->data.funData.returnType == TYPE_FLOAT) {
+              gen_var_setf(gen_var, gen_var->name);
+            }
+            else if (result->data.funData.returnType == TYPE_NIL) {
+              gen_var_setn(gen_var);
+            }
+            else if (result->data.funData.returnType == TYPE_STRING) {
+              gen_var_sets(gen_var, gen_var->name);
+            }*/
+
           }
         }
         if (result->type == VARIABLE) {
@@ -654,18 +674,6 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_ARGS_N:
       if (token->type == EOL || (token->type == OPERATOR && token->text[0] == ')')) {
         PUSH_RULE_23;
-        /*
-        fprintf(stderr, "id_name %s a id_func_name %s\n", id_name, id_func_name);
-        if (strcmp(id_name, id_func_name) == 0) {
-          tSymPtr result = NULL;
-          symtable_search(symtable_list->First->table_ptr, id_func_name, &result);
-          paramCount++;
-          fprintf(stderr, "paramCount %d\n", paramCount);
-          result->data.funData.paramCount = paramCount;
-          fprintf(stderr, "proc\n");
-          break;
-        }
-        */
         // insert data type - ID_variable = ID_function
         tSymPtr result = NULL;
         if (isGlobal) {
@@ -677,15 +685,12 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         if (result->type != FUNCTION) {
           symtable_search(symtable_list->First->table_ptr, id_func_name, &result);
           if (result->type == UNKNOWN) {
-            fprintf(stderr, "a jirka je taky tlustej\n");
             result->data.funData.returnType = UNIVERSAL;
-            //fprintf(stderr, "%s ma typ %d\n", result->name, result->data.funData.returnType);
           }
           if (result->type == FUNCTION || result->type == UNKNOWN) {
-            //fprintf(stderr, "inserting %s with type: %d\n",id_name, result->data.funData.returnType);
-            fprintf(stderr, "id name: %s\n", id_name);
             symtable_insert_variable(&(symtable_list->First->table_ptr), id_name, result->data.funData.returnType, true);
-            fprintf(stderr, "velky spatny\n");
+            // GENERATING IFJcode18
+            call_function(result, id_name, isGlobal, args);
           }
         }
 
@@ -709,18 +714,55 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       break;
     case LL_VALUE:
       paramCount++; // start of func param check
+      // save params for these functions
+      if (BUILT_IN_FUNCTION) {
+      //  fprintf(stderr, "strkam tam %s\n", token->text);
+        if (add_param(&args, token->type, token->text) == INTERNAL_ERR) {
+          // TODO free
+          return INTERNAL_ERR;
+        }
+      }
+      // GENERATING IFJcode18
       if (token->type == ID) {
         PUSH_RULE_26;
+        // GENERATING IFJcode18
+        if (!BUILT_IN_FUNCTION)
+        {
+          if (isGlobal) {
+            CALL_PARAM(printf("GF@%s",token->text), paramCount);
+          }
+          else {
+            CALL_PARAM(printf("LF@%s",token->text), paramCount);
+          }
+        }
       }
       else if (token->type == INTEGER) {
         PUSH_RULE_24;
-        fprintf(stderr, "ted tady\n");
+        // GENERATING IFJcode18
+        if (!BUILT_IN_FUNCTION) {
+        CALL_PARAM(print_int(token->text), paramCount);
+        }
       }
       else if (token->type == FLOATING_POINT) {
         PUSH_RULE_25;
+        // GENERATING IFJcode18
+        if (!BUILT_IN_FUNCTION) {
+          CALL_PARAM(print_float(token->text), paramCount);
+        }
       }
       else if (token->type == STRING) {
         PUSH_RULE_27;
+        // GENERATING IFJcode18
+        if (!BUILT_IN_FUNCTION) {
+          CALL_PARAM(print_string(token->text), paramCount);
+        }
+      }
+      else if (token->type == NIL) {
+        PUSH_RULE_28;
+        // GENERATING IFJcode18
+        if (!BUILT_IN_FUNCTION) {
+          CALL_PARAM(print_nil(), paramCount);
+        }
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
@@ -756,7 +798,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       int return_value = 0;
       if (token->type == INTEGER || token->type == STRING || token->type == FLOATING_POINT || token->type == NIL || token->type == OPERATOR || token->type == ID) { // everything that fits in expression,  TODO must be ID of a variable
-        return_value = prec_table(token, sym);
+        return_value = prec_table(token, sym, isGlobal);
         if(return_value == SYNTAX_ERR) {
           fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected token \"%s\" in expression.\n", token->text);
           return SYNTAX_ERR;
@@ -772,7 +814,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       else { // everything else or ID of a function
         tToken endExpression = {"", LL_BOTTOM}; // finish expression
-        return_value = prec_table(&endExpression, sym);
+        return_value = prec_table(&endExpression, sym, isGlobal);
         if (return_value == SYNTAX_ERR) {
           fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected token \"%s\" in expression.\n", token->text);
           return SYNTAX_ERR;
@@ -926,6 +968,15 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       break;
     case LL_STRING:
       if (token->type == STRING) {
+        s_pop(stack);
+      }
+      else {
+        fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected string, got \"%s\".\n", token->text);
+        return SYNTAX_ERR;
+      }
+      break;
+    case LL_NIL:
+      if (token->type == NIL) {
         s_pop(stack);
       }
       else {

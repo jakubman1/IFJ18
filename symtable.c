@@ -213,7 +213,7 @@ void symtable_clear(tSymPtr *root)
   }
 }
 
-int add_param(tFuncParam **head, data_type type)
+int add_param(tFuncParam **head, data_type type, char *name)
 {
   tFuncParam *new = NULL;
 
@@ -223,6 +223,14 @@ int add_param(tFuncParam **head, data_type type)
       return INTERNAL_ERR;
     }
     new->type = type;
+    new->name = malloc((strlen(name) + 1) * sizeof(char));
+    if(new->name != NULL) {
+      strcpy(new->name, name);
+    }
+    else {
+      free(new);
+      return INTERNAL_ERR;
+    }
     new->next = NULL;
 
     *head = new;
@@ -240,6 +248,16 @@ int add_param(tFuncParam **head, data_type type)
     last->next = new;
     new->type = type;
     new->next = NULL;
+
+    new->name = malloc((strlen(name) + 1) * sizeof(char));
+    if(new->name != NULL) {
+      strcpy(new->name, name);
+    }
+    else {
+      free(new);
+      return INTERNAL_ERR;
+    }
+
   }
   return SUCCESS;
 }
