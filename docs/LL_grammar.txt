@@ -25,3 +25,4 @@ VALUE → int
 VALUE → float
 VALUE → id
 VALUE → string
+VALUE → nil
