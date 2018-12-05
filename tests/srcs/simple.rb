@@ -1,4 +1,4 @@
-factorial 3
+fagctorial 3
 # na co cumis vole
 # Program 2: Vypocet faktorialu (rekurzivne)
 def factorial (n)

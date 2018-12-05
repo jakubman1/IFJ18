@@ -83,7 +83,7 @@ Vestavene funkce:
 */
 
 // x can be any valid symb print call, x should be int
-#define CALL_PARAM(x, num) printf("DEFVAR %%%d\n", num); printf("MOV %%%d\n", num); x; printf("\n")
+#define CALL_PARAM(x, num) printf("DEFVAR TF@%%%d\n", num); printf("MOV TF@%%%d\n", num); x; printf("\n")
 
 // Arithmetic operations
 // x and y must be either format@value (eg. int@5) or frame@name (eg. GF@a) and
