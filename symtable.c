@@ -260,13 +260,27 @@ int add_param(tFuncParam **head, data_type type, char *name)
 
 void clear_params(tFuncParam **head) {
   tFuncParam *current = *head;
+  fprintf(stderr, "tady 8\n");
   while(current != NULL) {
+    fprintf(stderr, "tady 20\n");
     tFuncParam *tmp = current;
     current = current->next;
-    free(tmp->name);
+    fprintf(stderr, "tady 21a\n");
+    if (tmp->name != NULL) {
+      fprintf(stderr, "tady 21c\n");
+      fprintf(stderr, "tmp->name: %s\n", tmp->name);
+      fprintf(stderr, "tmp->name: %p\n", tmp->name);
+      //free(tmp->name);
+      fprintf(stderr, "tady 21d\n");
+    }
+    fprintf(stderr, "tady 21b\n");
+
     tmp->name = NULL;
     tmp->next = NULL;
-    free(tmp);
+    fprintf(stderr, "tady 9a\n");
+    //free(tmp);
+    fprintf(stderr, "tady 9b\n");
   }
+  fprintf(stderr, "tady 10\n");
   *head = NULL;
 }

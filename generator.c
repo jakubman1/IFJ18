@@ -298,7 +298,6 @@ void insert_string_to_string(char **toStr, char *inStr, int pos) {
 
 void call_function (tSymPtr func, char *var_name, bool global_frame, tFuncParam *args)
 {
-  fprintf(stderr, "in call function\n");
   if (strcmp(func->name, "inputi") == 0) {
     gen_inputi(var_name, global_frame ? "GF" : "LF");
   }
@@ -314,20 +313,19 @@ void call_function (tSymPtr func, char *var_name, bool global_frame, tFuncParam 
       PRINT(print_args(global_frame, tmp));
       //fprintf(stderr, "%s ", tmp->name);
     }
+    fprintf(stderr, "tady 7\n");
     clear_params(&args);
+    fprintf(stderr, "tady 8\n");
 /*
     if (args != NULL) {
       free(args);
     }*/
   }
   else if (args != NULL) {
-    fprintf(stderr, "func->name: %p\n", func);
     if (strcmp(func->name, "length") == 0) {
       //STRLEN(printf("%s@%s", global_frame ? "GF" : "LF", var_name), args->name);
       STRLEN(printf("%s@%s", global_frame ? "GF" : "LF", var_name), print_args(global_frame, args));
-      free(args->name);
-      free(args);
-      args = NULL;
+      clear_params(&args);
     }
     else if (strcmp(func->name, "substr") == 0) {
       // TODO
@@ -365,14 +363,18 @@ void print_args (bool global_frame, tFuncParam *args) {
   }
   else {
     if (args->type == TYPE_INT) {
+      fprintf(stderr, "tady 3\n");
       print_int(args->name);
+      fprintf(stderr, "tady 4\n");
     }
     else if (args->type == TYPE_FLOAT) {
       print_float(args->name);
     }
     else if (args->type == TYPE_STRING) {
-
+      fprintf(stderr, "tady 1\n");
+      fprintf(stderr, "%s\n", args->name);
       print_string(args->name);
+      fprintf(stderr, "tady 2\n");
     }
     else if (args->type == TYPE_NIL) {
       print_nil();

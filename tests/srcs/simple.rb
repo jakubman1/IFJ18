@@ -1,5 +1,5 @@
 #a = inputs
-#b = 1
+##b = 1
 #a = 1 * 2 + b / 1.1
 #a = b == nil
 #a = "twoja mama mele maso"
