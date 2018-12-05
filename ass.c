@@ -138,66 +138,168 @@ void post_order(tAssPtr root, bool isGlobal, tAssPtr top_ass)
       MULS;
     }
     else if (strcmp(root->text, "/") == 0) {
-      DIVS;
+      if (root->type == FLOATING_POINT) {
+        IDIVS;
+      }
+      else {
+        DIVS;
+      }
     }
     else if (strcmp(root->text, "<") == 0) {
       LTS;
     }
     else if (strcmp(root->text, "<=") == 0) {
-      LTS;
-      EQS;
+      GTS;
+      NOTS;
     }
     else if (strcmp(root->text, ">") == 0) {
       GTS;
     }
     else if (strcmp(root->text, ">=") == 0) {
-      GTS;
-      EQS;
+      LTS;
+      NOTS;
     }
     else if (strcmp(root->text, "==") == 0) {
       EQS;
     }
     else if (strcmp(root->text, "!=") == 0) {
-      NOTS;
       EQS;
+      NOTS;
     }
     else {
-      //PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
       tAssPtr father_node = NULL;
       ass_find_father(top_ass, root, &father_node);
-/*
-      bool isNumber = false;
-      for (int i = 0; i < strlen(root->text); i++) {
-        fprintf(stderr, "SENDING %c TO isdigit\n", root->text[i]);
-        if (isdigit(root->text[i]) == 0) {
-          isNumber = false;
-          break;
-        }
-        else {
-          isNumber = true;
-        }
-      }
-*/
-//fprintf(stderr, "mam %d\n", isNumber);
-      //fprintf(stderr, "root je %d a otec je %d\n", root->type, father_node->type);
-      if (root->type == INTEGER && father_node->type == INTEGER) {
+      /*
+      fprintf(stderr, "root type je %d a otec type je %d\n", root->type, father_node->type);
+      fprintf(stderr, "root type je %d a root nodeType je %d\n", root->type, root->nodeType);
+      */
+      if (root->nodeType == INTEGER && father_node->type == INTEGER) {
         PUSH_ONE(print_int(root->text));
       }
-      else if (root->type == INTEGER && father_node->type == FLOATING_POINT) {
+      else if (root->nodeType == INTEGER && father_node->type == FLOATING_POINT) {
         PUSH_ONE(print_int(root->text));
         INT2FLOATS;
       }
-      else if (root->type == FLOATING_POINT && father_node->type == FLOATING_POINT) {
+      else if (root->nodeType == FLOATING_POINT && father_node->type == FLOATING_POINT) {
         PUSH_ONE(print_float(root->text));
       }
-      else if (root->type == STRING && father_node->type == STRING) {
+      else if (root->nodeType == STRING && father_node->type == STRING) {
         PUSH_ONE(print_string(root->text));
       }
-      else if (root->type == NIL && father_node->type == NIL) {
+      else if (root->nodeType == NIL && father_node->type == NIL) {
         PUSH_ONE(print_nil(root->text));
       }
-      else if (root->type == ID && father_node->type == INTEGER) {
+      else if (root->type == INTEGER && root->nodeType == ID && father_node->type == INTEGER) {
         PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+      }
+      else if (root->type == INTEGER && root->nodeType == ID && father_node->type == FLOATING_POINT) {
+        PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+        INT2FLOATS;
+      }
+      else if (root->type == UNIVERSAL && root->nodeType == ID && father_node->type == INTEGER) {
+        PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+        gen_check_int();
+      }
+      else if (root->type == FLOATING_POINT && root->nodeType == ID && father_node->type == FLOATING_POINT) {
+        PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+      }
+      else if (root->type == UNIVERSAL && root->nodeType == ID && father_node->type == FLOATING_POINT) {
+        PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+        int2floats();
+      }
+      else if (root->type == STRING && root->nodeType == ID && father_node->type == STRING) {
+        PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+      }
+      else if (root->type == UNIVERSAL && root->nodeType == ID && father_node->type == STRING) {
+        PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+        gen_check_string();
+      }
+      else if (root->type == UNIVERSAL && root->nodeType == ID && father_node->type == UNIVERSAL) {
+        PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+      }
+      else if (father_node->type == BOOL) {
+        if (father_node->lptr->type == INTEGER && father_node->rptr->type == INTEGER) {
+          if (root->nodeType == ID) {
+            PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+          }
+          else if (root->nodeType == INTEGER) {
+            PUSH_ONE(print_int(root->text));
+          }
+        }
+        else if ((father_node->lptr->type == INTEGER && father_node->rptr->type == FLOATING_POINT) || (father_node->lptr->type == FLOATING_POINT && father_node->rptr->type == INTEGER)) {
+          if (root->nodeType == ID && root->type == INTEGER) {
+            PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+            INT2FLOATS;
+          }
+          else if (root->nodeType == ID && root->type == FLOATING_POINT) {
+            PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+          }
+          else if (root->nodeType == FLOATING_POINT && root->type == FLOATING_POINT) {
+            PUSH_ONE(print_float(root->text));
+          }
+          else if (root->nodeType == INTEGER && root->type == INTEGER) {
+            PUSH_ONE(print_int(root->text));
+            INT2FLOATS;
+          }
+        }
+        else if (father_node->lptr->type == FLOATING_POINT && father_node->rptr->type == FLOATING_POINT) {
+          if (root->nodeType == ID) {
+            PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+          }
+          else if (root->nodeType == FLOATING_POINT) {
+            PUSH_ONE(print_float(root->text));
+          }
+        }
+        else if (father_node->lptr->type == STRING && father_node->rptr->type == STRING) {
+          if (root->nodeType == ID) {
+            PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+          }
+          else if (root->nodeType == STRING) {
+            PUSH_ONE(print_string(root->text));
+          }
+        }
+        else if (father_node->lptr->type == NIL || father_node->rptr->type == NIL) {
+          if ((strcmp(father_node->text, "!=") == 0) || (strcmp(father_node->text, "==") == 0)) {
+            if (root->nodeType == ID) {
+              PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+              gen_check_nil();
+            }
+            else if (root->nodeType == NIL) {
+              PUSH_ONE(print_nil(root->text));
+            }
+          }
+        }
+        else if (father_node->lptr->type == UNIVERSAL && father_node->rptr->type == UNIVERSAL) {
+          PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+        }
+        else if ((father_node->lptr->type == INTEGER && father_node->rptr->type == UNIVERSAL) || (father_node->lptr->type == UNIVERSAL && father_node->rptr->type == INTEGER)) {
+if (root->nodeType == ID) {
+            PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+            int2floats();
+          }
+          else {
+            PUSH_ONE(print_int(root->text));
+            INT2FLOATS;
+          }
+        }
+        else if ((father_node->lptr->type == FLOATING_POINT && father_node->rptr->type == UNIVERSAL) || (father_node->lptr->type == UNIVERSAL && father_node->rptr->type == FLOATING_POINT)) {
+          if (root->nodeType == ID) {
+            PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+            int2floats();
+          }
+          else {
+            PUSH_ONE(print_float(root->text));
+          }
+        }
+        else if ((father_node->lptr->type == STRING && father_node->rptr->type == UNIVERSAL) || (father_node->lptr->type == UNIVERSAL && father_node->rptr->type == STRING)) {
+          if (root->nodeType == ID) {
+            PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+            gen_check_string();
+          }
+          else {
+            PUSH_ONE(print_string(root->text));
+          }
+        }
       }
     }
   }

@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include "ass.h"
 #include "symtable.h"
+#include "stack.h"
 
 /*
 Good ol' tutorial:
@@ -124,27 +125,28 @@ Vestavene funkce:
 #define INT2FLOATS printf("INT2FLOATS\n")
 #define FLOAT2INTS printf("FLOAT2INTS\n")
 
+
 #define STRLEN(out, x) printf("STRLEN "); out; printf(" "); x; printf("\n")
 #define ORD(out, x, i) printf("STR2INT "); out; printf(" "); x; printf(" "); i; printf("\n")
 #define CHR(out, i) printf("INT2CHAR "); out; printf(" "); i; printf("\n")
 #define PRINT(x) printf("WRITE "); x; printf("\n")
-#define SUBSTR(s, i, n)
+#define SUBSTR(s, i, n) pritnf("")
 
 void gen_start();
 
 void gen_def(tSymPtr func);
 void gen_end_def(char *name);
 
-void gen_while(unsigned int num, char *varname);
-void gen_while_end(unsigned int num);
+void gen_while(tStack *stack);
+void gen_while_end(tStack *stack);
 
-void gen_if(unsigned int num, char *varname);
-void gen_else(unsigned int num);
-void gen_if_end(unsigned int num);
+void gen_if(tStack *stack);
+void gen_else(tStack *stack);
+void gen_if_end(tStack *stack);
 
 void gen_call(tSymPtr func);
 
-void gen_var_global(tSymPtr var);
+void gen_var(tSymPtr var, bool global);
 
 
 /**
@@ -161,13 +163,25 @@ void print_float(char *val);
 void print_string(char *s);
 void print_bool(bool b);
 void print_nil();
+void concat_strings();
+
+void int2floats();
+void gen_check_string();
+void gen_check_int();
+void gen_check_nil();
 
 void gen_inputi(char *varName, char *frame);
 void gen_inputs(char *varName, char *frame);
 void gen_inputf(char *varName, char *frame);
 
+void gen_var_seti(tSymPtr var, char *val, bool global);
+void gen_var_setf(tSymPtr var, char *val, bool global);
+void gen_var_sets(tSymPtr var, char *c, bool global);
+void gen_var_setn(tSymPtr var, bool global);
+
 void call_function (tSymPtr func, char *var_name, bool global_frame, tFuncParam *args);
 void print_args (bool global_frame, tFuncParam *args);
+void set_variable (tSymPtr var, char *value, data_type new_type, bool global_frame);
 int uniqueInt();
 
 #endif

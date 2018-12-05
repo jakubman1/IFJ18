@@ -15,7 +15,8 @@
 void gen_start() {
   printf(".IFJcode18\n");
   printf("# Generated using ifj18 compiler by\n");
-  printf("# Jakub Man, Adam Melichar, Jiri Tykva and Jan Martinak\n");
+  printf("# Jakub Man, Adam Melichar, Jiri Tykva and Jan Martinak\n\n");
+  printf("#main frame\nCREATEFRAME\nPUSHFRAME\n");
   //char *tmp = malloc(sizeof(char) * 50);
   //strcpy(tmp, "Toto je testovaci string");
   //print_string(tmp);
@@ -54,31 +55,34 @@ void gen_end_def(char *name) {
   printf("LABEL $$END-%s\n\n", name);
 }
 
-void gen_while(unsigned int num, char *varname) {
+void gen_while(tStack *stack) {
+  int stack_top = s_top(stack);
 
-  printf("LABEL $$WHILE%d\n", num);
-  // podminka
-  printf("JUMPIFEQ $$WHILEEND%d %s bool@false\n", num, varname);
+  printf("JUMPIFEQ $$WHILEEND%d LF@whilecond%d bool@false\n", stack_top, stack_top);
 
 }
 
-void gen_while_end(unsigned int num) {
-  printf("JUMP $$WHILE%d\n", num);
-  printf("LABEL $$WHILEEND%d\n", num);
+void gen_while_end(tStack *stack) {
+  int stack_top = s_top(stack);
+  printf("JUMP $$WHILE%d\n", stack_top);
+  printf("LABEL $$WHILEEND%d\n", stack_top);
 }
 
 // Podminka byla vyhodnocena
-void gen_if(unsigned int num, char *varname) {
-  printf("JUMPIFEQ $$IFELSE%d %s bool@false\n", num, varname);
+void gen_if(tStack *stack) {
+  int stack_top = s_top(stack);
+  printf("JUMPIFEQ $$IFELSE%d LF@ifcond%d bool@false\n", stack_top, stack_top);
 }
 // Prisel token else
-void gen_else(unsigned int num) {
-  printf("JUMP $$IFEND%d\n", num);
-  printf("LABEL $$IFELSE%d\n", num);
+void gen_else(tStack *stack) {
+  int stack_top = s_top(stack);
+  printf("JUMP $$IFEND%d\n", stack_top);
+  printf("LABEL $$IFELSE%d\n", stack_top);
 }
 // prisel token end patrici k if.
-void gen_if_end(unsigned int num) {
-  printf("LABEL $$IFEND%d\n", num);
+void gen_if_end(tStack *stack) {
+  int stack_top = s_top(stack);
+  printf("LABEL $$IFEND%d\n", stack_top);
 }
 
 void gen_call(tSymPtr func) {
@@ -86,31 +90,31 @@ void gen_call(tSymPtr func) {
 }
 
 
-void gen_var_global(tSymPtr var) {
-  printf("DEFVAR GF@%s\n", var->name);
+void gen_var(tSymPtr var, bool global) {
+  printf("DEFVAR %s@%s\n", global ? "GF": "LF", var->name);
 }
 
 
-void gen_var_seti(tSymPtr var, char *val) {
-  printf("MOVE GF@%s ", var->name);
+void gen_var_seti(tSymPtr var, char *val, bool global) {
+  printf("MOVE %s@%s ", global ? "GF": "LF", var->name);
 
   print_int(val);
   printf("\n");
 }
-void gen_var_setf(tSymPtr var, char *val) {
-  printf("MOVE GF@%s ", var->name);
+void gen_var_setf(tSymPtr var, char *val, bool global) {
+  printf("MOVE %s@%s ", global ? "GF": "LF", var->name);
   print_float(val);
   printf("\n");
 }
 
-void gen_var_sets(tSymPtr var, char *c) {
-  printf("MOVE GF@%s ", var->name);
+void gen_var_sets(tSymPtr var, char *c, bool global) {
+  printf("MOVE %s@%s ", global ? "GF": "LF", var->name);
   print_string(c);
   printf("\n");
 }
 
-void gen_var_setn(tSymPtr var) {
-  printf("MOVE GF@%s ", var->name);
+void gen_var_setn(tSymPtr var, bool global) {
+  printf("MOVE %s@%s ", global ? "GF": "LF", var->name);
   print_nil();
   printf("\n");
 }
@@ -131,6 +135,63 @@ void int2floats() {
   printf("LABEL $isfloat%d\n", uniqid);
   // printf("PUSHS LF$itf%d", uniqid);
 
+  uniqid++;
+}
+
+void gen_check_string() {
+  static int uniqid = 0;
+
+  printf("DEFVAR LF@$strcheck%d\n", uniqid);
+  printf("DEFVAR LF@$strchecktype%d\n", uniqid);
+  printf("POPS LF@$strcheck%d\n", uniqid);
+  printf("TYPE LF@$strchecktype%d LF@$strcheck%d\n", uniqid, uniqid);
+  PUSH_ONE(printf("LF@$strcheck%d", uniqid));
+  printf("JUMPIFEQ $isstring%d LF@$strchecktype%d string@string\n", uniqid, uniqid);
+  printf("EXIT int@4");
+  printf("LABEL $isstring%d\n", uniqid);
+
+  uniqid++;
+}
+
+void gen_check_nil() {
+  static int uniqid = 0;
+
+  printf("DEFVAR LF@$nilcheck%d\n", uniqid);
+  printf("DEFVAR LF@$nilchecktype%d\n", uniqid);
+  printf("POPS LF@$nilcheck%d\n", uniqid);
+  printf("TYPE LF@$nilchecktype%d LF@$nilcheck%d\n", uniqid, uniqid);
+  PUSH_ONE(printf("LF@$nilcheck%d", uniqid));
+  printf("JUMPIFEQ $isnil%d LF@$strchecktype%d string@nil\n", uniqid, uniqid);
+  printf("EXIT int@4");
+  printf("LABEL $isnil%d\n", uniqid);
+
+  uniqid++;
+}
+
+void gen_check_int() {
+  static int uniqid = 0;
+
+  printf("DEFVAR LF@$intcheck%d\n", uniqid);
+  printf("DEFVAR LF@$intchecktype%d\n", uniqid);
+  printf("POPS LF@$intcheck%d\n", uniqid);
+  printf("TYPE LF@$intchecktype%d LF@$intcheck%d\n", uniqid, uniqid);
+  PUSH_ONE(printf("LF@$intcheck%d", uniqid));
+  printf("JUMPIFEQ $isintc%d LF@$intchecktype%d string@int\n", uniqid, uniqid);
+  printf("EXIT int@4");
+  printf("LABEL $isintc%d\n", uniqid);
+
+  uniqid++;
+}
+
+void concat_strings() {
+  static int uniqid = 0;
+
+  printf("DEFVAR LF@$strcon%d\n", uniqid);
+  printf("DEFVAR LF@$strcontwo%d\n", uniqid);
+  printf("POPS LF@$strcon%d\n", uniqid);
+  printf("POPS LF@$strcontwo%d\n", uniqid);
+  printf("CONCAT LF@$strcon%d LF@$strcon%d LF@$strcontwo%d\n", uniqid, uniqid, uniqid);
+  printf("PUSHS LF@$strcon%d\n", uniqid);
   uniqid++;
 }
 
@@ -180,13 +241,16 @@ void print_nil() {
 }
 
 
+
 /*************
   HELPER FUNCTIONS
 ************ */
 void rewrite_string(char **str) {
   for(int i = 0; (*str)[i] != '\0'; i++) {
     if(i == 0) {
-      *str = *str + 1;
+      char *p = *str;
+      p++;
+      *str = p;
     }
     else if( i == (strlen(*str) - 1)) {
       str[i] = '\0';
@@ -281,6 +345,21 @@ void print_args (bool global_frame, tFuncParam *args) {
     else if (args->type == TYPE_NIL) {
       print_nil();
     }
+  }
+}
+
+void set_variable (tSymPtr var, char *value, data_type new_type, bool global_frame) {
+if (new_type == TYPE_INT) {
+    gen_var_seti(var, value, global_frame);
+  }
+  else if (new_type == TYPE_FLOAT) {
+    gen_var_setf(var, value, global_frame);
+  }
+  else if (new_type == TYPE_STRING) {
+    gen_var_sets(var, value, global_frame);
+  }
+  else if (new_type == TYPE_NIL) {
+    gen_var_setn(var, global_frame);
   }
 }
 

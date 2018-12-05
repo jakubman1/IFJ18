@@ -401,10 +401,13 @@ int prec_table(tToken *token, tSymPtr sym, bool isGlobal)
             symtable_search(sym, top_token.text, &temp);
             if (temp != NULL) {
               new_ass = ass_make_leaf(temp->data.varData.type, top_token.text, sym);
+              new_ass->nodeType = ID;
+              //fprintf(stderr, "typ ID %d\n", temp->type);
             }
           }
           else { // token->type == INTEGER || FLOATING_POINT || STRING
             new_ass = ass_make_leaf(top_token.type, top_token.text, NULL);
+            new_ass->nodeType = new_ass->type;
           }
           if (new_ass == NULL) {
             // TODO uvolnit stacky

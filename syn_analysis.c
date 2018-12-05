@@ -63,7 +63,7 @@ int fill_global_symtable (tList *symtable_list, tToken *token)
   tSymPtr ID_global = NULL;
   tSymPtr ID_local = NULL;
   tSymPtr searchNameID = NULL;
-  tSymPtr gen_var = NULL;
+  tSymPtr ID_gen_var = NULL;
 
   if (token->type == ID) {
     symtable_search(symtable_list->First->table_ptr, token->text, &ID_global); // searches through global Tree
@@ -94,8 +94,8 @@ int fill_global_symtable (tList *symtable_list, tToken *token)
     if (searchNameID->type != FUNCTION && strchr(nameID, '!') == NULL && strchr(nameID, '?') == NULL) {
       return_value = symtable_insert_variable(&(symtable_list->First->table_ptr), nameID, TYPE_NIL, true);
       // GENERATING IFJcode18
-      symtable_search(symtable_list->First->table_ptr, nameID, &gen_var);
-      gen_var_global(gen_var);
+      symtable_search(symtable_list->First->table_ptr, nameID, &ID_gen_var);
+      gen_var(ID_gen_var, true);
       free(nameID);
       seenID = false;
       return return_value;
@@ -122,6 +122,7 @@ int fill_local_symtable (tList *symtable_list, tToken *token, bool isParam)
   tSymPtr ID_global = NULL;
   tSymPtr ID_local = NULL;
   tSymPtr searchNameID = NULL;
+  tSymPtr ID_gen_var = NULL;
 
   if (token->type == ID) {
     symtable_search(symtable_list->First->table_ptr, token->text, &ID_global); // searches through global Tree
@@ -129,7 +130,6 @@ int fill_local_symtable (tList *symtable_list, tToken *token, bool isParam)
   }
 
   if (isParam == true && ID_local == NULL && (ID_global == NULL || (ID_global != NULL && ID_global->type != FUNCTION))) {
-    //fprintf(stderr, "3 inserting %s with type: NIL\n",token->text);
     return_value = symtable_insert_variable(&(symtable_list->Act->table_ptr), token->text, UNIVERSAL, true);
     return return_value;
   }
@@ -159,8 +159,10 @@ int fill_local_symtable (tList *symtable_list, tToken *token, bool isParam)
         return VARIABLE_ERR;
       }
       if (strchr(nameID, '!') == NULL && strchr(nameID, '?') == NULL) {
-        //fprintf(stderr, "4 inserting %s with type: NIL\n", nameID);
         return_value = symtable_insert_variable(&(symtable_list->Act->table_ptr), nameID, TYPE_NIL, true);
+        symtable_search(symtable_list->Act->table_ptr, nameID, &ID_gen_var);
+        // GENERATING IFJcode18
+        gen_var(ID_gen_var, false);
         free(nameID);
         seenID = false;
         return return_value;
@@ -196,6 +198,7 @@ int add_to_symtable(tList *symtable_list, tToken *token)
   static bool seenDEF = false;
   static bool seen_left_bracket = false;
   static bool local_symtable = false;
+  static bool is_end_while = false;
   static int countEND = 0;
   static int count_param = 0;
   static char *nameID = NULL;
@@ -279,6 +282,12 @@ int add_to_symtable(tList *symtable_list, tToken *token)
   }
   else if (local_symtable && (token->type == IF || token->type == WHILE)) {
     countEND++;
+    if (token->type == IF) {
+      is_end_while = false;
+    }
+    if (token->type == WHILE) {
+      is_end_while = true;
+    }
   }
   else if (local_symtable && token->type == END) {
     countEND--;
@@ -286,6 +295,14 @@ int add_to_symtable(tList *symtable_list, tToken *token)
       local_symtable = false;
       // GENERATING IFJcode18
       gen_end_def(symtable_list->Act->table_name);
+    }
+    else {
+      if (is_end_while) {
+        //gen_while_end();
+      }
+      else {
+        //gen_if_end();
+      }
     }
   }
   //BODY OF THE FUNCTION
@@ -315,6 +332,7 @@ int parser()
   tStack stack;
   tList symtable_list;
   tSymPtr globalTree = NULL;
+  tStack gen_stack;
 
   int countEND = 0;
   bool isGlobal = true;
@@ -329,6 +347,7 @@ int parser()
   list_insert(&symtable_list, globalTree, NULL);
 
   s_init(&stack);
+  s_init(&gen_stack);
 
   s_push(&stack, LL_BOTTOM);
   s_push(&stack, LL_PROG);
@@ -367,7 +386,7 @@ int parser()
         isGlobal = false;
       }
 
-      result = ll_predict(&currentToken, &stack, &symtable_list, isGlobal, id_name, id_func_name);
+      result = ll_predict(&currentToken, &stack, &symtable_list, isGlobal, id_name, id_func_name, &gen_stack);
     }
 
     //// MUSI BYT AZ NA KONCI CYKLU !!!!!!!!!!!!!!!
@@ -457,11 +476,13 @@ int parser()
 }
 
 
-int ll_predict(tToken *token, tStack *stack, tList *symtable_list, bool isGlobal, char *id_name, char *id_func_name)
+int ll_predict(tToken *token, tStack *stack, tList *symtable_list, bool isGlobal, char *id_name, char *id_func_name, tStack *gen_stack)
 {
   int top = s_top(stack);
   static int paramCount = 0;
   static tFuncParam *args = NULL;
+  static int gen_uniq_num = 0;
+  static bool is_end_while = false;
 
   // NON TERMINALS
 while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
@@ -474,6 +495,12 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         PUSH_RULE_1;
       }
       else if(token->type == ID || token->type == IF || token->type == WHILE || token->type == EOL) {
+        if (token->type == WHILE) {
+          s_push(gen_stack, gen_uniq_num);
+          printf("DEFVAR LF@whilecond%d\n", gen_uniq_num);
+          printf("LABEL $$WHILE%d\n", gen_uniq_num);
+
+        }
         PUSH_RULE_2;
       }
       else if(token->type == END || token->type == ELSE ) {
@@ -629,24 +656,9 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
             symtable_insert_variable(&(symtable_list->First->table_ptr), id_name, result->data.funData.returnType, true);
             // GENERATING IFJcode18
             call_function(result, id_name, isGlobal, args);
-
-            /* should be somewhere else
-            tSymPtr gen_var = NULL;
-            symtable_search(symtable_list->First->table_ptr, id_name, &gen_var);
-
-            if (result->data.funData.returnType == TYPE_INT) {
-              gen_var_seti(gen_var, gen_var->name);
-            }
-            else if (result->data.funData.returnType == TYPE_FLOAT) {
-              gen_var_setf(gen_var, gen_var->name);
-            }
-            else if (result->data.funData.returnType == TYPE_NIL) {
-              gen_var_setn(gen_var);
-            }
-            else if (result->data.funData.returnType == TYPE_STRING) {
-              gen_var_sets(gen_var, gen_var->name);
-            }*/
-
+            tSymPtr temp = NULL;
+            symtable_search(symtable_list->First->table_ptr, id_name, &temp);
+            set_variable(temp, id_name, result->data.funData.returnType, isGlobal);
           }
         }
         if (result->type == VARIABLE) {
@@ -691,6 +703,9 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
             symtable_insert_variable(&(symtable_list->First->table_ptr), id_name, result->data.funData.returnType, true);
             // GENERATING IFJcode18
             call_function(result, id_name, isGlobal, args);
+            tSymPtr temp = NULL;
+            symtable_search(symtable_list->First->table_ptr, id_name, &temp);
+            set_variable(temp, id_name, result->data.funData.returnType, isGlobal);
           }
         }
 
@@ -830,13 +845,28 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         else if (return_value == NIL || return_value == INTEGER || return_value == FLOATING_POINT || return_value == STRING || return_value == BOOL) {
           if (token->type == EOL) {
             int retval = symtable_insert_variable(&sym, id_name, return_value, true);
+            printf("POPS %s@%s\n", isGlobal ? "GF" : "LF", id_name);
             if (retval == INTERNAL_ERR) {
               return INTERNAL_ERR;
             }
           }
+          else if (token->type == DO) { // end of while expression
+
+            // Tady musi prijit kod expression
+            printf("POPS LF@whilecond%d\n", gen_uniq_num);
+            gen_while(gen_stack);
+            gen_uniq_num++;
+          }
+          else if (token->type == THEN) { // end of if expression
+            s_push(gen_stack, gen_uniq_num);
+            printf("DEFVAR LF@ifcond%d\n", gen_uniq_num);
+            printf("POPS LF@ifcond%d\n", gen_uniq_num);
+            gen_if(gen_stack);
+            gen_uniq_num++;
+          }
+          s_pop(stack);
+          ll_predict(token, stack, symtable_list, isGlobal, id_name, id_func_name, gen_stack); // recall the function in order not to lose a token
         }
-        s_pop(stack);
-        ll_predict(token, stack, symtable_list, isGlobal, id_name, id_func_name); // recall the function in order not to lose a token
       }
       break;
     case LL_ID:
@@ -861,6 +891,14 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_END:
       if (token->type == END) {
         s_pop(stack);
+        if (isGlobal) {
+          if (is_end_while) {
+            gen_while_end(gen_stack);
+          }
+          else { // of of if
+            gen_if_end(gen_stack);
+          }
+        }
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s, expected end.\n", token->text);
@@ -879,6 +917,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_IF:
       if (token->type == IF) {
         s_pop(stack);
+        is_end_while = false;
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected if, got \"%s\".\n", token->text);
@@ -897,6 +936,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_ELSE:
       if (token->type == ELSE) {
         s_pop(stack);
+        gen_else(gen_stack);
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected else, got \"%s\".\n", token->text);
@@ -906,6 +946,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_WHILE:
       if (token->type == WHILE) {
         s_pop(stack);
+        is_end_while = true;
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected while, got \"%s\".\n", token->text);
