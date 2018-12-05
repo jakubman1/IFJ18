@@ -16,10 +16,10 @@ void gen_start() {
   printf(".IFJcode18\n");
   printf("# Generated using ifj18 compiler by\n");
   printf("# Jakub Man, Adam Melichar, Jiri Tykva and Jan Martinak\n\n");
-  printf("#main frame\nCREATEFRAME\nPUSHFRAME\n");
-  //char *tmp = malloc(sizeof(char) * 50);
-  //strcpy(tmp, "Toto je testovaci string");
-  //print_string(tmp);
+  printf("#main frame\nCREATEFRAME\nPUSHFRAME\n\n");
+  char *tmp = malloc(sizeof(char) * 50);
+  strcpy(tmp, "\"Toto je testovaci string\"");
+  print_string(tmp);
 }
 
 /*************
@@ -246,6 +246,7 @@ void print_nil() {
   HELPER FUNCTIONS
 ************ */
 void rewrite_string(char **str) {
+  fprintf(stderr, "got rewrite string\n");
   for(int i = 0; (*str)[i] != '\0'; i++) {
     if(i == 0) {
       char *p = *str;
@@ -260,23 +261,32 @@ void rewrite_string(char **str) {
       // Convert letter to \xyz, where xyz is decimal value of the letter.
       sprintf(buff, "\\%03d", (*str)[i]);
       insert_string_to_string(str, buff, i);
+      //fprintf(stderr, "string is now %d\n", **str);
     }
   }
 }
 
 void insert_string_to_string(char **toStr, char *inStr, int pos) {
+  fprintf(stderr, "got insert to string. String is %s. InStr is %s Pos is %d\n", *toStr, inStr, pos);
   *toStr = realloc(*toStr, (strlen(*toStr) + strlen(inStr) + 2) * sizeof(char));
+  fprintf(stderr, "Got after realloc\n");
   char *tmp = malloc((strlen(*toStr) + strlen(inStr) + 2) * sizeof(char));
+  fprintf(stderr, "Got after tmp malloc\n");
   if(tmp == NULL || *toStr == NULL) {
     fprintf(stderr, "ERROR: No memory left!!!!\n");
     exit(99);
     return;
   }
+  fprintf(stderr, "reallocated\n");
   strncpy(tmp, *toStr, pos);
   tmp[pos] = '\0';
+  fprintf(stderr, "strncpy 1: %s\n", tmp);
   strcat(tmp, inStr);
+  fprintf(stderr, "strcat 1: %s\n", tmp);
   strcat(tmp, *toStr + pos + 1);
+  fprintf(stderr, "strcat 2: %s\n", tmp);
   strcpy(*toStr, tmp);
+  fprintf(stderr, "strncpy 2: %s\n", *toStr);
   free(tmp);
 }
 
@@ -292,7 +302,7 @@ void call_function (tSymPtr func, char *var_name, bool global_frame, tFuncParam 
     gen_inputs(var_name, global_frame ? "GF" : "LF");
   }
   else if (strcmp(func->name, "print") == 0) {
-    fprintf(stderr, "PRINT ARGS:");
+    //fprintf(stderr, "PRINT ARGS:");
     for (tFuncParam *tmp = args; tmp != NULL; tmp = tmp->next) {
       PRINT(print_args(global_frame, tmp));
       //fprintf(stderr, "%s ", tmp->name);
