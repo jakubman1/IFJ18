@@ -80,7 +80,7 @@ int fill_global_symtable (tList *symtable_list, tToken *token)
     // save as unknown
     return_value = symtable_insert_unknown(&(symtable_list->First->table_ptr), nameID);
     if (return_value != SUCCESS) {
-      free(nameID);
+      //free(nameID);
     }
     seenID = true;
     return return_value;
@@ -88,7 +88,7 @@ int fill_global_symtable (tList *symtable_list, tToken *token)
   else if (token->type == OPERATOR && (strcmp(token->text, "=") == 0) && seenID) {
     symtable_search(symtable_list->First->table_ptr, nameID, &searchNameID);
     if (searchNameID == NULL) {
-      free(nameID);
+      //free(nameID);
       return INTERNAL_ERR;
     }
     if (searchNameID->type != FUNCTION && strchr(nameID, '!') == NULL && strchr(nameID, '?') == NULL) {
@@ -96,18 +96,18 @@ int fill_global_symtable (tList *symtable_list, tToken *token)
       // GENERATING IFJcode18
       symtable_search(symtable_list->First->table_ptr, nameID, &ID_gen_var);
       gen_var(ID_gen_var, true);
-      free(nameID);
+      //free(nameID);
       seenID = false;
       return return_value;
     }
     else {
-      free(nameID);
+      //free(nameID);
       seenID = false;
       return VARIABLE_ERR;
     }
   }
   else if (seenID == true && (ID_global != NULL && ID_global->type != FUNCTION)) {
-    free(nameID);
+    //free(nameID);
     seenID = false;
   }
   return SUCCESS;
@@ -147,7 +147,7 @@ int fill_local_symtable (tList *symtable_list, tToken *token, bool isParam)
       strcpy(nameID, token->text);
       return_value = symtable_insert_unknown(&(symtable_list->Act->table_ptr), nameID);
       if (return_value != SUCCESS) {
-        free(nameID);
+        //free(nameID);
       }
       seenID = true;
       return return_value;
@@ -155,7 +155,7 @@ int fill_local_symtable (tList *symtable_list, tToken *token, bool isParam)
     else if (token->type == OPERATOR && (strcmp(token->text, "=") == 0) && seenID) {
       symtable_search(symtable_list->First->table_ptr, nameID, &searchNameID);
       if (searchNameID != NULL && searchNameID->type == FUNCTION) {
-        free(nameID);
+        //free(nameID);
         return VARIABLE_ERR;
       }
       if (strchr(nameID, '!') == NULL && strchr(nameID, '?') == NULL) {
@@ -163,18 +163,18 @@ int fill_local_symtable (tList *symtable_list, tToken *token, bool isParam)
         symtable_search(symtable_list->Act->table_ptr, nameID, &ID_gen_var);
         // GENERATING IFJcode18
         gen_var(ID_gen_var, false);
-        free(nameID);
+        //free(nameID);
         seenID = false;
         return return_value;
       }
       else {
-        free(nameID);
+        //free(nameID);
         seenID = false;
         return VARIABLE_ERR;
       }
     }
     else if (seenID == true) {
-      free(nameID);
+      //free(nameID);
       seenID = false;
     }
   }
@@ -246,13 +246,13 @@ int add_to_symtable(tList *symtable_list, tToken *token, tStack *gen_stack)
 
     return_value = fill_local_symtable (symtable_list, token, true);
     if (return_value != SUCCESS) {
-      free(nameID);
+      //free(nameID);
       return return_value;
     }
 
   }
   else if (token->type == ID && seen_left_bracket && ((ID_global != NULL && ID_global->type == FUNCTION) || ID_local != NULL)) {
-    free(nameID);
+    //free(nameID);
     return VARIABLE_ERR;
   }
   else if (token->type == OPERATOR && token->text[0] == ')' && seen_left_bracket) {
@@ -278,7 +278,7 @@ int add_to_symtable(tList *symtable_list, tToken *token, tStack *gen_stack)
     gen_def(gen_func);
 
     count_param = 0;
-    free(nameID);
+    //free(nameID);
   }
   else if (local_symtable && (token->type == IF || token->type == WHILE)) {
     countEND++;
@@ -392,15 +392,15 @@ int parser()
     //// MUSI BYT AZ NA KONCI CYKLU !!!!!!!!!!!!!!!
     if(currentToken.text != NULL) {
       // Free allocated text
-      free(currentToken.text);
+      //free(currentToken.text);
       currentToken.text = NULL;
     }
     if(result == VARIABLE_ERR) {
       fprintf(stderr, ANSI_COLOR_RED "Variable error: " ANSI_COLOR_RESET "Can not assign value into a function\n");
       // nechybi tu free stack?
-      free(id_name);
+      //free(id_name);
       id_name = NULL;
-      free(id_func_name);
+      //free(id_func_name);
       return result;
     }
     // TODO: Free allocated resouorces on
@@ -415,7 +415,7 @@ int parser()
         // Print all lexicals errors (scanner takes care of printing)
         if(currentToken.text != NULL) {
           // Free allocated text
-          free(currentToken.text);
+          //free(currentToken.text);
         }
       }
       result = LEXICAL_ERR;
@@ -449,11 +449,11 @@ int parser()
     }
 
   }
-  s_free(&stack);
+  //s_free(&stack);
 
-  free(id_name);
+  //free(id_name);
   id_name = NULL;
-  free(id_func_name);
+  //free(id_func_name);
   return result;
 }
 
@@ -509,13 +509,13 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       if(token->type == ID || token->type == EOL || token->type == IF || token->type == WHILE) {
         PUSH_RULE_12;
         if (token->type == ID) {
-          id_name = (char *)realloc(id_name, strlen(token->text) + 1);
+          //id_name = (char *)realloc(id_name, strlen(token->text) + 1);
           if (id_name == NULL) {
             return INTERNAL_ERR;
           }
           strcpy(id_name, token->text);
 
-          id_func_name = (char *) realloc(id_func_name, sizeof(char) * (strlen(token->text) + 1));
+          //id_func_name = (char *) realloc(id_func_name, sizeof(char) * (strlen(token->text) + 1));
           if (id_func_name == NULL) {
             return INTERNAL_ERR;
           }
@@ -529,13 +529,13 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_STATEMENT:
       if(token->type == ID) {
         PUSH_RULE_10;
-        id_name = (char *)realloc(id_name, strlen(token->text) + 1);
+        //id_name = (char *)realloc(id_name, strlen(token->text) + 1);
         if (id_name == NULL) {
           return INTERNAL_ERR;
         }
         strcpy(id_name, token->text);
 
-        id_func_name = (char *) realloc(id_func_name, sizeof(char) * (strlen(token->text) + 1));
+        //id_func_name = (char *) realloc(id_func_name, sizeof(char) * (strlen(token->text) + 1));
         if (id_func_name == NULL) {
           return INTERNAL_ERR;
         }
@@ -599,7 +599,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
           return VARIABLE_ERR;
         }
         if (sym->type == UNKNOWN || sym->type == FUNCTION) {
-          id_func_name = (char *) realloc(id_func_name, sizeof(char) * (strlen(sym->name) + 1));
+          //id_func_name = (char *) realloc(id_func_name, sizeof(char) * (strlen(sym->name) + 1));
           if (id_func_name == NULL) {
             return INTERNAL_ERR;
           }

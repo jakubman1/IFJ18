@@ -346,9 +346,9 @@ void call_function (tSymPtr func, char *var_name, bool global_frame, tFuncParam 
     }
     else if (strcmp(func->name, "chr") == 0) {
       CHR(printf("%s@%s", global_frame ? "GF" : "LF", var_name), print_args(global_frame, args));
-      free(args->name);
+    /*  free(args->name);
       free(args);
-      args = NULL;
+      args = NULL;*/
     }
   }
   else {
