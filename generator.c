@@ -298,6 +298,7 @@ void insert_string_to_string(char **toStr, char *inStr, int pos) {
 
 void call_function (tSymPtr func, char *var_name, bool global_frame, tFuncParam *args)
 {
+  fprintf(stderr, "in call function\n");
   if (strcmp(func->name, "inputi") == 0) {
     gen_inputi(var_name, global_frame ? "GF" : "LF");
   }
@@ -313,29 +314,43 @@ void call_function (tSymPtr func, char *var_name, bool global_frame, tFuncParam 
       PRINT(print_args(global_frame, tmp));
       //fprintf(stderr, "%s ", tmp->name);
     }
-    fprintf(stderr, "\n");
+    clear_params(&args);
+/*
     if (args != NULL) {
       free(args);
-    }
+    }*/
   }
   else if (args != NULL) {
+    fprintf(stderr, "func->name: %p\n", func);
     if (strcmp(func->name, "length") == 0) {
       //STRLEN(printf("%s@%s", global_frame ? "GF" : "LF", var_name), args->name);
       STRLEN(printf("%s@%s", global_frame ? "GF" : "LF", var_name), print_args(global_frame, args));
+      free(args->name);
       free(args);
+      args = NULL;
     }
     else if (strcmp(func->name, "substr") == 0) {
       // TODO
-      free(args);
+    //  free(args);
     }
     else if (strcmp(func->name, "ord") == 0) {
       //ORD(printf("%s@%s", global_frame ? "GF" : "LF", var_name), args->name, args->next->name);
       ORD(printf("%s@%s", global_frame ? "GF" : "LF", var_name), print_args(global_frame, args), print_args(global_frame, args->next));
+      clear_params(&args);
+      /*free(args->next->name);
+      args->next->name = NULL;
+      free(args->next);
+      args->next = NULL;
+      free(args->name);
+      args->name = NULL;
       free(args);
+      args = NULL;*/
     }
     else if (strcmp(func->name, "chr") == 0) {
       CHR(printf("%s@%s", global_frame ? "GF" : "LF", var_name), print_args(global_frame, args));
+      free(args->name);
       free(args);
+      args = NULL;
     }
   }
   else {
@@ -356,6 +371,7 @@ void print_args (bool global_frame, tFuncParam *args) {
       print_float(args->name);
     }
     else if (args->type == TYPE_STRING) {
+
       print_string(args->name);
     }
     else if (args->type == TYPE_NIL) {

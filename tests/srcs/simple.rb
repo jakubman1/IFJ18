@@ -3,13 +3,14 @@
 #a = 1 * 2 + b / 1.1
 #a = b == nil
 #a = "twoja mama mele maso"
-b = print("tet")
-d = inputi
-e = a
-def a()
+#b = print("tet")
+a = ord "test", 3
+b = print 5
+=begin
+def a(b)
   c = 3
 end
-
+=end
 
 
 

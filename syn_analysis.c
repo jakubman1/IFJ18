@@ -398,7 +398,6 @@ int parser()
     if(result == VARIABLE_ERR) {
       fprintf(stderr, ANSI_COLOR_RED "Variable error: " ANSI_COLOR_RESET "Can not assign value into a function\n");
       // nechybi tu free stack?
-      fprintf(stderr, "id_name :%p\n", id_name);
       free(id_name);
       id_name = NULL;
       free(id_func_name);
@@ -452,27 +451,6 @@ int parser()
   }
   s_free(&stack);
 
-  /*fprintf(stderr, "VYPIS TABULEK SYMBOLU:\n");
-  //fprintf(stderr, "Globalni 1. ID (foo): %s\n", symtable_list.First->table_ptr->name);
-  //fprintf(stderr, "Globalni 1. ID (foo) param_count: %d\n", symtable_list.First->table_ptr->data.funData.paramCount);
-  //fprintf(stderr, "Globalni 1. ID (foo) param_list 1. Element: %p\n", symtable_list.First->table_ptr->data.funData.params);
-  //fprintf(stderr, "Globalni 1. ID (foo) param_list 1. Element Typ: %d\n", symtable_list.First->table_ptr->data.funData.params->type);
-  //fprintf(stderr, "Globalni 1. ID (foo) param_list 1. (a) Element head: %p\n", symtable_list.First->table_ptr->data.funData.params);
-  //fprintf(stderr, "Globalni 1. ID (foo) param_list 2. (b) Element next: %p\n", symtable_list.First->table_ptr->data.funData.params->next);
-  //fprintf(stderr, "Globalni 1. ID (foo) param_list 3. (c) Element next->next: %p\n", symtable_list.First->table_ptr->data.funData.params->next->next);
-  //fprintf(stderr, "Globalni 1. ID (foo) param_list 1. Element rptr: %p\n", symtable_list.First->table_ptr->rptr);
-  //fprintf(stderr, "Globalni 1. ID (foo) param_list 2. Element: %p\n", symtable_list.First->table_ptr->rptr->data.funData.params);
-  //fprintf(stderr, "Globalni 1. ID (foo) param_list 2. Element Typ: %d\n", symtable_list.First->table_ptr->rptr->data.funData.params->type);
-  //fprintf(stderr, "Globalni 2. ID (ref): %s\n", symtable_list.First->table_ptr->rptr->name);
-  //fprintf(stderr, "Lokalni jmeno: %s\n", symtable_list.Act->table_name);
-  //fprintf(stderr, "Lokalni 1. ID (a): %s\n", symtable_list.Act->table_ptr->name);
-  //fprintf(stderr, "Lokalni 2. ID (b): %s\n", symtable_list.Act->table_ptr->rptr->name);
-  //fprintf(stderr, "Lokalni 2. ID (b): %s\n", symtable_list.Act->table_ptr->rptr->name);
-  fprintf(stderr, "%s type: %d\n", symtable_list.First->table_ptr->name, symtable_list.First->table_ptr->data.varData.type);
-  fprintf(stderr, "%s type: %d\n", symtable_list.First->table_ptr->rptr->name, symtable_list.First->table_ptr->rptr->data.varData.type);
-  fprintf(stderr, "KONEC VYPISU:\n");*/
-
-  fprintf(stderr, "id_name :%p\n", id_name);
   free(id_name);
   id_name = NULL;
   free(id_func_name);
@@ -530,6 +508,19 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
     case LL_STATEMENT_N:
       if(token->type == ID || token->type == EOL || token->type == IF || token->type == WHILE) {
         PUSH_RULE_12;
+        if (token->type == ID) {
+          id_name = (char *)realloc(id_name, strlen(token->text) + 1);
+          if (id_name == NULL) {
+            return INTERNAL_ERR;
+          }
+          strcpy(id_name, token->text);
+
+          id_func_name = (char *) realloc(id_func_name, sizeof(char) * (strlen(token->text) + 1));
+          if (id_func_name == NULL) {
+            return INTERNAL_ERR;
+          }
+          strcpy(id_func_name, token->text);
+        }
       }
       else if (token->type == END || token->type == ELSE) {
         PUSH_RULE_13;
@@ -544,7 +535,6 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         }
         strcpy(id_name, token->text);
 
-      //  fprintf(stderr, "ukladame %s\n", token->text);
         id_func_name = (char *) realloc(id_func_name, sizeof(char) * (strlen(token->text) + 1));
         if (id_func_name == NULL) {
           return INTERNAL_ERR;
@@ -608,7 +598,6 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         if (sym == NULL) {
           return VARIABLE_ERR;
         }
-
         if (sym->type == UNKNOWN || sym->type == FUNCTION) {
           id_func_name = (char *) realloc(id_func_name, sizeof(char) * (strlen(sym->name) + 1));
           if (id_func_name == NULL) {
@@ -692,7 +681,6 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         PUSH_RULE_23;
         // insert data type - ID_variable = ID_function
         tSymPtr result = NULL;
-        fprintf(stderr, "2 id_name: %p\n", id_name);
         if (isGlobal) {
           symtable_search(symtable_list->First->table_ptr, id_name, &result);
         }
@@ -741,7 +729,6 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       paramCount++; // start of func param check
       // save params for these functions
       if (BUILT_IN_FUNCTION) {
-      //  fprintf(stderr, "strkam tam %s\n", token->text);
         if (add_param(&args, token->type, token->text) == INTERNAL_ERR) {
           // TODO free
           return INTERNAL_ERR;
@@ -908,7 +895,6 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
           else { // of of if
             gen_if_end(gen_stack);
           }
-          //fprintf(stderr, "POPUJEM\n");
           s_pop(gen_stack);
         }
       }

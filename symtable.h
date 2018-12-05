@@ -131,4 +131,6 @@ Add parameter to a parameter list
 */
 int add_param(tFuncParam **head, data_type type, char *name);
 
+void clear_params(tFuncParam **head);
+
 #endif
