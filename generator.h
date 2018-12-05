@@ -17,6 +17,8 @@ Good ol' tutorial:
 definice funkce:
   prisel def + seznam parametru, funkce se uklada to tabulky symbolu:
     - gen_def(tSymPtr func)
+  prisel posledni identifikator funkce:
+    - RETURN_VALUE(val) <- val = volani printf na hodnotu nebo promennou (vcetne typu/ramce)
   prisel end patrici k def:
     - gen_end_def(char *name) <- nazev funkce, ktera skoncila
 
@@ -28,11 +30,14 @@ while:
     - gen_while_end(unsigned num) <- num = cislo prirazene k tomuto while pri gen_while
 
 volani funkce:
-  gen_call() <- TODO
-
+  zavolat makro CREATEFRAME
   pro kazdy parametr:
+
     CALL_PARAM(x, num) <- x = hodnota jako volani print (nazvu promenne nebo konstanty)
                           num = cislo parametru, pro kazdy parametr se zvysi o 1, zacina pro kazde volani na 1.
+  gen_call(tSymPtr func) <- func ukazatel na funkci do tabulky symbolu
+  Pro ziskani navratove hodnoty:
+    GET_RETVAL(val) <- val = printf promenne vcetne ramce, do ktere ulozit vysledek
 
 if:
   prisel if a podminka je vyhodnocena v nejake pomocne promenne
@@ -56,7 +61,6 @@ vyhodnoceni vyrazu:
 definice globalni promenne:
   gen_var_global(tSymPtr fun) <- fun = odkaz na promennou do tabulky symbolu
 
-Prirazeni hodnoty do globalni:
   prvni parametr je ukazatel do tabulky symbolu, druhy je hodnota. Pro jednotlive typy:
   gen_var_seti() pro int
   gen_var_setf() pro float
@@ -83,7 +87,11 @@ Vestavene funkce:
 */
 
 // x can be any valid symb print call, x should be int
-#define CALL_PARAM(x, num) printf("DEFVAR TF@%%%d\n", num); printf("MOV TF@%%%d\n", num); x; printf("\n")
+#define CALL_PARAM(x, num) printf("DEFVAR TF@%%%d\n", num); printf("MOV TF@%%%d ", num); x; printf("\n")
+#define CREATEFRAME printf("CREATEFRAME\n")
+#define RETURN_VALUE(val) printf("MOVE LF@%%retval "); val; printf("\n")
+#define GET_RETVAL(out) printf("MOVE "); out; printf(" TF@%%retval"); printf("\n")
+
 
 // Arithmetic operations
 // x and y must be either format@value (eg. int@5) or frame@name (eg. GF@a) and
@@ -97,8 +105,9 @@ Vestavene funkce:
 
 // Stack version of arithmetic functions. Result will be on top of the stack
 // Expression tree should be browsed using post-order
+// PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", token->text))
 #define PUSH_ONE(x) printf("PUSHS "); x; printf("\n")
-#define PUSH_TWO(x, y) printf("PUSHS "); y; printf("PUSHS "); x; printf("\n")
+#define PUSH_TWO(x, y) printf("PUSHS "); y; printf("\nPUSHS "); x; printf("\n")
 #define POPS(out) printf("POPS "); out; printf("\n")
 #define ADDS printf("ADDS\n")
 #define SUBS printf("SUBS\n")
@@ -114,10 +123,10 @@ Vestavene funkce:
 #define INT2FLOATS printf("INT2FLOATS\n")
 #define FLOAT2INTS printf("FLOAT2INTS\n")
 
-#define STRLEN(out, x) printf("STRLEN "); out; x
-#define ORD(out, x, i) printf("STR2INT "); out; x; i
-#define CHR(out, i) printf("INT2CHAR "); out, i
-#define PRINT(x) printf("WRITE "); x
+#define STRLEN(out, x) printf("STRLEN "); out; x; printf("\n")
+#define ORD(out, x, i) printf("STR2INT "); out; x; i; printf("\n")
+#define CHR(out, i) printf("INT2CHAR "); out, i; printf("\n")
+#define PRINT(x) printf("WRITE "); x; printf("\n")
 
 void gen_start();
 
@@ -145,10 +154,16 @@ void insert_string_to_string(char **toStr, char *inStr, int pos);
 
 */
 void insert_string_to_string(char **toStr, char *inStr, int pos);
-void print_int(int i);
-void print_float(double f);
+void print_int(char *val);
+void print_float(char *val);
 void print_string(char *s);
 void print_bool(bool b);
 void print_nil();
+
+void gen_inputi(char *varName, char *frame);
+void gen_inputs(char *varName, char *frame);
+void gen_inputf(char *varName, char *frame);
+
+void call_function (tSymPtr func, char *var_name, bool global_frame);
 
 #endif

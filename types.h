@@ -68,7 +68,8 @@ typedef enum {
   LL_EXPRESSION,
   LL_INT,
   LL_FLOAT,
-  LL_STRING
+  LL_STRING,
+  LL_NIL
 } ll_table_type;
 
 typedef struct token {

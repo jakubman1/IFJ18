@@ -21,6 +21,7 @@
 #include "symtable.h"
 #include "expression.h"
 #include "single_link_list.h"
+#include "generator.h"
 
 
 #define PUSH_START s_push(stack, LL_BOTTOM); s_push(stack, LL_PROG)
@@ -52,6 +53,7 @@
 #define PUSH_RULE_25 s_pop(stack); s_push(stack, LL_FLOAT)
 #define PUSH_RULE_26 s_pop(stack); s_push(stack, LL_ID)
 #define PUSH_RULE_27 s_pop(stack); s_push(stack, LL_STRING)
+#define PUSH_RULE_28 s_pop(stack); s_push(stack, LL_NIL)
 
 
  /**

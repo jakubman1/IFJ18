@@ -36,6 +36,7 @@ typedef enum {
 
 typedef struct funcParam {
   data_type type;
+  char *name;
   struct funcParam *next;
 } tFuncParam;
 
@@ -127,6 +128,6 @@ Add parameter to a parameter list
 @pre head cannot be NULL
 @return 0 on success, 99 on memory allocation errors.
 */
-int add_param(tFuncParam **head, data_type type);
+int add_param(tFuncParam **head, data_type type, char *name);
 
 #endif
