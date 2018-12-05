@@ -47,7 +47,7 @@ typedef enum {
 @brief Find first terminal closest to the top of the stack
 */
 int stack_terminal_top(tStack *searched_stack, tStack *aux_stack);
-int prec_table(tToken *token, tSymPtr sym);
+int prec_table(tToken *token, tSymPtr sym, bool isGlobal);
 int evaluate_rule (tStack *stack_temp, tStack *stack_pushdown, tStack *stack_rules);
 
 #endif

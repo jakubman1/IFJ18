@@ -156,7 +156,7 @@ int evaluate_rule (tStack *stack_temp, tStack *stack_pushdown, tStack *stack_rul
   return -2;
 }
 
-int prec_table(tToken *token, tSymPtr sym)
+int prec_table(tToken *token, tSymPtr sym, bool isGlobal)
 {
   static tStack stack_rules; // stores postfix notation
   static tStack stack_pushdown; // auxiliary stack
@@ -276,7 +276,7 @@ int prec_table(tToken *token, tSymPtr sym)
         else {
           // po vyhodnoceni pravidla se vola se stejnym tokenem
           if (token_input != P_BOTTOM || (stack_terminal_top(&stack_pushdown, &stack_temp) != P_BOTTOM)) {
-            int return_value = prec_table(token, sym);
+            int return_value = prec_table(token, sym, isGlobal);
             if (return_value == SYNTAX_ERR) {
               return SYNTAX_ERR;
             }
@@ -456,9 +456,17 @@ int prec_table(tToken *token, tSymPtr sym)
     // VYPIS JIRKA
     if (top_ass != NULL) {
       ret = ass_check_data_types(top_ass, sym);
+      top_ass->type = ret;
 
       //fprintf(stderr, "Vyraz typu: %d\n", ret);
     }
+
+    // **********************************zacatek generovani vyrazu**********************************************************
+    post_order(top_ass, isGlobal, top_ass);
+    //POPS(printf(printf("%s@%s", isGlobal ? "GF": "LF", nazev_promenne_do_ktere_to_chces_strcit))
+    // **********************************konec generovani vyrazu************************************************************
+
+
     /*  SCITANI, ODCITANI, NASOBENI, DELENI, KONKATENACE
         int , int --> int
         int , float --> float

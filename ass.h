@@ -10,12 +10,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "errcodes.h"
 #include "symtable.h"
 #include "types.h"
+#include "generator.h"
 
 typedef struct assNode {
   int type; // Type of node (for internal use only)
+  int nodeType;
   char *text; // Token text (NULL for non-terminals, token text for terminals)
   tSymPtr symtable; // Pointer to a symtable.
   struct assNode *lptr;
@@ -69,6 +72,8 @@ Find a father of a node
 @pre root != NULL, current_node != NULL, root and current_node must be part of the same tree.
 */
 void ass_find_father(tAssPtr root, tAssPtr current_node, tAssPtr *father_node);
+
+void post_order(tAssPtr root, bool isGlobal, tAssPtr top_ass);
 
 /**
 Evaluate data types of node in the tree.

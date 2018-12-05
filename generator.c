@@ -16,6 +16,9 @@ void gen_start() {
   printf(".IFJcode18\n");
   printf("# Generated using ifj18 compiler by\n");
   printf("# Jakub Man, Adam Melichar, Jiri Tykva and Jan Martinak\n");
+  //char *tmp = malloc(sizeof(char) * 50);
+  //strcpy(tmp, "Toto je testovaci string");
+  //print_string(tmp);
 }
 
 /*************
@@ -145,6 +148,8 @@ void gen_inputs(char *varName, char *frame) {
 }
 
 
+
+
 /*************
   CONSTANTS
 ************ */
@@ -180,27 +185,38 @@ void print_nil() {
 ************ */
 void rewrite_string(char **str) {
   for(int i = 0; (*str)[i] != '\0'; i++) {
+    if(i == 0) {
+      *str = *str + 1;
+    }
+    else if( i == (strlen(*str) - 1)) {
+      str[i] = '\0';
+    }
     if((*str)[i] == 35 || (*str)[i] <= 32 || (*str)[i] == 92 ) {
       char buff[5] = {0,};
       // Convert letter to \xyz, where xyz is decimal value of the letter.
-      sprintf(buff, "\\%3d", (*str)[i]);
+      sprintf(buff, "\\%03d", (*str)[i]);
       insert_string_to_string(str, buff, i);
     }
   }
 }
 
 void insert_string_to_string(char **toStr, char *inStr, int pos) {
-  realloc(*toStr, (strlen(*toStr) + strlen(inStr) + 1) * sizeof(char));
-  char *tmp = malloc((strlen(*toStr) + strlen(inStr) + 1) * sizeof(char));
+  *toStr = realloc(*toStr, (strlen(*toStr) + strlen(inStr) + 2) * sizeof(char));
+  char *tmp = malloc((strlen(*toStr) + strlen(inStr) + 2) * sizeof(char));
+  if(tmp == NULL || *toStr == NULL) {
+    fprintf(stderr, "ERROR: No memory left!!!!\n");
+    exit(99);
+    return;
+  }
   strncpy(tmp, *toStr, pos);
   tmp[pos] = '\0';
   strcat(tmp, inStr);
-  strcat(tmp, *toStr + pos);
+  strcat(tmp, *toStr + pos + 1);
   strcpy(*toStr, tmp);
   free(tmp);
 }
 
-void call_function (tSymPtr func, char *var_name, bool global_frame)
+void call_function (tSymPtr func, char *var_name, bool global_frame, tFuncParam *args)
 {
   if (strcmp(func->name, "inputi") == 0) {
     gen_inputi(var_name, global_frame ? "GF" : "LF");
@@ -211,10 +227,66 @@ void call_function (tSymPtr func, char *var_name, bool global_frame)
   else if (strcmp(func->name, "inputs") == 0) {
     gen_inputs(var_name, global_frame ? "GF" : "LF");
   }
+  else if (strcmp(func->name, "print") == 0) {
+    fprintf(stderr, "PRINT ARGS:");
+    for (tFuncParam *tmp = args; tmp != NULL; tmp = tmp->next) {
+      PRINT(print_args(global_frame, tmp));
+      //fprintf(stderr, "%s ", tmp->name);
+    }
+    fprintf(stderr, "\n");
+    if (args != NULL) {
+      free(args);
+    }
+  }
+  else if (args != NULL) {
+    if (strcmp(func->name, "length") == 0) {
+      //STRLEN(printf("%s@%s", global_frame ? "GF" : "LF", var_name), args->name);
+      STRLEN(printf("%s@%s", global_frame ? "GF" : "LF", var_name), print_args(global_frame, args));
+      free(args);
+    }
+    else if (strcmp(func->name, "substr") == 0) {
+      // TODO
+      free(args);
+    }
+    else if (strcmp(func->name, "ord") == 0) {
+      //ORD(printf("%s@%s", global_frame ? "GF" : "LF", var_name), args->name, args->next->name);
+      ORD(printf("%s@%s", global_frame ? "GF" : "LF", var_name), print_args(global_frame, args), print_args(global_frame, args->next));
+      free(args);
+    }
+    else if (strcmp(func->name, "chr") == 0) {
+      CHR(printf("%s@%s", global_frame ? "GF" : "LF", var_name), print_args(global_frame, args));
+      free(args);
+    }
+  }
   else {
     gen_call(func);
     GET_RETVAL(printf("GF@%s", var_name));
   }
+}
+
+void print_args (bool global_frame, tFuncParam *args) {
+  if (args->type == TYPE_ID) {
+    printf("%s@%s", global_frame ? "GF" : "LF", args->name);
+  }
+  else {
+    if (args->type == TYPE_INT) {
+      print_int(args->name);
+    }
+    else if (args->type == TYPE_FLOAT) {
+      print_float(args->name);
+    }
+    else if (args->type == TYPE_STRING) {
+      print_string(args->name);
+    }
+    else if (args->type == TYPE_NIL) {
+      print_nil();
+    }
+  }
+}
+
+int uniqueInt() {
+  static unsigned int i = 0;
+  return i++;
 }
 
 /*

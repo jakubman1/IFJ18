@@ -461,6 +461,7 @@ int ll_predict(tToken *token, tStack *stack, tList *symtable_list, bool isGlobal
 {
   int top = s_top(stack);
   static int paramCount = 0;
+  static tFuncParam *args = NULL;
 
   // NON TERMINALS
 while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
@@ -605,11 +606,13 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         PUSH_RULE_21;
         // GENERATING IFJcode18
         // start of call func
+        if (!BUILT_IN_FUNCTION) {
          CREATEFRAME;
+        }
       }
       else if(token->type == EOL || (token->type == OPERATOR && token->text[0] == ')')) {
         PUSH_RULE_19;
-        // insert data type - ID_variable = ID_function a b c
+        // insert data type - ID_variable = ID_function
         tSymPtr result = NULL;
         if (isGlobal) {
           symtable_search(symtable_list->First->table_ptr, id_name, &result);
@@ -625,7 +628,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
           if (result->type == FUNCTION || result->type == UNKNOWN) {
             symtable_insert_variable(&(symtable_list->First->table_ptr), id_name, result->data.funData.returnType, true);
             // GENERATING IFJcode18
-            call_function(result, id_name, isGlobal);
+            call_function(result, id_name, isGlobal, args);
 
             /* should be somewhere else
             tSymPtr gen_var = NULL;
@@ -687,7 +690,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
           if (result->type == FUNCTION || result->type == UNKNOWN) {
             symtable_insert_variable(&(symtable_list->First->table_ptr), id_name, result->data.funData.returnType, true);
             // GENERATING IFJcode18
-            call_function(result, id_name, isGlobal);
+            call_function(result, id_name, isGlobal, args);
           }
         }
 
@@ -711,37 +714,55 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       break;
     case LL_VALUE:
       paramCount++; // start of func param check
-      // TODO SEZNAM PARAMETRU
+      // save params for these functions
+      if (BUILT_IN_FUNCTION) {
+      //  fprintf(stderr, "strkam tam %s\n", token->text);
+        if (add_param(&args, token->type, token->text) == INTERNAL_ERR) {
+          // TODO free
+          return INTERNAL_ERR;
+        }
+      }
       // GENERATING IFJcode18
       if (token->type == ID) {
         PUSH_RULE_26;
         // GENERATING IFJcode18
-        if (isGlobal) {
-          CALL_PARAM(printf("GF@%s",token->text), paramCount);
-        }
-        else {
-          CALL_PARAM(printf("LF@%s",token->text), paramCount);
+        if (!BUILT_IN_FUNCTION)
+        {
+          if (isGlobal) {
+            CALL_PARAM(printf("GF@%s",token->text), paramCount);
+          }
+          else {
+            CALL_PARAM(printf("LF@%s",token->text), paramCount);
+          }
         }
       }
       else if (token->type == INTEGER) {
         PUSH_RULE_24;
         // GENERATING IFJcode18
+        if (!BUILT_IN_FUNCTION) {
         CALL_PARAM(print_int(token->text), paramCount);
+        }
       }
       else if (token->type == FLOATING_POINT) {
         PUSH_RULE_25;
         // GENERATING IFJcode18
-        CALL_PARAM(print_float(token->text), paramCount);
+        if (!BUILT_IN_FUNCTION) {
+          CALL_PARAM(print_float(token->text), paramCount);
+        }
       }
       else if (token->type == STRING) {
         PUSH_RULE_27;
         // GENERATING IFJcode18
-        CALL_PARAM(print_string(token->text), paramCount);
+        if (!BUILT_IN_FUNCTION) {
+          CALL_PARAM(print_string(token->text), paramCount);
+        }
       }
       else if (token->type == NIL) {
         PUSH_RULE_28;
         // GENERATING IFJcode18
-        CALL_PARAM(print_nil(), paramCount);
+        if (!BUILT_IN_FUNCTION) {
+          CALL_PARAM(print_nil(), paramCount);
+        }
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" unexpected identifier %s.\n", token->text);
@@ -777,7 +798,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       int return_value = 0;
       if (token->type == INTEGER || token->type == STRING || token->type == FLOATING_POINT || token->type == NIL || token->type == OPERATOR || token->type == ID) { // everything that fits in expression,  TODO must be ID of a variable
-        return_value = prec_table(token, sym);
+        return_value = prec_table(token, sym, isGlobal);
         if(return_value == SYNTAX_ERR) {
           fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected token \"%s\" in expression.\n", token->text);
           return SYNTAX_ERR;
@@ -793,7 +814,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       else { // everything else or ID of a function
         tToken endExpression = {"", LL_BOTTOM}; // finish expression
-        return_value = prec_table(&endExpression, sym);
+        return_value = prec_table(&endExpression, sym, isGlobal);
         if (return_value == SYNTAX_ERR) {
           fprintf(stderr, ANSI_COLOR_RED "Syntax error: " ANSI_COLOR_RESET "Unexpected token \"%s\" in expression.\n", token->text);
           return SYNTAX_ERR;

@@ -248,6 +248,16 @@ int add_param(tFuncParam **head, data_type type, char *name)
     last->next = new;
     new->type = type;
     new->next = NULL;
+
+    new->name = malloc((strlen(name) + 1) * sizeof(char));
+    if(new->name != NULL) {
+      strcpy(new->name, name);
+    }
+    else {
+      free(new);
+      return INTERNAL_ERR;
+    }
+
   }
   return SUCCESS;
 }

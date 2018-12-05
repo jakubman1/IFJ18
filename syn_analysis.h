@@ -23,6 +23,7 @@
 #include "single_link_list.h"
 #include "generator.h"
 
+#define BUILT_IN_FUNCTION (strcmp(id_func_name, "print") == 0 || strcmp(id_func_name, "length") == 0 || strcmp(id_func_name, "substr") == 0 || strcmp(id_func_name, "ord") == 0 || strcmp(id_func_name, "chr") == 0)
 
 #define PUSH_START s_push(stack, LL_BOTTOM); s_push(stack, LL_PROG)
 

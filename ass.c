@@ -122,12 +122,84 @@ void ass_find_father(tAssPtr root, tAssPtr current_node, tAssPtr *father_node)
   }
 }
 
-void in_order(tAssPtr root)
+void post_order(tAssPtr root, bool isGlobal, tAssPtr top_ass)
 {
   if (root != NULL) {
-    in_order(root->lptr);
-    in_order(root->rptr);
-    fprintf(stderr, "%s, ", root->text);
+    post_order(root->lptr, isGlobal, top_ass);
+    post_order(root->rptr, isGlobal, top_ass);
+
+    if (strcmp(root->text, "+") == 0) {
+      ADDS;
+    }
+    else if (strcmp(root->text, "-") == 0) {
+      SUBS;
+    }
+    else if (strcmp(root->text, "*") == 0) {
+      MULS;
+    }
+    else if (strcmp(root->text, "/") == 0) {
+      DIVS;
+    }
+    else if (strcmp(root->text, "<") == 0) {
+      LTS;
+    }
+    else if (strcmp(root->text, "<=") == 0) {
+      LTS;
+      EQS;
+    }
+    else if (strcmp(root->text, ">") == 0) {
+      GTS;
+    }
+    else if (strcmp(root->text, ">=") == 0) {
+      GTS;
+      EQS;
+    }
+    else if (strcmp(root->text, "==") == 0) {
+      EQS;
+    }
+    else if (strcmp(root->text, "!=") == 0) {
+      NOTS;
+      EQS;
+    }
+    else {
+      //PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+      tAssPtr father_node = NULL;
+      ass_find_father(top_ass, root, &father_node);
+/*
+      bool isNumber = false;
+      for (int i = 0; i < strlen(root->text); i++) {
+        fprintf(stderr, "SENDING %c TO isdigit\n", root->text[i]);
+        if (isdigit(root->text[i]) == 0) {
+          isNumber = false;
+          break;
+        }
+        else {
+          isNumber = true;
+        }
+      }
+*/
+//fprintf(stderr, "mam %d\n", isNumber);
+      //fprintf(stderr, "root je %d a otec je %d\n", root->type, father_node->type);
+      if (root->type == INTEGER && father_node->type == INTEGER) {
+        PUSH_ONE(print_int(root->text));
+      }
+      else if (root->type == INTEGER && father_node->type == FLOATING_POINT) {
+        PUSH_ONE(print_int(root->text));
+        INT2FLOATS;
+      }
+      else if (root->type == FLOATING_POINT && father_node->type == FLOATING_POINT) {
+        PUSH_ONE(print_float(root->text));
+      }
+      else if (root->type == STRING && father_node->type == STRING) {
+        PUSH_ONE(print_string(root->text));
+      }
+      else if (root->type == NIL && father_node->type == NIL) {
+        PUSH_ONE(print_nil(root->text));
+      }
+      else if (root->type == ID && father_node->type == INTEGER) {
+        PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
+      }
+    }
   }
 }
 
@@ -135,6 +207,7 @@ int ass_check_data_types(tAssPtr root, tSymPtr sym)
 {
   int type_left = -1;
   int type_right = -1;
+  root->nodeType = root->type;
   if (root->lptr == NULL && root->rptr == NULL) { // single node in the tree
     return root->type;
   }

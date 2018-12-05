@@ -106,6 +106,7 @@ Vestavene funkce:
 // Stack version of arithmetic functions. Result will be on top of the stack
 // Expression tree should be browsed using post-order
 // PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", token->text))
+// POPS(printf(printf("%s@%s", isGlobal ? "GF": "LF", nazev_promenne_do_ktere_to_chces_strcit))
 #define PUSH_ONE(x) printf("PUSHS "); x; printf("\n")
 #define PUSH_TWO(x, y) printf("PUSHS "); y; printf("\nPUSHS "); x; printf("\n")
 #define POPS(out) printf("POPS "); out; printf("\n")
@@ -123,10 +124,11 @@ Vestavene funkce:
 #define INT2FLOATS printf("INT2FLOATS\n")
 #define FLOAT2INTS printf("FLOAT2INTS\n")
 
-#define STRLEN(out, x) printf("STRLEN "); out; x; printf("\n")
-#define ORD(out, x, i) printf("STR2INT "); out; x; i; printf("\n")
-#define CHR(out, i) printf("INT2CHAR "); out, i; printf("\n")
+#define STRLEN(out, x) printf("STRLEN "); out; printf(" "); x; printf("\n")
+#define ORD(out, x, i) printf("STR2INT "); out; printf(" "); x; printf(" "); i; printf("\n")
+#define CHR(out, i) printf("INT2CHAR "); out; printf(" "); i; printf("\n")
 #define PRINT(x) printf("WRITE "); x; printf("\n")
+#define SUBSTR(s, i, n)
 
 void gen_start();
 
@@ -164,6 +166,8 @@ void gen_inputi(char *varName, char *frame);
 void gen_inputs(char *varName, char *frame);
 void gen_inputf(char *varName, char *frame);
 
-void call_function (tSymPtr func, char *var_name, bool global_frame);
+void call_function (tSymPtr func, char *var_name, bool global_frame, tFuncParam *args);
+void print_args (bool global_frame, tFuncParam *args);
+int uniqueInt();
 
 #endif
