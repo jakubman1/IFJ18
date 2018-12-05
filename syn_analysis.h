@@ -95,6 +95,6 @@ int fill_local_symtable (tList *symtable_list, tToken *token, bool isParam);
  @return 0 on success, VARIABLE_ERR if "<id>! = ..." or "<id>? = ..." or if name is a function (when inserting variable) or if name is a variable (when inserting function), 99 on memory allocation errors.
  @pre Head of the list should be global symtable
  */
- int add_to_symtable(tList *symtable_list, tToken *token);
+int add_to_symtable(tList *symtable_list, tToken *token, tStack *gen_stack);
 
  #endif

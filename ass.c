@@ -262,7 +262,6 @@ void post_order(tAssPtr root, bool isGlobal, tAssPtr top_ass)
           if ((strcmp(father_node->text, "!=") == 0) || (strcmp(father_node->text, "==") == 0)) {
             if (root->nodeType == ID) {
               PUSH_ONE(printf("%s@%s", isGlobal ? "GF": "LF", root->text));
-              gen_check_nil();
             }
             else if (root->nodeType == NIL) {
               PUSH_ONE(print_nil(root->text));

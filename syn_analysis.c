@@ -181,7 +181,7 @@ int fill_local_symtable (tList *symtable_list, tToken *token, bool isParam)
   return SUCCESS;
 }
 
-int add_to_symtable(tList *symtable_list, tToken *token)
+int add_to_symtable(tList *symtable_list, tToken *token, tStack *gen_stack)
 {
   tSymPtr ID_global = NULL; // driv bylo searchID, tak to pak prepsat
   tSymPtr ID_local = NULL;
@@ -298,10 +298,10 @@ int add_to_symtable(tList *symtable_list, tToken *token)
     }
     else {
       if (is_end_while) {
-        //gen_while_end();
+        gen_while_end(gen_stack);
       }
       else {
-        //gen_if_end();
+        gen_if_end(gen_stack);
       }
     }
   }
@@ -366,7 +366,7 @@ int parser()
     // create abstract syntax tree
     // currentToken contains new token in every iteration
 
-    result = add_to_symtable(&symtable_list, &currentToken);
+    result = add_to_symtable(&symtable_list, &currentToken, &gen_stack);
 
     if(result == 0) {
       if (currentToken.type == DEF) {
@@ -496,7 +496,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       }
       else if(token->type == ID || token->type == IF || token->type == WHILE || token->type == EOL) {
         if (token->type == WHILE) {
-          s_push(gen_stack, gen_uniq_num);
+        //  s_push(gen_stack, gen_uniq_num);
           printf("DEFVAR LF@whilecond%d\n", gen_uniq_num);
           printf("LABEL $$WHILE%d\n", gen_uniq_num);
 
@@ -898,6 +898,8 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
           else { // of of if
             gen_if_end(gen_stack);
           }
+          //fprintf(stderr, "POPUJEM\n");
+          s_pop(gen_stack);
         }
       }
       else {
@@ -918,6 +920,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       if (token->type == IF) {
         s_pop(stack);
         is_end_while = false;
+        //gen_uniq_num++;
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected if, got \"%s\".\n", token->text);
@@ -945,8 +948,10 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
       break;
     case LL_WHILE:
       if (token->type == WHILE) {
+        s_push(gen_stack, gen_uniq_num);
         s_pop(stack);
         is_end_while = true;
+        //gen_uniq_num++;
       }
       else {
         fprintf(stderr, ANSI_COLOR_RED "Syntax error: "ANSI_COLOR_RESET" expected while, got \"%s\".\n", token->text);
