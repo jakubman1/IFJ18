@@ -398,7 +398,9 @@ int parser()
     if(result == VARIABLE_ERR) {
       fprintf(stderr, ANSI_COLOR_RED "Variable error: " ANSI_COLOR_RESET "Can not assign value into a function\n");
       // nechybi tu free stack?
+      fprintf(stderr, "id_name :%p\n", id_name);
       free(id_name);
+      id_name = NULL;
       free(id_func_name);
       return result;
     }
@@ -470,7 +472,9 @@ int parser()
   fprintf(stderr, "%s type: %d\n", symtable_list.First->table_ptr->rptr->name, symtable_list.First->table_ptr->rptr->data.varData.type);
   fprintf(stderr, "KONEC VYPISU:\n");*/
 
+  fprintf(stderr, "id_name :%p\n", id_name);
   free(id_name);
+  id_name = NULL;
   free(id_func_name);
   return result;
 }
@@ -688,6 +692,7 @@ while ((top = s_top(stack)) >= LL_PROG && top < LL_BOTTOM) {
         PUSH_RULE_23;
         // insert data type - ID_variable = ID_function
         tSymPtr result = NULL;
+        fprintf(stderr, "2 id_name: %p\n", id_name);
         if (isGlobal) {
           symtable_search(symtable_list->First->table_ptr, id_name, &result);
         }
